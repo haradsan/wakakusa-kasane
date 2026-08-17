@@ -1,0 +1,835 @@
+<title>若草かさね ― 彩雲堂銘菓パズル（たたき台）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  :root{
+    --washi:#f3ecdd;
+    --washi-deep:#e7dcc4;
+    --sumi:#2f2620;
+    --lacquer:#33241c;
+    --lacquer-deep:#20140e;
+    --matcha:#6f9440;
+    --waka:#9cc95a;
+    --gold:#c9a24b;
+    --gold-bright:#e8c96a;
+    --azuki:#8e4a3f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 500px at 50% -200px, #fbf6ea 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent 0 34px, rgba(160,140,100,.05) 34px 35px),
+      var(--washi);
+    color:var(--sumi);
+    font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    -webkit-user-select:none;user-select:none;
+    overflow-x:hidden;
+  }
+  .wrap{width:min(94vw,430px);display:flex;flex-direction:column;gap:8px;padding:10px 0 24px}
+
+  header{text-align:center;padding-top:6px}
+  h1{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
+    font-size:26px;font-weight:600;letter-spacing:.35em;text-indent:.35em;
+  }
+  .sub{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
+    font-size:11px;letter-spacing:.25em;color:#7a6a52;margin-top:2px;
+  }
+  .sub b{color:var(--azuki);font-weight:600}
+  header .rule{width:120px;height:2px;margin:7px auto 0;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+  /* HUD */
+  .hud{display:flex;align-items:stretch;gap:8px}
+  .hud .box{
+    background:#fffdf6;border:1px solid #d8cbae;border-radius:10px;
+    padding:5px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 1px 2px rgba(90,70,40,.12);
+  }
+  .hud .label{font-size:9px;letter-spacing:.15em;color:#8a7a5e}
+  .hud .moves b{font-family:"Yu Mincho",serif;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+  .hud .moves b.low{color:#b03a2e}
+  .missions{flex:1;display:flex;gap:6px;justify-content:center}
+  .chip{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:44px}
+  .chip svg{width:26px;height:26px}
+  .chip .cnt{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+  .chip .cnt.done{color:var(--matcha)}
+  .hud .score b{font-family:"Yu Mincho",serif;font-size:16px;font-variant-numeric:tabular-nums}
+
+  /* board = 漆の菓子盆 */
+  .tray{
+    position:relative;border-radius:18px;padding:8px;
+    background:linear-gradient(160deg,#3d2b20,var(--lacquer) 40%,var(--lacquer-deep));
+    box-shadow:inset 0 2px 6px rgba(255,220,160,.14), inset 0 -3px 8px rgba(0,0,0,.55),
+      0 6px 18px rgba(60,40,20,.35);
+    border:1px solid #1a0f09;
+  }
+  #board{position:relative;width:100%;aspect-ratio:1/1;touch-action:none;border-radius:10px;overflow:hidden}
+  .piece{
+    position:absolute;left:0;top:0;width:var(--cell);height:var(--cell);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .27s cubic-bezier(.3,.9,.45,1.08);
+    will-change:transform;
+  }
+  .piece svg{width:88%;height:88%;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+  .piece.no-t{transition:none}
+  .piece.sel svg{filter:drop-shadow(0 0 6px var(--gold-bright)) drop-shadow(0 2px 2px rgba(0,0,0,.4));transform:scale(1.1)}
+  .piece.pop{animation:pop .26s ease-in forwards}
+  @keyframes pop{40%{opacity:1;scale:1.18}100%{opacity:0;scale:.2}}
+  .piece.goldpop svg{filter:drop-shadow(0 0 8px var(--gold-bright))}
+  .piece.special svg{animation:shimmer 1.6s ease-in-out infinite}
+  @keyframes shimmer{0%,100%{filter:drop-shadow(0 0 2px var(--gold-bright)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+    50%{filter:drop-shadow(0 0 8px var(--gold-bright)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}}
+
+  .particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:fly .55s ease-out forwards}
+  @keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+
+  /* 菓子切りの刃 */
+  .blade{position:absolute;background:linear-gradient(90deg,transparent,#fff,var(--gold-bright),#fff,transparent);
+    pointer-events:none;opacity:0;animation:slash .35s ease-out forwards;border-radius:3px}
+  .blade.h{height:5px;width:100%;left:0}
+  .blade.v{width:5px;height:100%;top:0}
+  @keyframes slash{0%{opacity:0;scale:.3}30%{opacity:1;scale:1}100%{opacity:0;scale:1}}
+  .gust{position:absolute;border:3px solid rgba(255,235,180,.9);border-radius:50%;pointer-events:none;
+    animation:gust .4s ease-out forwards}
+  @keyframes gust{from{opacity:.95;scale:.2}to{opacity:0;scale:1.6}}
+
+  .chainText{
+    position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:44px;font-weight:700;color:#fffbe8;
+    text-shadow:0 0 14px var(--gold),0 2px 4px rgba(0,0,0,.6);letter-spacing:.1em;
+    pointer-events:none;animation:chain .8s ease-out forwards;white-space:nowrap;
+  }
+  @keyframes chain{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}
+    25%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
+    75%{opacity:1;transform:translate(-50%,-55%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-75%) scale(1)}}
+
+  /* footer controls */
+  .controls{display:flex;gap:10px;align-items:stretch}
+  .gaugeBox{
+    flex:1;background:#fffdf6;border:1px solid #d8cbae;border-radius:12px;
+    display:flex;align-items:center;gap:8px;padding:6px 10px;
+    box-shadow:0 1px 2px rgba(90,70,40,.12);
+  }
+  .gaugeBox .txt{flex:1}
+  .gaugeBox .name{font-family:"Yu Mincho",serif;font-size:13px;letter-spacing:.12em;font-weight:600}
+  .gaugeBox .desc{font-size:9.5px;color:#8a7a5e;margin-top:1px}
+  .bar{height:8px;border-radius:4px;background:var(--washi-deep);margin-top:4px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;border-radius:4px;transition:width .4s ease}
+  #teaBar i{background:linear-gradient(90deg,var(--matcha),var(--waka))}
+  #pandaBar i{background:linear-gradient(90deg,#b78a4e,var(--gold-bright))}
+  .gaugeBox svg{width:40px;height:40px;flex-shrink:0}
+  #pandaBtn{cursor:pointer;border:1px solid #d8cbae;-webkit-tap-highlight-color:transparent}
+  #pandaBtn.ready{border-color:var(--gold);animation:ready 1.1s ease-in-out infinite}
+  @keyframes ready{0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,.0)}50%{box-shadow:0 0 12px 2px rgba(201,162,75,.55)}}
+  #pandaBtn:not(.ready){opacity:.75}
+
+  /* overlays */
+  .overlay{
+    position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(30,20,10,.72);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s;
+    text-align:center;padding:20px;
+  }
+  .overlay.show{opacity:1;pointer-events:auto}
+  .overlay .card{
+    background:var(--washi);border:2px solid var(--gold);border-radius:14px;
+    padding:22px 26px;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,.5);
+  }
+  .overlay h2{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:22px;letter-spacing:.2em;margin-bottom:6px}
+  .overlay p{font-size:13px;line-height:1.7;color:#5c4f3c}
+  .overlay button{
+    margin-top:14px;font-family:"Yu Mincho",serif;font-size:15px;letter-spacing:.2em;
+    padding:9px 26px;border-radius:999px;border:1px solid var(--gold);
+    background:linear-gradient(180deg,#fffbe8,#f0e2bc);color:var(--sumi);cursor:pointer;
+  }
+  .overlay .bigsvg{width:150px;height:150px;margin:0 auto 6px}
+  .overlay .scene{display:block;width:100%;border-radius:8px;border:1px solid #d8cbae;margin-bottom:10px}
+
+  #feverOv{background:radial-gradient(circle at 50% 45%,rgba(201,162,75,.55),rgba(30,20,10,.85))}
+  #feverOv .fname{
+    font-family:"Yu Mincho",serif;font-size:34px;color:#fff8e0;letter-spacing:.3em;
+    text-shadow:0 0 18px var(--gold-bright),0 2px 6px rgba(0,0,0,.7);margin-top:4px;
+  }
+  #feverOv .fsub{color:#f5e6bb;font-size:13px;letter-spacing:.25em;margin-top:6px}
+  #feverOv .bigsvg{width:190px;height:190px;animation:appear .9s ease-out}
+  #pandaOv .bigsvg{width:150px;height:150px;animation:appear .5s cubic-bezier(.2,1.4,.5,1)}
+  #pandaOv .fname{font-size:22px;color:#fff8e0;font-family:"Yu Mincho",serif;letter-spacing:.2em;
+    text-shadow:0 2px 6px rgba(0,0,0,.7);margin-top:2px}
+  @keyframes appear{from{opacity:0;transform:translateY(30px) scale(.7)}to{opacity:1}}
+
+  details{background:#fffdf6;border:1px solid #d8cbae;border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.8;color:#5c4f3c}
+  summary{cursor:pointer;font-weight:700;letter-spacing:.1em;font-size:12px}
+  details b{color:var(--azuki)}
+  .foot{text-align:center;font-size:10px;color:#a09070;letter-spacing:.15em}
+
+  @media (prefers-reduced-motion: reduce){
+    .piece{transition-duration:.01s}
+    .piece.special svg,#pandaBtn.ready{animation:none}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>若草かさね</h1>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.2</b></div>
+    <div class="rule"></div>
+  </header>
+
+  <div class="hud">
+    <div class="box moves"><span class="label">残り手数</span><b id="moves">25</b></div>
+    <div class="box missions" id="missions"></div>
+    <div class="box score"><span class="label">点数</span><b id="score">0</b></div>
+  </div>
+
+  <div class="tray"><div id="board"></div></div>
+
+  <div class="controls">
+    <div class="gaugeBox">
+      <svg viewBox="0 0 100 100"><use href="#s-bowl"/></svg>
+      <div class="txt">
+        <div class="name">大茶会</div>
+        <div class="desc">連鎖でお茶が点つと 不昧公さま降臨</div>
+        <div class="bar" id="teaBar"><i></i></div>
+      </div>
+    </div>
+    <div class="gaugeBox" id="pandaBtn">
+      <svg viewBox="0 0 100 100"><use href="#s-panda"/></svg>
+      <div class="txt">
+        <div class="name">おたすけパンダ</div>
+        <div class="desc" id="pandaDesc">あんぱん饅頭を5個消すと出動</div>
+        <div class="bar" id="pandaBar"><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>あそびかた</summary>
+    となり同士のお菓子を入れ替えて、同じ銘菓を3つ揃えて消します。<br>
+    <b>若草4つ</b>で棹物「棹若草」に → 揃えて消すと菓子切りが縦横を<b>スパッ</b>。<br>
+    <b>L字/5つ</b>で伯耆坊が「天狗のうちわ」(金の輪)に → 揃えて消すと周りを吹き飛ばします。<br>
+    <b>やまかつら</b>(三層のお菓子)は隣で消すたびに一層ずつ剥がれます。<br>
+    連鎖(一服、二服…)で茶碗ゲージが満ちると<b>不昧公さま</b>が降臨し大茶会に。<br>
+    あんぱん饅頭を<b>5個</b>消すとパンダが出動準備。ボタンを押すと一番多い銘菓をぱくり。
+  </details>
+  <div class="foot">松江・彩雲堂 ― 試作につき非売品</div>
+</div>
+
+<!-- ===== SVG素材（すべてオリジナルのベクター画） ===== -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g-waka" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b5dd6e"/><stop offset="1" stop-color="#86b344"/>
+    </linearGradient>
+    <linearGradient id="g-kuri" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a4713f"/><stop offset="1" stop-color="#6f4423"/>
+    </linearGradient>
+    <radialGradient id="g-gold" cx=".5" cy=".45" r=".6">
+      <stop offset="0" stop-color="#f6e7b3"/><stop offset="1" stop-color="#c9a24b"/>
+    </radialGradient>
+
+    <!-- 若草 -->
+    <symbol id="s-waka" viewBox="0 0 100 100">
+      <rect x="16" y="30" width="68" height="46" rx="9" fill="#6d9138"/>
+      <rect x="16" y="26" width="68" height="42" rx="9" fill="url(#g-waka)"/>
+      <g fill="#eaf7c8" opacity=".85">
+        <circle cx="30" cy="38" r="2"/><circle cx="45" cy="33" r="1.6"/><circle cx="60" cy="40" r="2"/>
+        <circle cx="72" cy="34" r="1.5"/><circle cx="38" cy="50" r="1.7"/><circle cx="55" cy="55" r="2"/>
+        <circle cx="70" cy="52" r="1.6"/><circle cx="26" cy="58" r="1.5"/>
+      </g>
+    </symbol>
+
+    <!-- 伯耆坊（小豆羹×求肥・端の欠けた丸い三日月形） -->
+    <symbol id="s-hoki" viewBox="0 0 100 100">
+      <mask id="m-hoki">
+        <rect x="0" y="0" width="100" height="100" fill="#fff"/>
+        <circle cx="74" cy="30" r="25" fill="#000"/>
+      </mask>
+      <circle cx="50" cy="55" r="34" fill="#4e2a22" mask="url(#m-hoki)"/>
+      <circle cx="49" cy="52" r="33" fill="#733d31" mask="url(#m-hoki)"/>
+      <path d="M27 70 C36 79 52 82 64 75" stroke="#8f5546" stroke-width="4" fill="none" stroke-linecap="round" opacity=".75"/>
+      <ellipse cx="33" cy="41" rx="8" ry="4.5" fill="#a56b5e" opacity=".6" transform="rotate(-32 33 41)"/>
+    </symbol>
+
+    <!-- 朝汐（白い生地・断面はグレーの餡） -->
+    <symbol id="s-asa" viewBox="0 0 100 100">
+      <path d="M16 66 A34 34 0 0 1 84 66 Z" fill="#e3d5ba"/>
+      <path d="M16 63 A34 33 0 0 1 84 63 Z" fill="#faf5ea"/>
+      <path d="M27 63 A23 22 0 0 1 73 63 Z" fill="#8d8578"/>
+      <path d="M33 63 A17 16 0 0 1 67 63 Z" fill="#7b7266"/>
+      <rect x="16" y="62" width="68" height="4" rx="2" fill="#e9dcc4"/>
+      <ellipse cx="36" cy="40" rx="8" ry="4" fill="#ffffff" opacity=".7" transform="rotate(-28 36 40)"/>
+    </symbol>
+
+    <!-- あんぱん饅頭（パンダ焼印） -->
+    <symbol id="s-anpan" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="31" fill="#c99b5c"/>
+      <circle cx="50" cy="51" r="30" fill="#e8c07a"/>
+      <g fill="none" stroke="#6b4423" stroke-width="3.2" stroke-linecap="round">
+        <circle cx="38" cy="38" r="5" fill="#6b4423" stroke="none"/>
+        <circle cx="62" cy="38" r="5" fill="#6b4423" stroke="none"/>
+        <ellipse cx="41" cy="51" rx="5.5" ry="7" fill="#6b4423" stroke="none"/>
+        <ellipse cx="59" cy="51" rx="5.5" ry="7" fill="#6b4423" stroke="none"/>
+        <path d="M46 62 Q50 66 54 62"/>
+      </g>
+      <g fill="#fff"><circle cx="42.5" cy="49.5" r="1.7"/><circle cx="60.5" cy="49.5" r="1.7"/></g>
+    </symbol>
+
+    <!-- 栗まる（断面：餡の中央に栗が丸ごと） -->
+    <symbol id="s-kuri" viewBox="0 0 100 100">
+      <path d="M16 66 A34 34 0 0 1 84 66 Z" fill="#d9c39a"/>
+      <path d="M16 63 A34 33 0 0 1 84 63 Z" fill="#f3ead4"/>
+      <path d="M26 63 A24 23 0 0 1 74 63 Z" fill="#a9835a"/>
+      <path d="M50 31 C60 35 66 42 66 51 C66 60 59 63 50 63 C41 63 34 60 34 51 C34 42 40 35 50 31 Z" fill="#ecc25a"/>
+      <path d="M50 31 C60 35 66 42 66 51 C66 56 64 60 60 62 C63 52 59 40 50 31 Z" fill="#d6a53d" opacity=".85"/>
+      <rect x="16" y="62" width="68" height="4" rx="2" fill="#e0d0ae"/>
+    </symbol>
+
+    <!-- 棹若草（特殊：ライン消し） -->
+    <symbol id="s-sao" viewBox="0 0 100 100">
+      <rect x="8" y="36" width="84" height="30" rx="7" fill="#6d9138"/>
+      <rect x="8" y="33" width="84" height="27" rx="7" fill="url(#g-waka)"/>
+      <g stroke="#fffbe8" stroke-width="2" opacity=".9"><path d="M36 33 V60"/><path d="M64 33 V60"/></g>
+      <g fill="#eaf7c8" opacity=".85"><circle cx="22" cy="42" r="1.7"/><circle cx="50" cy="40" r="1.7"/><circle cx="78" cy="44" r="1.7"/></g>
+      <path d="M84 22 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3 Z" fill="#e8c96a"/>
+    </symbol>
+
+    <!-- うちわ伯耆坊（特殊：範囲消し） -->
+    <symbol id="s-uchiwa" viewBox="0 0 100 100">
+      <circle cx="50" cy="48" r="44" fill="none" stroke="url(#g-gold)" stroke-width="5" opacity=".95"/>
+      <use href="#s-hoki"/>
+    </symbol>
+
+    <!-- 茶碗（ゲージ） -->
+    <symbol id="s-bowl" viewBox="0 0 100 100">
+      <path d="M18 40 H82 C82 66 70 82 50 82 C30 82 18 66 18 40 Z" fill="#4a3a2c"/>
+      <path d="M22 44 H78 C77 64 67 77 50 77 C33 77 23 64 22 44 Z" fill="#6f9440"/>
+      <ellipse cx="50" cy="44" rx="28" ry="6" fill="#8fb75c"/>
+      <path d="M38 42 Q50 48 62 42" stroke="#d9ecb0" stroke-width="2.5" fill="none" opacity=".9"/>
+      <rect x="38" y="84" width="24" height="5" rx="2" fill="#33241c"/>
+    </symbol>
+
+    <!-- おたすけパンダ -->
+    <symbol id="s-panda" viewBox="0 0 100 100">
+      <circle cx="28" cy="26" r="12" fill="#3a3a3a"/><circle cx="72" cy="26" r="12" fill="#3a3a3a"/>
+      <circle cx="50" cy="54" r="34" fill="#fdfaf4"/>
+      <ellipse cx="37" cy="48" rx="8.5" ry="11" fill="#3a3a3a" transform="rotate(-14 37 48)"/>
+      <ellipse cx="63" cy="48" rx="8.5" ry="11" fill="#3a3a3a" transform="rotate(14 63 48)"/>
+      <circle cx="39" cy="49" r="3" fill="#fff"/><circle cx="61" cy="49" r="3" fill="#fff"/>
+      <ellipse cx="50" cy="63" rx="5" ry="4" fill="#3a3a3a"/>
+      <path d="M43 71 Q50 76 57 71" stroke="#3a3a3a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="30" cy="63" r="5" fill="#f2b8ae" opacity=".7"/><circle cx="70" cy="63" r="5" fill="#f2b8ae" opacity=".7"/>
+    </symbol>
+
+    <!-- 不昧公さま（歴史上の茶人を品よく意匠化） -->
+    <symbol id="s-fumai" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="56" fill="url(#g-gold)" opacity=".95"/>
+      <g stroke="#fff8e0" stroke-width="2.5" opacity=".8">
+        <path d="M60 2 V14"/><path d="M60 106 V118"/><path d="M2 60 H14"/><path d="M106 60 H118"/>
+        <path d="M19 19 L27 27"/><path d="M93 93 L101 101"/><path d="M101 19 L93 27"/><path d="M27 93 L19 101"/>
+      </g>
+      <path d="M28 96 C30 74 44 66 60 66 C76 66 90 74 92 96 Z" fill="#3c342c"/>
+      <path d="M46 74 L60 96 L74 74" fill="#57493d"/>
+      <path d="M60 70 L84 92 L77 96 L56 76 Z" fill="#c9a24b" opacity=".9"/>
+      <circle cx="60" cy="44" r="17" fill="#f0d8b8"/>
+      <path d="M44 40 C46 31 52 27 60 27 C68 27 74 31 76 40" fill="none" stroke="#e0c29c" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="42.5" cy="46" r="3.5" fill="#f0d8b8"/><circle cx="77.5" cy="46" r="3.5" fill="#f0d8b8"/>
+      <path d="M50 44 Q52 40 56 42 M64 42 Q68 40 70 44" stroke="#8a7357" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M50 48 Q53 50 56 48 M64 48 Q67 50 70 48" stroke="#5c4530" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M55 57 Q60 59.5 65 57" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <g transform="translate(60 88)">
+        <path d="M-12 -6 H12 C12 4 6 10 0 10 C-6 10 -12 4 -12 -6 Z" fill="#4a3a2c"/>
+        <ellipse cx="0" cy="-6" rx="10" ry="2.6" fill="#8fb75c"/>
+        <path d="M-5 -14 Q0 -18 2 -12 M4 -20 Q8 -22 8 -16" stroke="#fff8e0" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"/>
+      </g>
+    </symbol>
+
+    <!-- クリア演出：宍道湖の夕景（嫁ヶ島） -->
+    <symbol id="s-shinji" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="#f2b45e"/>
+      <rect width="200" height="34" fill="#e88f4d"/>
+      <circle cx="100" cy="58" r="15" fill="#e0512f"/>
+      <rect y="66" width="200" height="54" fill="#b05a40"/>
+      <rect y="66" width="200" height="54" fill="#8c4436" opacity=".45"/>
+      <g stroke="#f2b45e" stroke-width="2.5" opacity=".8">
+        <path d="M92 72 H108"/><path d="M88 79 H112"/><path d="M94 86 H106"/>
+      </g>
+      <g fill="#3e2723">
+        <path d="M26 66 C34 60 66 60 74 66 Z"/>
+        <path d="M38 52 L44 63 H32 Z"/><path d="M50 48 L57 63 H43 Z"/><path d="M62 53 L67 63 H57 Z"/>
+      </g>
+      <g stroke="#7c4a2e" stroke-width="2" fill="none" stroke-linecap="round">
+        <path d="M140 34 q4 -4 8 0"/><path d="M154 28 q4 -4 8 0"/>
+      </g>
+    </symbol>
+
+    <!-- クリア演出：国宝松江城と桜 -->
+    <symbol id="s-castle" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="#dfe8e4"/>
+      <path d="M58 120 L70 92 H130 L142 120 Z" fill="#8a8578"/>
+      <g fill="#33393d">
+        <path d="M74 92 L79 80 H121 L126 92 Z"/>
+        <path d="M64 80 Q100 68 136 80 L126 70 H74 Z"/>
+        <path d="M82 70 L86 58 H114 L118 70 Z"/>
+        <path d="M74 58 Q100 48 126 58 L118 50 H82 Z"/>
+        <path d="M88 50 L91 40 H109 L112 50 Z"/>
+        <path d="M84 40 Q100 31 116 40 L110 33 H90 Z"/>
+      </g>
+      <g fill="#e8e4d4">
+        <rect x="92" y="42" width="4" height="5"/><rect x="104" y="42" width="4" height="5"/>
+        <rect x="88" y="61" width="5" height="6"/><rect x="98" y="61" width="5" height="6"/><rect x="108" y="61" width="5" height="6"/>
+      </g>
+      <path d="M92 33 C92 27 97 26 96 31 M108 33 C108 27 103 26 104 31" stroke="#c9a24b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <g fill="#f2c6cf">
+        <circle cx="24" cy="98" r="17"/><circle cx="42" cy="106" r="13"/>
+        <circle cx="178" cy="100" r="15"/><circle cx="162" cy="110" r="11"/>
+      </g>
+      <g fill="#e9aebc" opacity=".8"><circle cx="30" cy="90" r="7"/><circle cx="172" cy="92" r="6"/></g>
+    </symbol>
+
+    <!-- クリア演出：堀川めぐり（こたつ舟） -->
+    <symbol id="s-horikawa" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="#e6ead6"/>
+      <rect y="76" width="200" height="44" fill="#7fa39b"/>
+      <path d="M0 54 H200 V78 H136 A36 28 0 0 0 64 78 H0 Z" fill="#9a8f7c"/>
+      <path d="M0 54 H200 V60 H0 Z" fill="#8a7f6c"/>
+      <path d="M58 98 Q100 106 142 98 L133 89 H67 Z" fill="#5d3f26"/>
+      <rect x="68" y="72" width="64" height="5" rx="2.5" fill="#7c552f"/>
+      <g stroke="#7c552f" stroke-width="3"><path d="M74 77 V89"/><path d="M100 77 V89"/><path d="M126 77 V89"/></g>
+      <circle cx="136" cy="83" r="4" fill="#e0512f"/>
+      <g stroke="#8fae6a" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <path d="M16 0 C14 26 18 44 12 62"/><path d="M28 0 C28 24 32 40 26 58"/><path d="M6 2 C4 22 8 38 4 54"/>
+      </g>
+      <g stroke="#a9c3ba" stroke-width="2" stroke-linecap="round">
+        <path d="M36 108 h18"/><path d="M92 113 h20"/><path d="M150 106 h16"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- overlays -->
+<div class="overlay" id="feverOv">
+  <svg class="bigsvg" viewBox="0 0 120 120"><use href="#s-fumai"/></svg>
+  <div class="fname">不昧公さま 降臨</div>
+  <div class="fsub">― 大茶会 ―</div>
+</div>
+<div class="overlay" id="pandaOv">
+  <svg class="bigsvg" viewBox="0 0 100 100"><use href="#s-panda"/></svg>
+  <div class="fname" id="pandaMsg">ぱくり！</div>
+</div>
+<div class="overlay" id="winOv">
+  <div class="card">
+    <svg class="scene" viewBox="0 0 200 120"><use id="winScene" href="#s-shinji"/></svg>
+    <h2 id="winTitle">お見事でした</h2>
+    <p><span id="winMsg">詰合せが完成しました。</span><br>点数：<b id="winScore">0</b></p>
+    <button onclick="location.reload()">もう一箱つくる</button>
+  </div>
+</div>
+<div class="overlay" id="loseOv">
+  <div class="card">
+    <h2>もう一服いかがですか</h2>
+    <p>手数が尽きてしまいました。<br>お茶を淹れ直して、ゆっくりまいりましょう。</p>
+    <button onclick="location.reload()">やり直す</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+const N = 7;
+const TYPES = ['waka','hoki','asa','anpan','kuri'];
+const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri'};
+const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#caa46a'};
+const CHAIN_KANJI = ['','','二服','三服','四服','五服','六服','七服','八服','九服'];
+const TEA_MAX = 100, PANDA_MAX = 5;
+const TARGETS = {waka:20, asa:18, anpan:14};
+const YAMA_CELLS = [[2,2],[2,4],[4,1],[4,5]];
+
+const board = document.getElementById('board');
+let grid, cell = 0, moves = 25, score = 0, teaGauge = 0, pandaGauge = 0;
+let busy = false, over = false, selected = null;
+const collected = {waka:0, asa:0, anpan:0};
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const key = (r,c) => r + ',' + c;
+const unkey = k => k.split(',').map(Number);
+const inB = (r,c) => r >= 0 && r < N && c >= 0 && c < N;
+
+function pieceSVG(p){
+  if(p.type === 'yama'){
+    const L = [['8','#caa46a'],['30','#3a2a20'],['52','#8e4a3f']];
+    let s = '<svg viewBox="0 0 100 100"><rect x="14" y="6" width="72" height="72" rx="8" fill="#241812"/>';
+    for(let i = 0; i < p.layers; i++){
+      s += `<rect x="19" y="${L[i][0]}" width="62" height="19" rx="4" fill="${L[i][1]}"/>`;
+      if(i === 0) s += '<g fill="#fff3d6" opacity=".8"><circle cx="30" cy="14" r="1.6"/><circle cx="48" cy="18" r="1.6"/><circle cx="66" cy="13" r="1.6"/></g>';
+    }
+    return s + '</svg>';
+  }
+  const href = p.special === 'sao' ? '#s-sao' : p.special === 'uchiwa' ? '#s-uchiwa' : SYM[p.type];
+  return `<svg viewBox="0 0 100 100"><use href="${href}"/></svg>`;
+}
+function updateVisual(p){
+  p.el.innerHTML = pieceSVG(p);
+  p.el.classList.toggle('special', !!p.special);
+}
+function place(p, r, c, instant){
+  p.r = r; p.c = c;
+  if(instant) p.el.classList.add('no-t');
+  p.el.style.transform = `translate(${c*cell}px, ${r*cell}px)`;
+  if(instant){ p.el.offsetHeight; p.el.classList.remove('no-t'); }
+}
+function makePiece(type, r, c, spawnAbove){
+  const p = {type, special:null, layers: type === 'yama' ? 3 : 0, r, c, el: document.createElement('div')};
+  p.el.className = 'piece';
+  updateVisual(p);
+  board.appendChild(p.el);
+  if(spawnAbove){
+    p.el.classList.add('no-t');
+    p.el.style.transform = `translate(${c*cell}px, ${(r - spawnAbove)*cell}px)`;
+    p.el.offsetHeight; p.el.classList.remove('no-t');
+  }
+  place(p, r, c, !spawnAbove);
+  return p;
+}
+
+function init(){
+  cell = board.clientWidth / N;
+  board.style.setProperty('--cell', cell + 'px');
+  grid = Array.from({length:N}, () => Array(N).fill(null));
+  for(const [r,c] of YAMA_CELLS) grid[r][c] = makePiece('yama', r, c, 0);
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    if(grid[r][c]) continue;
+    let t;
+    do { t = TYPES[Math.random()*TYPES.length|0]; }
+    while((c >= 2 && grid[r][c-1]?.type === t && grid[r][c-2]?.type === t) ||
+          (r >= 2 && grid[r-1][c]?.type === t && grid[r-2][c]?.type === t));
+    grid[r][c] = makePiece(t, r, c, 0);
+  }
+  renderMissions(); updateHUD();
+}
+
+function renderMissions(){
+  document.getElementById('missions').innerHTML = Object.keys(TARGETS).map(t =>
+    `<div class="chip"><svg viewBox="0 0 100 100"><use href="${SYM[t]}"/></svg><span class="cnt" id="m-${t}"></span></div>`
+  ).join('');
+}
+function updateHUD(){
+  const mv = document.getElementById('moves');
+  mv.textContent = moves; mv.classList.toggle('low', moves <= 5);
+  document.getElementById('score').textContent = score;
+  for(const t in TARGETS){
+    const left = TARGETS[t] - collected[t], el = document.getElementById('m-' + t);
+    el.textContent = left <= 0 ? '✓' : 'あと' + left;
+    el.classList.toggle('done', left <= 0);
+  }
+  document.querySelector('#teaBar i').style.width = Math.min(100, teaGauge/TEA_MAX*100) + '%';
+  document.querySelector('#pandaBar i').style.width = Math.min(100, pandaGauge/PANDA_MAX*100) + '%';
+  document.getElementById('pandaBtn').classList.toggle('ready', pandaGauge >= PANDA_MAX && !over);
+  document.getElementById('pandaDesc').textContent = pandaGauge >= PANDA_MAX
+    ? 'タップで出動！一番多い銘菓をぱくり'
+    : 'あんぱん饅頭をあと' + (PANDA_MAX - pandaGauge) + '個消すと出動';
+}
+
+/* ---------- match detection ---------- */
+function findRuns(){
+  const runs = [];
+  const scan = (horiz) => {
+    for(let a = 0; a < N; a++){
+      let run = [];
+      for(let b = 0; b <= N; b++){
+        const r = horiz ? a : b, c = horiz ? b : a;
+        const p = b < N ? grid[r]?.[c] : null;
+        const t = (p && p.type !== 'yama') ? p.type : null;
+        if(t && run.length && grid[run[0][0]][run[0][1]].type === t){ run.push([r,c]); }
+        else {
+          if(run.length >= 3) runs.push({cells:run, horiz});
+          run = t ? [[r,c]] : [];
+        }
+      }
+    }
+  };
+  scan(true); scan(false);
+  return runs;
+}
+function findMatches(swapKey){
+  const runs = findRuns();
+  const set = new Set(), inH = new Set(), inV = new Set();
+  for(const run of runs){
+    for(const [r,c] of run.cells){ set.add(key(r,c)); (run.horiz ? inH : inV).add(key(r,c)); }
+  }
+  const plans = [];
+  const planned = new Set();
+  for(const k of set){ // L字/T字 → うちわ
+    if(inH.has(k) && inV.has(k) && !planned.has(k)){ plans.push({k, kind:'uchiwa'}); planned.add(k); }
+  }
+  for(const run of runs){
+    if(run.cells.length < 4) continue;
+    const keys = run.cells.map(([r,c]) => key(r,c));
+    if(keys.some(k => planned.has(k))) continue;
+    const kind = run.cells.length >= 5 ? 'uchiwa' : 'sao';
+    const k = (swapKey && keys.includes(swapKey)) ? swapKey : keys[keys.length >> 1];
+    plans.push({k, kind}); planned.add(k);
+  }
+  return {set, plans};
+}
+
+/* ---------- effects ---------- */
+function fx(el){ board.appendChild(el); setTimeout(() => el.remove(), 700); }
+function bladeFX(r, c){
+  const h = document.createElement('div'); h.className = 'blade h'; h.style.top = (r*cell + cell/2 - 2) + 'px'; fx(h);
+  const v = document.createElement('div'); v.className = 'blade v'; v.style.left = (c*cell + cell/2 - 2) + 'px'; fx(v);
+}
+function gustFX(r, c){
+  const g = document.createElement('div'); g.className = 'gust';
+  const s = cell*2.6;
+  g.style.cssText = `width:${s}px;height:${s}px;left:${c*cell + cell/2 - s/2}px;top:${r*cell + cell/2 - s/2}px`;
+  fx(g);
+}
+function particles(r, c, color){
+  for(let i = 0; i < 5; i++){
+    const d = document.createElement('div'); d.className = 'particle';
+    d.style.cssText = `left:${c*cell + cell/2}px;top:${r*cell + cell/2}px;background:${color};
+      --dx:${(Math.random()-.5)*70}px;--dy:${(Math.random()-.5)*70 - 20}px`;
+    fx(d);
+  }
+}
+function showChain(wave){
+  const d = document.createElement('div'); d.className = 'chainText';
+  d.textContent = (CHAIN_KANJI[Math.min(wave,9)] || '九服') + '！';
+  board.appendChild(d); setTimeout(() => d.remove(), 850);
+}
+
+/* ---------- clearing pipeline ---------- */
+function expandSpecials(set){
+  const q = [...set].filter(k => { const [r,c] = unkey(k); return grid[r][c]?.special; });
+  const seen = new Set(q);
+  while(q.length){
+    const [r,c] = unkey(q.pop());
+    const p = grid[r][c]; if(!p) continue;
+    const add = [];
+    if(p.special === 'sao'){
+      bladeFX(r, c);
+      for(let i = 0; i < N; i++){ add.push([r,i]); add.push([i,c]); }
+    } else if(p.special === 'uchiwa'){
+      gustFX(r, c);
+      for(let dr = -1; dr <= 1; dr++) for(let dc = -1; dc <= 1; dc++) add.push([r+dr, c+dc]);
+    }
+    for(const [ar,ac] of add){
+      if(!inB(ar,ac)) continue;
+      const t = grid[ar][ac];
+      if(!t || t.type === 'yama') continue;
+      const k = key(ar,ac);
+      if(!set.has(k)){ set.add(k); if(t.special && !seen.has(k)){ seen.add(k); q.push(k); } }
+    }
+  }
+}
+function damageYama(set){
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    const p = grid[r][c];
+    if(!p || p.type !== 'yama') continue;
+    const hit = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].some(([ar,ac]) => inB(ar,ac) && set.has(key(ar,ac)));
+    if(hit){
+      p.layers--;
+      if(p.layers <= 0) set.add(key(r,c));
+      else { updateVisual(p); particles(r, c, PCOLOR.yama); }
+    }
+  }
+}
+async function clearWave(set, plans = [], mult = 1, gold = false){
+  expandSpecials(set);
+  damageYama(set);
+  const planPieces = [];
+  for(const pl of plans){
+    set.delete(pl.k);
+    const [r,c] = unkey(pl.k);
+    if(grid[r][c]) planPieces.push({p:grid[r][c], kind:pl.kind});
+  }
+  if(set.size === 0) return 0;
+  let n = 0;
+  for(const k of set){
+    const [r,c] = unkey(k);
+    const p = grid[r][c]; if(!p) continue;
+    n++;
+    if(p.type in collected) collected[p.type]++;
+    if(p.type === 'anpan') pandaGauge = Math.min(PANDA_MAX, pandaGauge + 1);
+    score += 10 * mult;
+    p.el.classList.add('pop'); if(gold) p.el.classList.add('goldpop');
+    particles(r, c, PCOLOR[p.type] || '#fff');
+  }
+  updateHUD();
+  await sleep(280);
+  for(const k of set){
+    const [r,c] = unkey(k);
+    if(grid[r][c]){ grid[r][c].el.remove(); grid[r][c] = null; }
+  }
+  for(const {p, kind} of planPieces){ p.special = kind; updateVisual(p); }
+  await gravity();
+  return n;
+}
+async function gravity(){
+  for(let c = 0; c < N; c++){
+    const col = [];
+    for(let r = N-1; r >= 0; r--) if(grid[r][c]) col.push(grid[r][c]);
+    let holes = 0;
+    for(let r = N-1; r >= 0; r--){
+      const p = col[N-1-r] || null;
+      grid[r][c] = p;
+      if(p){ if(p.r !== r || p.c !== c) place(p, r, c, false); }
+    }
+    holes = N - col.length;
+    for(let i = 0; i < holes; i++){
+      const r = holes - 1 - i;
+      grid[r][c] = makePiece(TYPES[Math.random()*TYPES.length|0], r, c, holes);
+    }
+  }
+  await sleep(330);
+}
+
+/* ---------- main resolution ---------- */
+async function resolveAll(swapKey){
+  let wave = 0;
+  while(true){
+    const {set, plans} = findMatches(wave === 0 ? swapKey : null);
+    if(set.size === 0){
+      if(teaGauge >= TEA_MAX && !over){ await fever(); continue; }
+      break;
+    }
+    wave++;
+    if(wave >= 2) showChain(wave);
+    const n = await clearWave(set, plans, wave);
+    teaGauge = Math.min(TEA_MAX, teaGauge + n + (wave-1)*5);
+    updateHUD();
+  }
+}
+async function fever(){
+  teaGauge = 0; updateHUD();
+  const ov = document.getElementById('feverOv');
+  ov.classList.add('show');
+  await sleep(1500);
+  ov.classList.remove('show');
+  const cands = [];
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
+    if(grid[r][c] && grid[r][c].type !== 'yama') cands.push(key(r,c));
+  for(let i = cands.length-1; i > 0; i--){ const j = Math.random()*(i+1)|0; [cands[i],cands[j]] = [cands[j],cands[i]]; }
+  await clearWave(new Set(cands.slice(0, 12)), [], 2, true);
+  updateHUD();
+}
+async function pandaHelp(){
+  if(busy || over || pandaGauge < PANDA_MAX) return;
+  busy = true; pandaGauge = 0; updateHUD();
+  const count = {};
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    const p = grid[r][c];
+    if(p && p.type !== 'yama') count[p.type] = (count[p.type] || 0) + 1;
+  }
+  const best = Object.keys(count).sort((a,b) => count[b] - count[a])[0];
+  const ov = document.getElementById('pandaOv');
+  document.getElementById('pandaMsg').textContent = 'いちばん多い銘菓を ぱくり！';
+  ov.classList.add('show');
+  await sleep(1000);
+  ov.classList.remove('show');
+  const set = new Set();
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
+    if(grid[r][c]?.type === best) set.add(key(r,c));
+  await clearWave(set, [], 1);
+  await resolveAll(null);
+  busy = false;
+  checkEnd();
+}
+document.getElementById('pandaBtn').addEventListener('click', pandaHelp);
+
+function checkEnd(){
+  if(over) return;
+  const win = Object.keys(TARGETS).every(t => collected[t] >= TARGETS[t]);
+  if(win){
+    over = true;
+    const SCENES = [
+      {href:'#s-shinji',   t:'宍道湖の夕景',  m:'嫁ヶ島の向こうに日が沈みます。詰合せも無事に完成。'},
+      {href:'#s-castle',   t:'国宝 松江城',   m:'千鳥城に桜の季節がやってきました。詰合せも無事に完成。'},
+      {href:'#s-horikawa', t:'堀川めぐり',    m:'こたつ舟でゆるりと一巡り。詰合せも無事に完成。'}
+    ];
+    const sc = SCENES[Math.random()*SCENES.length|0];
+    document.getElementById('winScene').setAttribute('href', sc.href);
+    document.getElementById('winTitle').textContent = sc.t;
+    document.getElementById('winMsg').textContent = sc.m;
+    document.getElementById('winScore').textContent = score;
+    setTimeout(() => document.getElementById('winOv').classList.add('show'), 400);
+  } else if(moves <= 0){
+    over = true;
+    setTimeout(() => document.getElementById('loseOv').classList.add('show'), 400);
+  }
+  updateHUD();
+}
+
+/* ---------- input ---------- */
+async function trySwap(r1, c1, r2, c2){
+  if(busy || over || !inB(r2,c2)) return;
+  const a = grid[r1][c1], b = grid[r2][c2];
+  if(!a || !b || a.type === 'yama' || b.type === 'yama') return;
+  busy = true;
+  clearSel();
+  grid[r1][c1] = b; grid[r2][c2] = a;
+  place(a, r2, c2, false); place(b, r1, c1, false);
+  await sleep(240);
+  const {set} = findMatches(null);
+  if(set.size === 0){
+    grid[r1][c1] = a; grid[r2][c2] = b;
+    place(a, r1, c1, false); place(b, r2, c2, false);
+    await sleep(240);
+    busy = false;
+    return;
+  }
+  moves--; updateHUD();
+  await resolveAll(key(r2,c2));
+  busy = false;
+  checkEnd();
+}
+function cellFromEvent(e){
+  const rect = board.getBoundingClientRect();
+  const c = Math.floor((e.clientX - rect.left) / cell);
+  const r = Math.floor((e.clientY - rect.top) / cell);
+  return inB(r,c) ? [r,c] : null;
+}
+function clearSel(){
+  if(selected){ grid[selected[0]]?.[selected[1]]?.el.classList.remove('sel'); selected = null; }
+}
+let drag = null;
+board.addEventListener('pointerdown', e => {
+  if(busy || over) return;
+  const rc = cellFromEvent(e);
+  if(!rc) return;
+  drag = {rc, x:e.clientX, y:e.clientY, moved:false};
+});
+board.addEventListener('pointermove', e => {
+  if(!drag || drag.moved || busy) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if(Math.hypot(dx,dy) < 18) return;
+  drag.moved = true;
+  const [r,c] = drag.rc;
+  const [dr,dc] = Math.abs(dx) > Math.abs(dy) ? [0, Math.sign(dx)] : [Math.sign(dy), 0];
+  trySwap(r, c, r+dr, c+dc);
+});
+board.addEventListener('pointerup', e => {
+  if(!drag){ return; }
+  const wasDrag = drag.moved; const [r,c] = drag.rc; drag = null;
+  if(wasDrag || busy || over) return;
+  const p = grid[r][c];
+  if(!p || p.type === 'yama'){ clearSel(); return; }
+  if(selected){
+    const [sr,sc] = selected;
+    if(Math.abs(sr-r) + Math.abs(sc-c) === 1){ trySwap(sr, sc, r, c); return; }
+    clearSel();
+    if(sr === r && sc === c) return;
+  }
+  selected = [r,c]; p.el.classList.add('sel');
+});
+window.addEventListener('resize', () => {
+  cell = board.clientWidth / N;
+  board.style.setProperty('--cell', cell + 'px');
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
+    if(grid[r][c]) place(grid[r][c], r, c, true);
+});
+
+init();
+</script>
