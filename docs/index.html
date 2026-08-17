@@ -133,7 +133,7 @@
 
   /* overlays */
   .overlay{
-    position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:rgba(30,20,10,.72);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s;
     text-align:center;padding:20px;
   }
@@ -500,6 +500,7 @@ function makePiece(type, r, c, spawnAbove){
 }
 
 function init(){
+  board.style.height = board.clientWidth + 'px'; // aspect-ratio非対応ブラウザ向け
   cell = board.clientWidth / N;
   board.style.setProperty('--cell', cell + 'px');
   grid = Array.from({length:N}, () => Array(N).fill(null));
@@ -508,8 +509,8 @@ function init(){
     if(grid[r][c]) continue;
     let t;
     do { t = TYPES[Math.random()*TYPES.length|0]; }
-    while((c >= 2 && grid[r][c-1]?.type === t && grid[r][c-2]?.type === t) ||
-          (r >= 2 && grid[r-1][c]?.type === t && grid[r-2][c]?.type === t));
+    while((c >= 2 && grid[r][c-1] && grid[r][c-2] && grid[r][c-1].type === t && grid[r][c-2].type === t) ||
+          (r >= 2 && grid[r-1][c] && grid[r-2][c] && grid[r-1][c].type === t && grid[r-2][c].type === t));
     grid[r][c] = makePiece(t, r, c, 0);
   }
   renderMissions(); updateHUD();
@@ -545,7 +546,7 @@ function findRuns(){
       let run = [];
       for(let b = 0; b <= N; b++){
         const r = horiz ? a : b, c = horiz ? b : a;
-        const p = b < N ? grid[r]?.[c] : null;
+        const p = (b < N && grid[r]) ? grid[r][c] : null;
         const t = (p && p.type !== 'yama') ? p.type : null;
         if(t && run.length && grid[run[0][0]][run[0][1]].type === t){ run.push([r,c]); }
         else {
@@ -608,7 +609,7 @@ function showChain(wave){
 
 /* ---------- clearing pipeline ---------- */
 function expandSpecials(set){
-  const q = [...set].filter(k => { const [r,c] = unkey(k); return grid[r][c]?.special; });
+  const q = [...set].filter(k => { const [r,c] = unkey(k); return grid[r][c] && grid[r][c].special; });
   const seen = new Set(q);
   while(q.length){
     const [r,c] = unkey(q.pop());
@@ -737,7 +738,7 @@ async function pandaHelp(){
   ov.classList.remove('show');
   const set = new Set();
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
-    if(grid[r][c]?.type === best) set.add(key(r,c));
+    if(grid[r][c] && grid[r][c].type === best) set.add(key(r,c));
   await clearWave(set, [], 1);
   await resolveAll(null);
   busy = false;
@@ -798,7 +799,11 @@ function cellFromEvent(e){
   return inB(r,c) ? [r,c] : null;
 }
 function clearSel(){
-  if(selected){ grid[selected[0]]?.[selected[1]]?.el.classList.remove('sel'); selected = null; }
+  if(selected){
+    const sp = grid[selected[0]] && grid[selected[0]][selected[1]];
+    if(sp) sp.el.classList.remove('sel');
+    selected = null;
+  }
 }
 let drag = null;
 board.addEventListener('pointerdown', e => {
@@ -831,6 +836,7 @@ board.addEventListener('pointerup', e => {
   selected = [r,c]; p.el.classList.add('sel');
 });
 window.addEventListener('resize', () => {
+  board.style.height = board.clientWidth + 'px';
   cell = board.clientWidth / N;
   board.style.setProperty('--cell', cell + 'px');
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
