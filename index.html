@@ -33,6 +33,39 @@
     box-shadow:0 1px 2px rgba(90,70,40,.12);-webkit-tap-highlight-color:transparent;
   }
   #sndBtn.off{opacity:.4}
+  #quitBtn{
+    position:absolute;top:48px;right:0;width:34px;height:34px;border-radius:50%;
+    border:1px solid #d8cbae;background:#fffdf6;color:var(--azuki);font-size:13px;cursor:pointer;
+    box-shadow:0 1px 2px rgba(90,70,40,.12);-webkit-tap-highlight-color:transparent;
+    font-family:"Yu Mincho",serif;
+  }
+  .gaugeBox.chasen{
+    flex:0 0 62px;flex-direction:column;gap:2px;padding:5px 4px;cursor:pointer;
+    align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;
+  }
+  .gaugeBox.chasen svg{width:30px;height:30px}
+  .gaugeBox.chasen .cname{font-family:"Yu Mincho",serif;font-size:11px;letter-spacing:.1em;font-weight:600}
+  .gaugeBox.chasen .cleft{font-size:9.5px;color:#8a7a5e}
+  .gaugeBox.chasen.used{opacity:.45;cursor:default}
+  .openChars{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-bottom:8px}
+  .openChars svg{width:74px;height:74px}
+  .openLead{margin-bottom:10px}
+  .guestBox{
+    display:flex;align-items:center;gap:10px;justify-content:center;
+    background:#fffdf6;border:1px solid #d8cbae;border-radius:10px;padding:8px 12px;margin:4px 0 2px;
+  }
+  .guestBox svg{width:44px;height:44px;flex-shrink:0}
+  .guestTxt{font-size:11.5px;color:#5c4f3c;text-align:left;line-height:1.5}
+  .guestTxt b{font-size:15px;color:var(--sumi)}
+  .guestTxt span{font-size:10px;color:#8a7a5e}
+  .rankRow{
+    font-family:"Yu Mincho",serif;font-size:15px;letter-spacing:.15em;margin:2px 0 6px;
+    color:#5c4f3c;
+  }
+  .rankRow b{font-size:22px;color:var(--azuki);margin-left:4px}
+  .shake{animation:shake .18s linear infinite}
+  @keyframes shake{0%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}100%{transform:rotate(-14deg)}}
+  @media (prefers-reduced-motion: reduce){ .shake{animation:none} }
 
   header{text-align:center;padding-top:6px}
   h1{
@@ -180,10 +213,11 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.3</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.4</b></div>
     <div class="rule"></div>
   </header>
-  <button id="sndBtn" aria-label="効果音の切り替え" title="効果音">♪</button>
+  <button id="sndBtn" aria-label="音の切り替え" title="音">♪</button>
+  <button id="quitBtn" aria-label="投了してやり直す" title="投了">投</button>
 
   <div class="hud">
     <div class="box moves"><span class="label">残り手数</span><b id="moves">20</b></div>
@@ -210,6 +244,11 @@
         <div class="bar" id="pandaBar"><i></i></div>
       </div>
     </div>
+    <div class="gaugeBox chasen" id="chasenBtn" title="茶筅でひとまぜ（盤面シャッフル）">
+      <svg viewBox="0 0 100 100"><use href="#s-chasen"/></svg>
+      <div class="cname">茶筅</div>
+      <div class="cleft" id="chasenLeft">残1</div>
+    </div>
   </div>
 
   <details>
@@ -221,7 +260,9 @@
     <b>上生菓子</b>(桜の練り切り)は単体では消えません。<b>二服(2連鎖)以上</b>の消し込みが隣で起きると外れて高得点。<br>
     連鎖(一服、二服…)で茶碗ゲージが満ちると<b>不昧公さま</b>が降臨し大茶会に。<br>
     あんぱん饅頭を<b>5個</b>消すとパンダが出動準備。ボタンを押すと一番多い銘菓をぱくり。<br>
-    右上の<b>♪</b>で効果音の入り切りができます。
+    <b>茶筅</b>ボタン(1回きり)で盤面をシャカシャカとひとまぜ。手詰まりの時は自動でまぜ直します。<br>
+    毎回1種だけ銘菓が入れ替わります(満天・柚衣・はな桜)。クリア時の点数と連鎖で<b>段位</b>が決まります。<br>
+    右上の<b>♪</b>で音の入り切り、<b>投</b>で投了してやり直しできます。
   </details>
   <div class="foot">松江・彩雲堂 ― 試作につき非売品</div>
 </div>
@@ -238,6 +279,74 @@
     <radialGradient id="g-gold" cx=".5" cy=".45" r=".6">
       <stop offset="0" stop-color="#f6e7b3"/><stop offset="1" stop-color="#c9a24b"/>
     </radialGradient>
+    <radialGradient id="g-manten" cx=".5" cy=".3" r=".95">
+      <stop offset="0" stop-color="#3b5ea8"/><stop offset="1" stop-color="#17264d"/>
+    </radialGradient>
+
+    <!-- 満天（夜空の錦玉羹） -->
+    <symbol id="s-manten" viewBox="0 0 100 100">
+      <rect x="20" y="26" width="60" height="52" rx="8" fill="#101c3a"/>
+      <rect x="20" y="22" width="60" height="50" rx="8" fill="url(#g-manten)"/>
+      <path d="M62 30 A9 9 0 1 0 70 44 A11 11 0 0 1 62 30 Z" fill="#f6e7b3" opacity=".95"/>
+      <g fill="#f6e7b3">
+        <circle cx="34" cy="34" r="1.8"/><circle cx="44" cy="52" r="1.4"/><circle cx="58" cy="60" r="1.7"/>
+        <circle cx="30" cy="58" r="1.3"/><circle cx="50" cy="40" r="1.2"/><circle cx="70" cy="56" r="1.3"/>
+      </g>
+      <path d="M38 62 l1.6 3.6 3.6 1.6 -3.6 1.6 -1.6 3.6 -1.6 -3.6 -3.6 -1.6 3.6 -1.6 Z" fill="#fff" opacity=".9"/>
+    </symbol>
+
+    <!-- 柚衣（まんま柚子の形） -->
+    <symbol id="s-yuzu" viewBox="0 0 100 100">
+      <circle cx="50" cy="58" r="29" fill="#d9a92c"/>
+      <circle cx="50" cy="55" r="28" fill="#f2c93c"/>
+      <g fill="#d9a92c" opacity=".6">
+        <circle cx="38" cy="48" r="1.3"/><circle cx="52" cy="42" r="1.3"/><circle cx="64" cy="52" r="1.3"/>
+        <circle cx="42" cy="62" r="1.3"/><circle cx="58" cy="66" r="1.3"/><circle cx="33" cy="58" r="1.2"/>
+      </g>
+      <circle cx="50" cy="28" r="3.5" fill="#c8951f"/>
+      <rect x="48.5" y="22" width="3" height="7" rx="1.5" fill="#7a5a1e"/>
+      <ellipse cx="60" cy="24" rx="9" ry="4.5" fill="#6f9440" transform="rotate(-18 60 24)"/>
+      <ellipse cx="40" cy="46" rx="7" ry="4" fill="#fff" opacity=".5" transform="rotate(-32 40 46)"/>
+    </symbol>
+
+    <!-- はな桜（桜色の春菓子） -->
+    <symbol id="s-hana" viewBox="0 0 100 100">
+      <path d="M34.5 81 A32 32 0 1 1 65.5 81 Z" fill="#d98aa2"/>
+      <path d="M34.5 78 A32 32 0 1 1 65.5 78 Z" fill="#f2a8bd"/>
+      <g fill="#f7c6d4" opacity=".9">
+        <circle cx="36" cy="46" r="2"/><circle cx="52" cy="36" r="1.8"/><circle cx="64" cy="50" r="2"/>
+        <circle cx="44" cy="60" r="1.8"/><circle cx="58" cy="64" r="1.7"/>
+      </g>
+      <g transform="translate(50 52)" fill="#c25f7e">
+        <path d="M0 -12 C4 -8 4 -4 0 0 C-4 -4 -4 -8 0 -12 Z"/>
+        <path d="M0 -12 C4 -8 4 -4 0 0 C-4 -4 -4 -8 0 -12 Z" transform="rotate(72)"/>
+        <path d="M0 -12 C4 -8 4 -4 0 0 C-4 -4 -4 -8 0 -12 Z" transform="rotate(144)"/>
+        <path d="M0 -12 C4 -8 4 -4 0 0 C-4 -4 -4 -8 0 -12 Z" transform="rotate(216)"/>
+        <path d="M0 -12 C4 -8 4 -4 0 0 C-4 -4 -4 -8 0 -12 Z" transform="rotate(288)"/>
+      </g>
+      <ellipse cx="35" cy="34" rx="7" ry="4" fill="#fff" opacity=".6" transform="rotate(-32 35 34)"/>
+    </symbol>
+
+    <!-- 茶筅（シャッフル） -->
+    <symbol id="s-chasen" viewBox="0 0 100 100">
+      <g stroke="#d9b87c" stroke-width="2.6" fill="none" stroke-linecap="round">
+        <path d="M50 52 C36 42 30 28 28 12"/>
+        <path d="M50 52 C42 38 40 24 39 10"/>
+        <path d="M50 52 C50 36 50 22 50 8"/>
+        <path d="M50 52 C58 38 60 24 61 10"/>
+        <path d="M50 52 C64 42 70 28 72 12"/>
+      </g>
+      <g stroke="#c4a061" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8">
+        <path d="M50 52 C40 40 36 30 34 18"/>
+        <path d="M50 52 C46 38 45 26 44 14"/>
+        <path d="M50 52 C54 38 55 26 56 14"/>
+        <path d="M50 52 C60 40 64 30 66 18"/>
+      </g>
+      <path d="M40 46 H60 V54 C60 57 57 58 50 58 C43 58 40 57 40 54 Z" fill="#8a5c33"/>
+      <path d="M42 49 H58" stroke="#6f4423" stroke-width="1.6"/>
+      <rect x="43" y="56" width="14" height="34" rx="6" fill="#b78a4e"/>
+      <rect x="43" y="56" width="6" height="34" rx="3" fill="#c99b5c"/>
+    </symbol>
 
     <!-- 若草 -->
     <symbol id="s-waka" viewBox="0 0 100 100">
@@ -444,10 +553,30 @@
   <svg class="bigsvg" viewBox="0 0 100 100"><use href="#s-panda"/></svg>
   <div class="fname" id="pandaMsg">ぱくり！</div>
 </div>
+<div class="overlay show" id="openOv">
+  <div class="card">
+    <div class="openChars">
+      <svg viewBox="0 0 100 100"><use href="#s-panda"/></svg>
+      <svg viewBox="0 0 120 120"><use href="#s-fumai"/></svg>
+    </div>
+    <h2>若草かさね</h2>
+    <p class="openLead">彩雲堂の銘菓をそろえて<br>詰合せを完成させましょう。</p>
+    <div class="guestBox">
+      <svg viewBox="0 0 100 100" id="guestSvg"><use id="guestUse" href="#s-manten"/></svg>
+      <div class="guestTxt">本日のお替わり銘菓<br><b id="guestName">満天</b><span id="guestNote"></span></div>
+    </div>
+    <button id="startBtn">はじめる</button>
+  </div>
+</div>
+<div class="overlay" id="chasenOv">
+  <svg class="bigsvg shake" viewBox="0 0 100 100"><use href="#s-chasen"/></svg>
+  <div class="fname" style="font-family:'Yu Mincho',serif;font-size:22px;color:#fff8e0;letter-spacing:.2em;text-shadow:0 2px 6px rgba(0,0,0,.7)">シャカシャカ…</div>
+</div>
 <div class="overlay" id="winOv">
   <div class="card">
     <svg class="scene" viewBox="0 0 200 120"><use id="winScene" href="#s-shinji"/></svg>
     <h2 id="winTitle">お見事でした</h2>
+    <div class="rankRow">段位：<b id="winRank">見習い</b></div>
     <p><span id="winMsg">詰合せが完成しました。</span><br>点数：<b id="winScore">0</b>　最大連鎖：<b id="winChain">一服</b></p>
     <button onclick="location.reload()">もう一箱つくる</button>
   </div>
@@ -464,9 +593,26 @@
 'use strict';
 const N = 7;
 const TYPES = ['waka','hoki','asa','anpan','kuri'];
-const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou'};
-const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#b8cf8e',jou:'#f6cdd8'};
-const CHAIN_KANJI = ['','','二服','三服','四服','五服','六服','七服','八服','九服'];
+const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou',
+             manten:'#s-manten',yuzu:'#s-yuzu',hana:'#s-hana'};
+const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#b8cf8e',
+                jou:'#f6cdd8',manten:'#3b5ea8',yuzu:'#f2c93c',hana:'#f2a8bd'};
+// 本日のお替わり銘菓: 毎回1種だけ入れ替わる（ミッション対象外の伯耆坊か栗まると交代）
+const VARIANTS = [
+  {key:'manten', name:'満天',   note:'夜空をうつした錦玉羹'},
+  {key:'yuzu',   name:'柚衣',   note:'まんま柚子の形の冬菓子'},
+  {key:'hana',   name:'はな桜', note:'桜色の春菓子'}
+];
+const GUEST = VARIANTS[Math.random()*VARIANTS.length|0];
+const REPLACED = ['hoki','kuri'][Math.random()*2|0];
+TYPES[TYPES.indexOf(REPLACED)] = GUEST.key;
+function kanjiNum(n){
+  const K = ['','一','二','三','四','五','六','七','八','九'];
+  if(n < 10) return K[n];
+  if(n < 20) return '十' + K[n%10];
+  if(n < 100) return K[Math.floor(n/10)] + '十' + K[n%10];
+  return '百';
+}
 const TEA_MAX = 100, PANDA_MAX = 5;
 const JOU_RATE = 0.06;
 const TARGETS = {waka:26, asa:22, anpan:16};
@@ -533,6 +679,41 @@ function thud(soft){ // 太鼓
 }
 const PENTA = [392, 440, 523.3, 587.3, 659.3, 784];
 document.addEventListener('pointerdown', () => { ac(); });
+
+/* ---------- BGM（琴の爪弾き＋笛。WebAudioでその場で生成） ---------- */
+function flute(f, delay, dur, vol){
+  const a = ac(); if(!a || muted) return;
+  const t = a.currentTime + (delay || 0);
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(f, t);
+  const lfo = a.createOscillator(), lg = a.createGain();
+  lfo.frequency.value = 5.2; lg.gain.value = f * .013;
+  lfo.connect(lg); lg.connect(o.frequency);
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.linearRampToValueAtTime(vol, t + .3);
+  g.gain.setValueAtTime(vol, t + Math.max(.3, dur - .5));
+  g.gain.linearRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(a.destination);
+  o.start(t); o.stop(t + dur); lfo.start(t); lfo.stop(t + dur);
+}
+// 律音階(A C D E G)によるゆったりした琴の手 32歩
+const KOTO_SEQ = [
+  220,0,329.6,0, 293.7,0,261.6,0, 220,0,261.6,293.7, 0,0,329.6,0,
+  392,0,329.6,0, 293.7,261.6,0,0, 440,0,392,329.6, 0,293.7,0,0
+];
+const FLUTE_NOTES = [329.6, 440, 392, 293.7];
+let bgmOn = false, bgmStep = 0, bgmNext = 0;
+setInterval(() => {
+  const a = AC;
+  if(!bgmOn || !a || a.state !== 'running') return;
+  if(bgmNext < a.currentTime) bgmNext = a.currentTime + .05;
+  while(bgmNext < a.currentTime + 1.4){
+    const f = KOTO_SEQ[bgmStep % 32];
+    if(f) pluck(f, bgmNext - a.currentTime, .045);
+    if(bgmStep % 64 === 20) flute(FLUTE_NOTES[(bgmStep >> 6) % 4], bgmNext - a.currentTime, 2.6, .035);
+    bgmNext += .45; bgmStep++;
+  }
+}, 300);
 const collected = {waka:0, asa:0, anpan:0};
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -594,6 +775,10 @@ function init(){
     grid[r][c] = makePiece(t, r, c, 0);
   }
   renderMissions(); updateHUD();
+  document.getElementById('guestUse').setAttribute('href', SYM[GUEST.key]);
+  document.getElementById('guestName').textContent = GUEST.name;
+  document.getElementById('guestNote').textContent =
+    GUEST.note + '／' + (REPLACED === 'hoki' ? '伯耆坊' : '栗まる') + 'とお替わり';
 }
 
 function renderMissions(){
@@ -616,6 +801,10 @@ function updateHUD(){
   document.getElementById('pandaDesc').textContent = pandaGauge >= PANDA_MAX
     ? 'タップで出動！一番多い銘菓をぱくり'
     : 'あんぱん饅頭をあと' + (PANDA_MAX - pandaGauge) + '個消すと出動';
+  if(typeof chasenLeft !== 'undefined'){
+    document.getElementById('chasenLeft').textContent = chasenLeft > 0 ? '残1' : '残0';
+    document.getElementById('chasenBtn').classList.toggle('used', chasenLeft <= 0);
+  }
 }
 
 /* ---------- match detection ---------- */
@@ -685,7 +874,7 @@ function particles(r, c, color){
 }
 function showChain(wave){
   const d = document.createElement('div'); d.className = 'chainText';
-  d.textContent = (CHAIN_KANJI[Math.min(wave,9)] || '九服') + '！';
+  d.textContent = kanjiNum(wave) + '服！';
   board.appendChild(d); setTimeout(() => d.remove(), 850);
 }
 
@@ -844,6 +1033,7 @@ async function pandaHelp(){
   await resolveAll(null);
   busy = false;
   checkEnd();
+  ensureMoves();
 }
 document.getElementById('pandaBtn').addEventListener('click', pandaHelp);
 document.getElementById('sndBtn').addEventListener('click', function(){
@@ -851,9 +1041,88 @@ document.getElementById('sndBtn').addEventListener('click', function(){
   this.classList.toggle('off', muted);
   if(!muted) pluck(659.3, 0, .2);
 });
+document.getElementById('quitBtn').addEventListener('click', function(){
+  if(over) return;
+  if(confirm('投了して、最初からやり直しますか？')) location.reload();
+});
+document.getElementById('startBtn').addEventListener('click', function(){
+  const a = ac();
+  document.getElementById('openOv').classList.remove('show');
+  bgmOn = true;
+  if(a) bgmNext = a.currentTime + .3;
+  pluck(523.3, 0, .18); pluck(659.3, .1, .18);
+});
+
+/* ---------- 茶筅シャッフル ---------- */
+let chasenLeft = 1;
+function hasAnyMove(){
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    for(const d of [[0,1],[1,0]]){
+      const r2 = r + d[0], c2 = c + d[1];
+      if(!inB(r2,c2)) continue;
+      const a = grid[r][c], b = grid[r2][c2];
+      if(!a || !b || a.type === 'yama' || b.type === 'yama') continue;
+      grid[r][c] = b; grid[r2][c2] = a;
+      const n = findMatches(null).set.size;
+      grid[r][c] = a; grid[r2][c2] = b;
+      if(n > 0) return true;
+    }
+  }
+  return false;
+}
+async function chasenShuffle(free){
+  if(busy || over) return;
+  if(!free){
+    if(chasenLeft <= 0) return;
+    chasenLeft = 0;
+  }
+  busy = true;
+  updateHUD();
+  const ov = document.getElementById('chasenOv');
+  ov.classList.add('show');
+  for(let i = 0; i < 4; i++) setTimeout(() => swish(i % 2 === 0), i * 110);
+  await sleep(900);
+  ov.classList.remove('show');
+  let tries = 0;
+  do {
+    const cells = [], pieces = [];
+    for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+      const p = grid[r][c];
+      if(p && p.type !== 'yama'){ cells.push([r,c]); pieces.push(p); }
+    }
+    for(let i = pieces.length - 1; i > 0; i--){
+      const j = Math.random() * (i + 1) | 0;
+      [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+    }
+    cells.forEach((rc, i) => { grid[rc[0]][rc[1]] = pieces[i]; place(pieces[i], rc[0], rc[1], false); });
+  } while(!hasAnyMove() && findMatches(null).set.size === 0 && ++tries < 6);
+  await sleep(420);
+  await resolveAll(null);
+  busy = false;
+  checkEnd();
+  ensureMoves();
+}
+function ensureMoves(){
+  if(over || busy) return;
+  if(!hasAnyMove()){
+    const d = document.createElement('div'); d.className = 'chainText';
+    d.style.fontSize = '26px'; d.textContent = '手詰まり…茶筅でひとまぜ';
+    board.appendChild(d); setTimeout(() => d.remove(), 850);
+    setTimeout(() => chasenShuffle(true), 700);
+  }
+}
+document.getElementById('chasenBtn').addEventListener('click', () => chasenShuffle(false));
 
 function chainLabel(){
-  return maxChain >= 2 ? (CHAIN_KANJI[Math.min(maxChain, 9)] || '九服') : '一服';
+  return maxChain >= 2 ? kanjiNum(maxChain) + '服' : '一服';
+}
+function rankName(){
+  const pts = score + maxChain * 300;
+  if(pts >= 6500) return '不昧公さま級';
+  if(pts >= 5000) return '銘菓の匠';
+  if(pts >= 3800) return '本職';
+  if(pts >= 2800) return '若職人';
+  return '見習い';
 }
 function checkEnd(){
   if(over) return;
@@ -871,6 +1140,7 @@ function checkEnd(){
     document.getElementById('winMsg').textContent = sc.m;
     document.getElementById('winScore').textContent = score;
     document.getElementById('winChain').textContent = chainLabel();
+    document.getElementById('winRank').textContent = rankName();
     PENTA.forEach((f, i) => pluck(f, .4 + i * .09, .2));
     setTimeout(() => document.getElementById('winOv').classList.add('show'), 400);
   } else if(moves <= 0){
@@ -906,6 +1176,7 @@ async function trySwap(r1, c1, r2, c2){
   await resolveAll(key(r2,c2));
   busy = false;
   checkEnd();
+  ensureMoves();
 }
 function cellFromEvent(e){
   const rect = board.getBoundingClientRect();
