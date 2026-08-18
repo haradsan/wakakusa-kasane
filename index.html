@@ -12,11 +12,13 @@
     --gold:#c9a24b;
     --gold-bright:#e8c96a;
     --azuki:#8e4a3f;
+    --seasonGlow:rgba(255,255,255,0);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
   body{
     background:
+      radial-gradient(900px 420px at 50% 0, var(--seasonGlow), transparent 68%),
       radial-gradient(1200px 500px at 50% -200px, #fbf6ea 0%, transparent 60%),
       repeating-linear-gradient(0deg, transparent 0 34px, rgba(160,140,100,.05) 34px 35px),
       var(--washi);
@@ -33,8 +35,14 @@
     box-shadow:0 1px 2px rgba(90,70,40,.12);-webkit-tap-highlight-color:transparent;
   }
   #sndBtn.off{opacity:.4}
-  #quitBtn{
+  #bgmBtn{
     position:absolute;top:48px;right:0;width:34px;height:34px;border-radius:50%;
+    border:1px solid #d8cbae;background:#fffdf6;color:var(--matcha);font-size:15px;cursor:pointer;
+    box-shadow:0 1px 2px rgba(90,70,40,.12);-webkit-tap-highlight-color:transparent;
+  }
+  #bgmBtn.off{opacity:.4}
+  #quitBtn{
+    position:absolute;top:88px;right:0;width:34px;height:34px;border-radius:50%;
     border:1px solid #d8cbae;background:#fffdf6;color:var(--azuki);font-size:13px;cursor:pointer;
     box-shadow:0 1px 2px rgba(90,70,40,.12);-webkit-tap-highlight-color:transparent;
     font-family:"Yu Mincho",serif;
@@ -63,7 +71,7 @@
     color:#5c4f3c;
   }
   .rankRow b{font-size:22px;color:var(--azuki);margin-left:4px}
-  .shake{animation:shake .18s linear infinite}
+  .shake{animation:shake .1s linear infinite}
   @keyframes shake{0%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}100%{transform:rotate(-14deg)}}
   @media (prefers-reduced-motion: reduce){ .shake{animation:none} }
 
@@ -118,22 +126,19 @@
   .piece.pop{animation:pop .26s ease-in forwards}
   @keyframes pop{40%{opacity:1;scale:1.18}100%{opacity:0;scale:.2}}
   .piece.goldpop svg{filter:drop-shadow(0 0 8px var(--gold-bright))}
-  .piece.special svg{animation:shimmer 1.6s ease-in-out infinite}
-  @keyframes shimmer{0%,100%{filter:drop-shadow(0 0 2px var(--gold-bright)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
-    50%{filter:drop-shadow(0 0 8px var(--gold-bright)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}}
 
   .particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:fly .55s ease-out forwards}
   @keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 
-  /* 菓子切りの刃 */
-  .blade{position:absolute;background:linear-gradient(90deg,transparent,#fff,var(--gold-bright),#fff,transparent);
-    pointer-events:none;opacity:0;animation:slash .35s ease-out forwards;border-radius:3px}
-  .blade.h{height:5px;width:100%;left:0}
-  .blade.v{width:5px;height:100%;top:0}
-  @keyframes slash{0%{opacity:0;scale:.3}30%{opacity:1;scale:1}100%{opacity:0;scale:1}}
-  .gust{position:absolute;border:3px solid rgba(255,235,180,.9);border-radius:50%;pointer-events:none;
-    animation:gust .4s ease-out forwards}
-  @keyframes gust{from{opacity:.95;scale:.2}to{opacity:0;scale:1.6}}
+  /* 連鎖の華（金箔と花びら） */
+  .kinpaku{position:absolute;top:-12px;width:7px;height:9px;pointer-events:none;opacity:.95;
+    background:linear-gradient(135deg,#f6e7b3,#c9a24b);animation:kfall 1.2s ease-in forwards}
+  .kinpaku.petal{background:#f2a8bd;border-radius:65% 0 65% 0;width:8px;height:8px}
+  @keyframes kfall{from{transform:translate(0,0) rotate(0deg)}
+    to{transform:translate(var(--kx), calc(var(--cell) * 7.4)) rotate(var(--krot));opacity:0}}
+  .chainText.hot{color:#ffe9a8;text-shadow:0 0 18px #ff9d3c,0 0 32px var(--gold-bright),0 2px 4px rgba(0,0,0,.65)}
+  .tray.chainGlow{animation:trayGlowA .7s ease-out}
+  @keyframes trayGlowA{0%,100%{filter:none}40%{filter:drop-shadow(0 0 24px rgba(232,201,106,.95))}}
 
   .chainText{
     position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
@@ -164,7 +169,9 @@
   #pandaBtn{cursor:pointer;border:1px solid #d8cbae;-webkit-tap-highlight-color:transparent}
   #pandaBtn.ready{border-color:var(--gold);animation:ready 1.1s ease-in-out infinite}
   @keyframes ready{0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,.0)}50%{box-shadow:0 0 12px 2px rgba(201,162,75,.55)}}
-  #pandaBtn:not(.ready){opacity:.75}
+  #pandaBtn:not(.ready):not(.called){opacity:.75}
+  #pandaBtn.called{border-color:var(--gold);background:#fff8e2;animation:calledA 1s ease-in-out infinite}
+  @keyframes calledA{0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,0)}50%{box-shadow:0 0 14px 3px rgba(201,162,75,.7)}}
 
   /* overlays */
   .overlay{
@@ -206,22 +213,154 @@
 
   @media (prefers-reduced-motion: reduce){
     .piece{transition-duration:.01s}
-    .piece.special svg,#pandaBtn.ready{animation:none}
+    #pandaBtn.ready,#pandaBtn.called{animation:none}
   }
+
+  /* ===== v0.5 追加分 ===== */
+
+  /* 四季の情景（舞い散るもの） */
+  #seasonLayer{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:1;overflow:hidden}
+  #seasonLayer span{position:absolute;top:-20px;display:block;animation:fall linear infinite}
+  @keyframes fall{
+    0%{transform:translate(0,0) rotate(0deg);opacity:0}
+    12%{opacity:1}
+    88%{opacity:1}
+    100%{transform:translate(var(--sx),104vh) rotate(var(--rot));opacity:0}
+  }
+  .wrap{z-index:2}
+
+  /* 消し込んだ形の名前 */
+  .shapeTag{
+    position:absolute;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:15px;font-weight:700;color:#fffbe8;
+    text-shadow:0 0 8px var(--gold),0 1px 3px rgba(0,0,0,.85);animation:tagUp .95s ease-out forwards;
+  }
+  .shapeTag i{font-style:normal;font-size:12px;color:#ffe9a8;margin-left:4px}
+  @keyframes tagUp{
+    0%{opacity:0;transform:translate(-50%,-25%) scale(.7)}
+    20%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-155%) scale(1)}}
+
+  /* 発火剤の小爆発 */
+  .boom{
+    position:absolute;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,250,230,.98),rgba(246,205,216,.6) 50%,rgba(232,201,106,.25) 70%,transparent 78%);
+    animation:boomA .45s ease-out forwards;
+  }
+  @keyframes boomA{from{opacity:1;transform:scale(.15)}to{opacity:0;transform:scale(1.5)}}
+  /* 大爆発の衝撃波 */
+  .shock{
+    position:absolute;border-radius:50%;pointer-events:none;border:5px solid rgba(255,242,196,.95);
+    box-shadow:0 0 30px rgba(232,201,106,.9),inset 0 0 30px rgba(232,201,106,.9);
+    animation:shockA .75s cubic-bezier(.15,.7,.3,1) forwards;
+  }
+  @keyframes shockA{from{opacity:1;transform:scale(.08)}to{opacity:0;transform:scale(2.4)}}
+  .quake{animation:quakeA .55s ease-out}
+  @keyframes quakeA{
+    0%,100%{transform:translate(0,0)}
+    12%{transform:translate(-6px,3px)}28%{transform:translate(6px,-4px)}
+    44%{transform:translate(-5px,-3px)}62%{transform:translate(5px,3px)}82%{transform:translate(-2px,1px)}}
+
+  /* パンダのつなぎチャンス */
+  #pandaBtn.chance{border-color:#d95977;animation:chanceA .34s ease-in-out infinite}
+  @keyframes chanceA{
+    0%,100%{box-shadow:0 0 0 0 rgba(217,89,119,0);transform:scale(1)}
+    50%{box-shadow:0 0 18px 5px rgba(217,89,119,.75);transform:scale(1.06)}}
+  .chanceCall{
+    position:absolute;left:50%;top:62%;transform:translateX(-50%);pointer-events:none;white-space:nowrap;
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:27px;color:#fff;letter-spacing:.18em;
+    text-shadow:0 0 14px #d95977,0 2px 5px rgba(0,0,0,.85);
+    animation:callA .34s ease-in-out infinite alternate;
+  }
+  .chanceCall b{display:block;font-size:12px;letter-spacing:.2em;color:#ffe2e8;margin-top:2px;font-weight:400}
+  @keyframes callA{from{opacity:.72;transform:translateX(-50%) scale(.95)}to{opacity:1;transform:translateX(-50%) scale(1.07)}}
+
+  /* カットイン（十服以上） */
+  #cutinOv{background:radial-gradient(circle at 50% 45%,rgba(60,40,16,.9),rgba(16,10,4,.95))}
+  #cutinOv .cutCard{width:min(92vw,400px);animation:cutInA .45s cubic-bezier(.2,1.25,.4,1)}
+  #cutinOv .cutChain{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:38px;color:#fff8e0;letter-spacing:.14em;
+    text-shadow:0 0 22px var(--gold-bright),0 2px 6px rgba(0,0,0,.85);margin-bottom:8px;line-height:1;
+  }
+  #cutinOv .cutScene{
+    display:block;width:100%;border-radius:12px;border:2px solid var(--gold);
+    box-shadow:0 0 34px rgba(232,201,106,.5),0 12px 32px rgba(0,0,0,.55);
+  }
+  #cutinOv .cutTitle{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:17px;color:#fff3d4;
+    letter-spacing:.22em;margin-top:10px;
+  }
+  #cutinOv .cutNote{font-size:11.5px;color:#dfcda6;letter-spacing:.06em;margin-top:4px;line-height:1.65}
+  @keyframes cutInA{from{opacity:0;transform:translateY(26px) scale(.9)}to{opacity:1}}
+
+  /* 詰合せ（何箱目か） */
+  .hud .missionBox{flex:1;gap:2px}
+  .hud .missionBox .label{font-family:"Yu Mincho",serif;letter-spacing:.12em;font-size:9.5px}
+  .missions{display:flex;gap:6px;justify-content:center;flex:0 0 auto}
+
+  /* 詰合せ完成 */
+  #boxOv .card{max-width:330px}
+  #boxOv .boxGain{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:15px;letter-spacing:.1em;
+    color:var(--azuki);margin-top:10px;
+  }
+  #boxOv .boxGain b{font-size:26px;margin:0 2px}
+  #boxOv .boxNext{font-size:10.5px;color:#8a7a5e;letter-spacing:.08em;margin-top:6px}
+  #boxOv h2{margin-bottom:4px}
+  #boxOv p{font-size:12px}
+
+  /* 結果 */
+  #resultOv .card{max-width:330px}
+  #resultOv .bigScore{margin:2px 0 10px}
+  #resultOv .bigScore span{display:block;font-size:9px;letter-spacing:.2em;color:#8a7a5e}
+  #resultOv .bigScore b{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:40px;line-height:1.1;
+    font-variant-numeric:tabular-nums;color:var(--sumi);
+  }
+  #resultOv .breakdown{list-style:none;border-top:1px solid #d8cbae;padding-top:8px}
+  #resultOv .breakdown li{
+    display:flex;align-items:baseline;gap:6px;font-size:12px;color:#5c4f3c;
+    padding:2px 4px;
+  }
+  #resultOv .breakdown li span{flex:1;text-align:left;letter-spacing:.08em}
+  #resultOv .breakdown li b{font-family:"Yu Mincho",serif;font-size:16px;color:var(--sumi);font-variant-numeric:tabular-nums}
+  #resultOv .breakdown li i{font-style:normal;font-size:10.5px;color:#8a7a5e;min-width:34px;text-align:left}
+
+  /* 季節の見出し */
+  .seasonTag{
+    display:inline-block;font-family:"Yu Mincho",serif;font-size:10px;letter-spacing:.2em;
+    color:#7a6a52;border:1px solid #d8cbae;border-radius:999px;padding:1px 9px;background:#fffdf6;
+  }
+
+  /* 発火剤（上生菓子）はほのかに脈打つ */
+  .piece.fuse svg{animation:fuseA 1.5s ease-in-out infinite}
+  @keyframes fuseA{
+    0%,100%{filter:drop-shadow(0 0 2px rgba(246,205,216,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+    50%{filter:drop-shadow(0 0 9px rgba(255,150,180,.95)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}}
+  .piece.born svg{animation:bornA .55s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes bornA{0%{transform:scale(.3) rotate(-20deg)}60%{transform:scale(1.18) rotate(6deg)}100%{transform:scale(1)}}
+  @media (prefers-reduced-motion: reduce){ .piece.fuse svg,.piece.born svg{animation:none} }
 </style>
+
+<div id="seasonLayer"></div>
 
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.4</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.6</b></div>
     <div class="rule"></div>
+    <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">夏の候</span></div>
   </header>
   <button id="sndBtn" aria-label="音の切り替え" title="音">♪</button>
+  <button id="bgmBtn" aria-label="BGMの切り替え" title="調べ（BGM）">♫</button>
   <button id="quitBtn" aria-label="投了してやり直す" title="投了">投</button>
 
   <div class="hud">
     <div class="box moves"><span class="label">残り手数</span><b id="moves">20</b></div>
-    <div class="box missions" id="missions"></div>
+    <div class="box missionBox">
+      <span class="label" id="boxLabel">詰合せ 一箱目</span>
+      <div class="missions" id="missions"></div>
+    </div>
     <div class="box score"><span class="label">点数</span><b id="score">0</b></div>
   </div>
 
@@ -232,7 +371,7 @@
       <svg viewBox="0 0 100 100"><use href="#s-bowl"/></svg>
       <div class="txt">
         <div class="name">大茶会</div>
-        <div class="desc">連鎖でお茶が点つと 不昧公さま降臨</div>
+        <div class="desc">連鎖でお茶が点つと 不昧公が大爆発</div>
         <div class="bar" id="teaBar"><i></i></div>
       </div>
     </div>
@@ -240,7 +379,7 @@
       <svg viewBox="0 0 100 100"><use href="#s-panda"/></svg>
       <div class="txt">
         <div class="name">おたすけパンダ</div>
-        <div class="desc" id="pandaDesc">あんぱん饅頭を5個消すと出動</div>
+        <div class="desc" id="pandaDesc">あんぱん饅頭を12個消すと出動</div>
         <div class="bar" id="pandaBar"><i></i></div>
       </div>
     </div>
@@ -253,16 +392,21 @@
 
   <details>
     <summary>あそびかた</summary>
-    となり同士のお菓子を入れ替えて、同じ銘菓を3つ揃えて消します。<br>
-    <b>若草4つ</b>で棹物「棹若草」に → 揃えて消すと菓子切りが縦横を<b>スパッ</b>。<br>
-    <b>L字/5つ</b>で伯耆坊が「天狗のうちわ」(金の輪)に → 揃えて消すと周りを吹き飛ばします。<br>
-    <b>やまかつら</b>(三層のお菓子)は隣で消すたびに一層ずつ剥がれます。<br>
-    <b>上生菓子</b>(桜の練り切り)は単体では消えません。<b>二服(2連鎖)以上</b>の消し込みが隣で起きると外れて高得点。<br>
-    連鎖(一服、二服…)で茶碗ゲージが満ちると<b>不昧公さま</b>が降臨し大茶会に。<br>
-    あんぱん饅頭を<b>5個</b>消すとパンダが出動準備。ボタンを押すと一番多い銘菓をぱくり。<br>
-    <b>茶筅</b>ボタン(1回きり)で盤面をシャカシャカとひとまぜ。手詰まりの時は自動でまぜ直します。<br>
-    毎回1種だけ銘菓が入れ替わります(満天・柚衣・はな桜)。クリア時の点数と連鎖で<b>段位</b>が決まります。<br>
-    右上の<b>♪</b>で音の入り切り、<b>投</b>で投了してやり直しできます。
+    <b>手数が尽きるまでに、どれだけ点を積めるか</b> ― 競うのはそれだけです。<br>
+    となり同士のお菓子を入れ替えて、<b>同じ銘菓を3つ以上となり合わせ</b>にすると、
+    繋がっている分が<b>まるごと消えます</b>。たくさん・めずらしい形ほど高得点。<br>
+    <b>詰合せ</b>を一箱詰め終えるごとに<b>手数と点</b>がもらえます。次の箱は一回り大きくなります。<br>
+    <b>一度に5つ以上</b>消すと<b>上生菓子（発火剤）</b>が生まれます。となりで消し込みが起きると
+    <b>小爆発</b>してまわりを巻き込み、近くの上生菓子にも燃えうつります。手数1つで動かせます。<br>
+    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。
+    茶碗ゲージが満ちると<b>不昧公</b>が降臨し、大茶会の<b>大爆発</b>。<br>
+    <b>パンダは連鎖の命綱</b>。ゲージが満タンなら連鎖中にタップして<b>呼んでおく</b>と、
+    切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
+    ふだんにタップすれば一番多い銘菓をぱくり。<br>
+    <b>茶筅</b>ボタン(1回きり)で盤面をひとまぜ。手詰まりの時は自動でまぜ直します。<br>
+    <b>十服(10連鎖)</b>から、四季の情景がカットインで入ります。<br>
+    季節ごとに<b>お替わり銘菓</b>が替わります。段位は点数だけで決まります。<br>
+    右上の<b>♪</b>で効果音、<b>♫</b>で調べ（BGM）、<b>投</b>で投了できます。
   </details>
   <div class="foot">松江・彩雲堂 ― 試作につき非売品</div>
 </div>
@@ -419,21 +563,6 @@
       <ellipse cx="40" cy="36" rx="6" ry="3.5" fill="#fff" opacity=".65" transform="rotate(-30 40 36)"/>
     </symbol>
 
-    <!-- 棹若草（特殊：ライン消し） -->
-    <symbol id="s-sao" viewBox="0 0 100 100">
-      <rect x="8" y="36" width="84" height="30" rx="7" fill="#6d9138"/>
-      <rect x="8" y="33" width="84" height="27" rx="7" fill="url(#g-waka)"/>
-      <g stroke="#fffbe8" stroke-width="2" opacity=".9"><path d="M36 33 V60"/><path d="M64 33 V60"/></g>
-      <g fill="#eaf7c8" opacity=".85"><circle cx="22" cy="42" r="1.7"/><circle cx="50" cy="40" r="1.7"/><circle cx="78" cy="44" r="1.7"/></g>
-      <path d="M84 22 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3 Z" fill="#e8c96a"/>
-    </symbol>
-
-    <!-- うちわ伯耆坊（特殊：範囲消し） -->
-    <symbol id="s-uchiwa" viewBox="0 0 100 100">
-      <circle cx="50" cy="48" r="44" fill="none" stroke="url(#g-gold)" stroke-width="5" opacity=".95"/>
-      <use href="#s-hoki"/>
-    </symbol>
-
     <!-- 茶碗（ゲージ） -->
     <symbol id="s-bowl" viewBox="0 0 100 100">
       <path d="M18 40 H82 C82 66 70 82 50 82 C30 82 18 66 18 40 Z" fill="#4a3a2c"/>
@@ -457,26 +586,52 @@
       <circle cx="24" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/><circle cx="76" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/>
     </symbol>
 
-    <!-- 不昧公さま（歴史上の茶人を品よく意匠化） -->
+    <!-- 不昧公（松江の茶人大名。剃髪はそのままに、風流人・文化人として意匠化） -->
     <symbol id="s-fumai" viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="url(#g-gold)" opacity=".95"/>
       <g stroke="#fff8e0" stroke-width="2.5" opacity=".8">
         <path d="M60 2 V14"/><path d="M60 106 V118"/><path d="M2 60 H14"/><path d="M106 60 H118"/>
         <path d="M19 19 L27 27"/><path d="M93 93 L101 101"/><path d="M101 19 L93 27"/><path d="M27 93 L19 101"/>
       </g>
-      <path d="M28 96 C30 74 44 66 60 66 C76 66 90 74 92 96 Z" fill="#3c342c"/>
-      <path d="M46 74 L60 96 L74 74" fill="#57493d"/>
-      <path d="M60 70 L84 92 L77 96 L56 76 Z" fill="#c9a24b" opacity=".9"/>
+      <!-- 短冊（和歌をしたためる紙） -->
+      <g transform="translate(22 38) rotate(-9)">
+        <rect x="-6.5" y="-20" width="13" height="42" rx="1.5" fill="#fdf8ec" stroke="#c9a24b" stroke-width="1.2"/>
+        <g stroke="#8a7357" stroke-width="1.2" stroke-linecap="round" opacity=".85">
+          <path d="M0 -14 V-4"/><path d="M0 0 V12"/><path d="M-2.5 16 q2.5 2 5 0"/>
+        </g>
+        <circle cx="0" cy="-17" r="1.2" fill="#c25f7e"/>
+      </g>
+      <!-- 江戸紫の肩衣（裃）と着物 -->
+      <path d="M27 96 C25 78 40 68 60 68 C80 68 95 78 93 96 Z" fill="#5b3a76"/>
+      <path d="M60 68 L34 96 L27 96 C27 84 38 72 52 69 Z" fill="#6d4a8c"/>
+      <path d="M60 68 L86 96 L93 96 C93 84 82 72 68 69 Z" fill="#6d4a8c"/>
+      <path d="M52 72 L60 96 L68 72" fill="#f3ecdd"/>
+      <path d="M52 72 L60 80 L68 72 L60 76 Z" fill="#8a5c9e"/>
+      <!-- 胸元の紋（梅鉢ふう） -->
+      <g transform="translate(60 88)" fill="#e8c96a">
+        <circle r="1.9"/><circle cx="0" cy="-4.4" r="1.5"/><circle cx="4.2" cy="-1.4" r="1.5"/>
+        <circle cx="2.6" cy="3.6" r="1.5"/><circle cx="-2.6" cy="3.6" r="1.5"/><circle cx="-4.2" cy="-1.4" r="1.5"/>
+      </g>
+      <!-- 顔（剃髪は維持しつつ、目もとは涼やかに） -->
       <circle cx="60" cy="44" r="17" fill="#f0d8b8"/>
       <path d="M44 40 C46 31 52 27 60 27 C68 27 74 31 76 40" fill="none" stroke="#e0c29c" stroke-width="3" stroke-linecap="round"/>
       <circle cx="42.5" cy="46" r="3.5" fill="#f0d8b8"/><circle cx="77.5" cy="46" r="3.5" fill="#f0d8b8"/>
-      <path d="M50 44 Q52 40 56 42 M64 42 Q68 40 70 44" stroke="#8a7357" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-      <path d="M50 48 Q53 50 56 48 M64 48 Q67 50 70 48" stroke="#5c4530" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M55 57 Q60 59.5 65 57" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <g transform="translate(60 88)">
-        <path d="M-12 -6 H12 C12 4 6 10 0 10 C-6 10 -12 4 -12 -6 Z" fill="#4a3a2c"/>
-        <ellipse cx="0" cy="-6" rx="10" ry="2.6" fill="#8fb75c"/>
-        <path d="M-5 -14 Q0 -18 2 -12 M4 -20 Q8 -22 8 -16" stroke="#fff8e0" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"/>
+      <path d="M49 41 Q53 38.5 57 40 M63 40 Q67 38.5 71 41" stroke="#6b5636" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+      <path d="M51 47 Q53.5 49 56 47 M64 47 Q66.5 49 69 47" stroke="#5c4530" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M55 57 Q60 60 65 57" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- 右手の金扇子（風流の証） -->
+      <g transform="translate(90 74) rotate(-16)">
+        <path d="M0 15 L-14 -7 A17.5 17.5 0 0 1 14 -7 Z" fill="url(#g-gold)" stroke="#8a6a3a" stroke-width="1.4"/>
+        <g stroke="#8a6a3a" stroke-width="1" opacity=".8">
+          <path d="M0 15 L-8.6 -10.6"/><path d="M0 15 L0 -12.5"/><path d="M0 15 L8.6 -10.6"/>
+        </g>
+        <path d="M-7 -3 q3.5 -3.5 7 0 q3.5 3.5 7 0" stroke="#c0392b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="0" cy="15" r="2.2" fill="#6b4423"/>
+      </g>
+      <!-- 左手の茶杓（茶の湯の心） -->
+      <g transform="translate(30 82) rotate(22)">
+        <rect x="-1.3" y="-15" width="2.6" height="28" rx="1.3" fill="#d9b87c"/>
+        <path d="M-1.3 -15 C-1 -20 2 -22 3.5 -20.5 C2.5 -18 1.6 -16 1.3 -14 Z" fill="#c4a061"/>
       </g>
     </symbol>
 
@@ -540,14 +695,282 @@
         <path d="M36 108 h18"/><path d="M92 113 h20"/><path d="M150 106 h16"/>
       </g>
     </symbol>
+
+    <!-- ===== v0.5 四季の情景・カットイン素材 ===== -->
+    <linearGradient id="g-night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0e1430"/><stop offset=".55" stop-color="#20305e"/><stop offset="1" stop-color="#3a4c7e"/>
+    </linearGradient>
+    <linearGradient id="g-dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#37284e"/><stop offset=".42" stop-color="#a85c78"/><stop offset="1" stop-color="#f0a95f"/>
+    </linearGradient>
+    <linearGradient id="g-winter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b8c9dc"/><stop offset="1" stop-color="#edf2f7"/>
+    </linearGradient>
+    <radialGradient id="g-moon" cx=".42" cy=".38" r=".62">
+      <stop offset="0" stop-color="#fffdf2"/><stop offset=".72" stop-color="#f8eeca"/><stop offset="1" stop-color="#eddfa6"/>
+    </radialGradient>
+
+    <!-- 桜の花（部品） -->
+    <symbol id="s-sakurabana" viewBox="0 0 20 20">
+      <g fill="currentColor">
+        <ellipse cx="10" cy="4.8" rx="3.3" ry="4.8"/>
+        <ellipse cx="10" cy="4.8" rx="3.3" ry="4.8" transform="rotate(72 10 10)"/>
+        <ellipse cx="10" cy="4.8" rx="3.3" ry="4.8" transform="rotate(144 10 10)"/>
+        <ellipse cx="10" cy="4.8" rx="3.3" ry="4.8" transform="rotate(216 10 10)"/>
+        <ellipse cx="10" cy="4.8" rx="3.3" ry="4.8" transform="rotate(288 10 10)"/>
+      </g>
+      <circle cx="10" cy="10" r="1.6" fill="#f6e7b3"/>
+    </symbol>
+
+    <!-- 紅葉の葉（部品） -->
+    <symbol id="s-momijiha" viewBox="0 0 20 20">
+      <path fill="currentColor" d="M10 1.2 L12.3 6.4 L17 4.4 L15.4 9.3 L19.4 10.6 L15.3 13 L17.4 17.2 L12.5 16 L10 19 L7.5 16 L2.6 17.2 L4.7 13 L0.6 10.6 L4.6 9.3 L3 4.4 L7.7 6.4 Z"/>
+      <path stroke="currentColor" stroke-width="1.1" d="M10 19 V13"/>
+    </symbol>
+
+    <!-- 【春】夜桜 -->
+    <symbol id="s-yozakura" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-night)"/>
+      <g fill="#fff8e0"><circle cx="22" cy="16" r="1" opacity=".8"/><circle cx="52" cy="9" r=".8" opacity=".65"/>
+        <circle cx="96" cy="20" r="1.1" opacity=".85"/><circle cx="122" cy="8" r=".8" opacity=".6"/>
+        <circle cx="186" cy="52" r="1" opacity=".75"/><circle cx="30" cy="44" r=".8" opacity=".6"/></g>
+      <circle cx="160" cy="28" r="24" fill="#fff8e0" opacity=".1"/>
+      <circle cx="160" cy="28" r="15" fill="url(#g-moon)"/>
+      <g fill="#0e1430" opacity=".45"><ellipse cx="150" cy="24" rx="30" ry="3"/><ellipse cx="176" cy="40" rx="24" ry="2.4"/></g>
+      <path d="M0 120 H200 V104 C160 100 120 106 84 100 C50 95 24 100 0 96 Z" fill="#131a3c"/>
+      <g stroke="#2b1c24" stroke-width="5" fill="none" stroke-linecap="round">
+        <path d="M-6 118 C24 108 38 88 54 62"/>
+      </g>
+      <g stroke="#2b1c24" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M22 100 C40 92 62 88 86 84"/><path d="M54 62 C74 50 100 44 128 44"/>
+        <path d="M40 80 C48 66 50 50 48 32"/>
+      </g>
+      <g stroke="#2b1c24" stroke-width="1.6" fill="none" stroke-linecap="round">
+        <path d="M86 84 C102 80 112 70 124 64"/><path d="M128 44 C142 42 152 46 160 52"/>
+        <path d="M48 32 C54 24 64 20 74 20"/>
+      </g>
+      <g color="#f7c6d4">
+        <use href="#s-sakurabana" x="40" y="22" width="17" height="17"/>
+        <use href="#s-sakurabana" x="62" y="12" width="14" height="14"/>
+        <use href="#s-sakurabana" x="42" y="50" width="15" height="15"/>
+        <use href="#s-sakurabana" x="70" y="40" width="18" height="18"/>
+        <use href="#s-sakurabana" x="96" y="34" width="16" height="16"/>
+        <use href="#s-sakurabana" x="120" y="36" width="19" height="19"/>
+        <use href="#s-sakurabana" x="146" y="44" width="14" height="14"/>
+        <use href="#s-sakurabana" x="78" y="74" width="16" height="16"/>
+        <use href="#s-sakurabana" x="104" y="58" width="14" height="14"/>
+        <use href="#s-sakurabana" x="30" y="88" width="15" height="15"/>
+        <use href="#s-sakurabana" x="56" y="80" width="13" height="13"/>
+      </g>
+      <g color="#fdeaf1">
+        <use href="#s-sakurabana" x="52" y="34" width="11" height="11"/>
+        <use href="#s-sakurabana" x="88" y="48" width="10" height="10"/>
+        <use href="#s-sakurabana" x="134" y="52" width="11" height="11"/>
+        <use href="#s-sakurabana" x="64" y="62" width="10" height="10"/>
+      </g>
+      <g fill="#f2a8bd" opacity=".9">
+        <ellipse cx="154" cy="76" rx="3.2" ry="2" transform="rotate(28 154 76)"/>
+        <ellipse cx="172" cy="94" rx="2.8" ry="1.8" transform="rotate(-20 172 94)"/>
+        <ellipse cx="136" cy="98" rx="3" ry="1.9" transform="rotate(44 136 98)"/>
+        <ellipse cx="112" cy="86" rx="2.6" ry="1.7" transform="rotate(-36 112 86)"/>
+      </g>
+    </symbol>
+
+    <!-- 【夏】宍道湖の花火 -->
+    <symbol id="s-hanabi" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-night)"/>
+      <g fill="#fff8e0"><circle cx="16" cy="12" r=".9" opacity=".7"/><circle cx="184" cy="16" r="1" opacity=".7"/>
+        <circle cx="100" cy="8" r=".8" opacity=".55"/><circle cx="44" cy="66" r=".8" opacity=".5"/></g>
+      <g stroke-linecap="round" fill="none">
+        <circle cx="62" cy="38" r="29" stroke="#ffd86b" stroke-width="2.8" stroke-dasharray=".1 7.8"/>
+        <circle cx="62" cy="38" r="20" stroke="#fff3c4" stroke-width="2.3" stroke-dasharray=".1 6"/>
+        <circle cx="62" cy="38" r="11" stroke="#ffe89a" stroke-width="2" stroke-dasharray=".1 4.6"/>
+      </g>
+      <circle cx="62" cy="38" r="2.6" fill="#fffdf0"/>
+      <g stroke-linecap="round" fill="none">
+        <circle cx="141" cy="28" r="21" stroke="#f7a8c4" stroke-width="2.5" stroke-dasharray=".1 6.4"/>
+        <circle cx="141" cy="28" r="13" stroke="#ffe0ee" stroke-width="2" stroke-dasharray=".1 4.8"/>
+      </g>
+      <circle cx="141" cy="28" r="2.2" fill="#fff0f6"/>
+      <g stroke-linecap="round" fill="none">
+        <circle cx="107" cy="57" r="14" stroke="#9fe4d0" stroke-width="2.1" stroke-dasharray=".1 5"/>
+        <circle cx="107" cy="57" r="7" stroke="#e6fff7" stroke-width="1.8" stroke-dasharray=".1 3.6"/>
+      </g>
+      <g stroke="#ffd86b" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".65">
+        <path d="M178 78 C180 66 179 58 176 50"/><path d="M24 82 C22 72 24 64 27 58"/>
+      </g>
+      <path d="M0 74 C22 70 40 72 58 75 C78 78 96 71 118 74 C140 77 168 71 200 75 V82 H0 Z" fill="#0a1026"/>
+      <rect y="80" width="200" height="40" fill="#101c3a"/>
+      <g fill="#3e2723"><path d="M30 80 C38 73 62 73 70 80 Z"/><path d="M42 67 L47 78 H37 Z"/><path d="M53 64 L59 78 H47 Z"/></g>
+      <g opacity=".3" stroke-linecap="round" fill="none">
+        <ellipse cx="62" cy="96" rx="27" ry="8" stroke="#ffd86b" stroke-width="2.4" stroke-dasharray=".1 7"/>
+        <ellipse cx="141" cy="102" rx="19" ry="6" stroke="#f7a8c4" stroke-width="2.2" stroke-dasharray=".1 6"/>
+      </g>
+      <g stroke="#9fb6d8" stroke-width="1.4" stroke-linecap="round" opacity=".45">
+        <path d="M18 110 h22"/><path d="M84 116 h26"/><path d="M150 108 h20"/><path d="M110 92 h16"/>
+      </g>
+    </symbol>
+
+    <!-- 【秋】紅葉に月 -->
+    <symbol id="s-momiji" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-dusk)"/>
+      <circle cx="56" cy="32" r="26" fill="#fff3d0" opacity=".12"/>
+      <circle cx="56" cy="32" r="17" fill="url(#g-moon)"/>
+      <g fill="#fff" opacity=".2"><ellipse cx="70" cy="38" rx="52" ry="3.4"/><ellipse cx="128" cy="22" rx="40" ry="2.8"/>
+        <ellipse cx="34" cy="52" rx="34" ry="2.4"/></g>
+      <path d="M0 120 H200 V96 C164 88 132 100 96 94 C62 88 30 96 0 90 Z" fill="#5a3752" opacity=".75"/>
+      <g stroke="#e6cf9a" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".92">
+        <path d="M8 120 C10 98 6 84 1 72"/><path d="M20 120 C21 100 18 86 14 76"/>
+        <path d="M32 120 C34 102 32 90 29 80"/><path d="M186 120 C188 100 192 88 196 78"/>
+        <path d="M172 120 C174 104 176 92 179 84"/>
+      </g>
+      <g fill="#f2e2b8" opacity=".85">
+        <ellipse cx="1" cy="70" rx="2.6" ry="5" transform="rotate(-8 1 70)"/>
+        <ellipse cx="14" cy="74" rx="2.4" ry="4.6" transform="rotate(-6 14 74)"/>
+        <ellipse cx="29" cy="78" rx="2.4" ry="4.4" transform="rotate(-4 29 78)"/>
+        <ellipse cx="196" cy="76" rx="2.5" ry="4.6" transform="rotate(10 196 76)"/>
+        <ellipse cx="179" cy="82" rx="2.3" ry="4.2" transform="rotate(7 179 82)"/>
+      </g>
+      <g stroke="#4a2f22" stroke-width="4" fill="none" stroke-linecap="round">
+        <path d="M206 6 C176 12 156 24 132 30"/>
+      </g>
+      <g stroke="#4a2f22" stroke-width="2.2" fill="none" stroke-linecap="round">
+        <path d="M172 15 C168 26 166 34 168 44"/><path d="M148 26 C142 34 138 40 134 50"/>
+      </g>
+      <g color="#d94f2b"><use href="#s-momijiha" x="126" y="20" width="19" height="19"/>
+        <use href="#s-momijiha" x="160" y="36" width="17" height="17"/>
+        <use href="#s-momijiha" x="182" y="12" width="16" height="16"/></g>
+      <g color="#e87b2f"><use href="#s-momijiha" x="145" y="8" width="15" height="15"/>
+        <use href="#s-momijiha" x="128" y="44" width="14" height="14"/>
+        <use href="#s-momijiha" x="170" y="56" width="13" height="13"/></g>
+      <g color="#f0a83c" opacity=".95"><use href="#s-momijiha" x="104" y="62" width="12" height="12"/>
+        <use href="#s-momijiha" x="86" y="34" width="11" height="11"/>
+        <use href="#s-momijiha" x="118" y="86" width="13" height="13"/></g>
+    </symbol>
+
+    <!-- 【冬】雪の千鳥城 -->
+    <symbol id="s-yukishiro" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-winter)"/>
+      <path d="M0 120 H200 V100 C158 92 120 104 80 98 C48 93 24 100 0 94 Z" fill="#fbfdff"/>
+      <path d="M58 120 L70 92 H130 L142 120 Z" fill="#8d8b84"/>
+      <g fill="#2e343a">
+        <path d="M74 92 L79 80 H121 L126 92 Z"/>
+        <path d="M64 80 Q100 68 136 80 L126 70 H74 Z"/>
+        <path d="M82 70 L86 58 H114 L118 70 Z"/>
+        <path d="M74 58 Q100 48 126 58 L118 50 H82 Z"/>
+        <path d="M88 50 L91 40 H109 L112 50 Z"/>
+        <path d="M84 40 Q100 31 116 40 L110 33 H90 Z"/>
+      </g>
+      <g fill="#fbfdff">
+        <path d="M64 80 Q100 68 136 80 L133 76 Q100 65 67 76 Z"/>
+        <path d="M74 58 Q100 48 126 58 L123.5 54.5 Q100 45.5 76.5 54.5 Z"/>
+        <path d="M84 40 Q100 31 116 40 L114 37 Q100 29 86 37 Z"/>
+      </g>
+      <g fill="#e8e4d4"><rect x="92" y="42" width="4" height="5"/><rect x="104" y="42" width="4" height="5"/>
+        <rect x="88" y="61" width="5" height="6"/><rect x="98" y="61" width="5" height="6"/><rect x="108" y="61" width="5" height="6"/></g>
+      <path d="M92 33 C92 27 97 26 96 31 M108 33 C108 27 103 26 104 31" stroke="#c9a24b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <g fill="#31513f">
+        <path d="M28 104 L14 104 L21 84 Z"/><path d="M30 92 L12 92 L21 72 Z"/><path d="M28 80 L14 80 L21 64 Z"/>
+        <path d="M180 106 L166 106 L173 88 Z"/><path d="M182 95 L164 95 L173 76 Z"/>
+      </g>
+      <g fill="#fbfdff">
+        <path d="M21 64 L27 78 L21 74 L15 78 Z"/><path d="M21 72 L29 89 L21 84 L13 89 Z"/>
+        <path d="M173 76 L181 92 L173 88 L165 92 Z"/>
+      </g>
+      <rect x="18" y="104" width="6" height="12" fill="#5c4530"/><rect x="170" y="106" width="6" height="11" fill="#5c4530"/>
+      <g fill="#fff"><circle cx="24" cy="22" r="2"/><circle cx="52" cy="40" r="1.6"/><circle cx="86" cy="18" r="1.8"/>
+        <circle cx="120" cy="30" r="1.5"/><circle cx="150" cy="14" r="2"/><circle cx="176" cy="38" r="1.7"/>
+        <circle cx="38" cy="58" r="1.5"/><circle cx="66" cy="30" r="1.3"/><circle cx="140" cy="52" r="1.6"/>
+        <circle cx="192" cy="62" r="1.4"/><circle cx="10" cy="44" r="1.5"/><circle cx="104" cy="12" r="1.4"/></g>
+    </symbol>
+
+    <!-- 伯耆坊（大山の天狗） -->
+    <symbol id="s-tengu" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="#241a34"/>
+      <rect width="200" height="60" fill="#33244a"/>
+      <circle cx="162" cy="26" r="20" fill="#fff3d0" opacity=".12"/>
+      <circle cx="162" cy="26" r="13" fill="url(#g-moon)"/>
+      <path d="M0 120 L46 44 L74 78 L96 54 L130 96 L152 74 L200 120 Z" fill="#181228"/>
+      <path d="M0 120 L46 44 L60 61 L38 120 Z" fill="#1f1834"/>
+      <path d="M40 50 L46 44 L52 50 L46 47 Z" fill="#fff" opacity=".9"/>
+      <g stroke="#6b5a86" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7">
+        <path d="M112 18 q10 -7 20 0 q10 7 20 0"/><path d="M22 30 q9 -6 18 0"/>
+      </g>
+      <g transform="translate(66 66)">
+        <ellipse cx="0" cy="34" rx="40" ry="22" fill="#1d1524"/>
+        <path d="M-34 -6 C-38 -30 -20 -44 0 -44 C20 -44 38 -30 34 -6 C31 16 18 30 0 30 C-18 30 -31 16 -34 -6 Z" fill="#c0392b"/>
+        <path d="M-34 -6 C-36 -26 -22 -40 -6 -43 C-20 -30 -26 -12 -24 8 C-22 22 -12 29 0 30 C-18 30 -31 16 -34 -6 Z" fill="#a02f24" opacity=".7"/>
+        <path d="M-30 -18 C-26 -40 -10 -52 0 -50 C10 -52 26 -40 30 -18 C22 -34 10 -40 0 -39 C-10 -40 -22 -34 -30 -18 Z" fill="#1a1220"/>
+        <path d="M-34 -14 C-44 -30 -46 -44 -40 -54 C-38 -40 -32 -30 -26 -24 Z" fill="#1a1220"/>
+        <path d="M34 -14 C44 -30 46 -44 40 -54 C38 -40 32 -30 26 -24 Z" fill="#1a1220"/>
+        <rect x="-7" y="-44" width="14" height="10" rx="2.5" fill="#1a1220"/>
+        <rect x="-7" y="-38" width="14" height="3" fill="#c9a24b"/>
+        <path d="M-26 -14 L-8 -8 L-26 -6 Z" fill="#1a1220"/>
+        <path d="M26 -14 L8 -8 L26 -6 Z" fill="#1a1220"/>
+        <ellipse cx="-15" cy="-2" rx="8" ry="5" fill="#fdf6e6"/>
+        <ellipse cx="15" cy="-2" rx="8" ry="5" fill="#fdf6e6"/>
+        <circle cx="-14" cy="-2" r="3.4" fill="#c9a24b"/><circle cx="14" cy="-2" r="3.4" fill="#c9a24b"/>
+        <circle cx="-14" cy="-2" r="1.5" fill="#20140e"/><circle cx="14" cy="-2" r="1.5" fill="#20140e"/>
+        <path d="M0 -8 C6 6 8 18 0 22 C-8 18 -6 6 0 -8 Z" fill="#d4503c"/>
+        <path d="M0 -8 C6 6 8 18 0 22 C0 14 2 4 0 -8 Z" fill="#e8705c" opacity=".7"/>
+        <path d="M-14 20 Q0 28 14 20 Q0 26 -14 20 Z" fill="#5c1f18"/>
+        <path d="M-16 19 Q-8 16 -2 19 M16 19 Q8 16 2 19" stroke="#f0e4d0" stroke-width="2" fill="none" stroke-linecap="round" opacity=".9"/>
+      </g>
+      <g transform="translate(152 78) rotate(-14)">
+        <g fill="#e8dcc0" stroke="#8a6a3a" stroke-width="1.2">
+          <ellipse cx="-14" cy="-6" rx="6" ry="17" transform="rotate(-24 -14 -6)"/>
+          <ellipse cx="-6" cy="-10" rx="6" ry="19" transform="rotate(-12 -6 -10)"/>
+          <ellipse cx="2" cy="-11" rx="6" ry="20"/>
+          <ellipse cx="10" cy="-10" rx="6" ry="19" transform="rotate(12 10 -10)"/>
+          <ellipse cx="18" cy="-6" rx="6" ry="17" transform="rotate(24 18 -6)"/>
+        </g>
+        <rect x="-2" y="6" width="7" height="26" rx="3.5" fill="#6b4423"/>
+        <rect x="-6" y="2" width="15" height="7" rx="3" fill="#8a5c33"/>
+      </g>
+      <g stroke="#cbbfe0" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5">
+        <path d="M116 52 q14 -8 28 -2"/><path d="M120 62 q18 -8 34 -1"/><path d="M124 100 q16 -7 30 -2"/>
+      </g>
+    </symbol>
+
+    <!-- 不昧公の茶室 -->
+    <symbol id="s-chashitsu" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="#efe6cf"/>
+      <rect width="200" height="74" fill="#f8f2e2"/>
+      <g stroke="#9a8c66" stroke-width="3" opacity=".45" fill="none">
+        <path d="M12 74 C16 52 10 34 6 16"/><path d="M26 74 C30 56 26 40 22 26"/>
+        <path d="M19 46 L8 38 M19 46 L30 36 M25 60 L14 54"/>
+      </g>
+      <g stroke="#c9b98e" stroke-width="1.4" fill="none">
+        <path d="M0 20 H200"/><path d="M0 42 H200"/><path d="M0 62 H200"/>
+        <path d="M44 0 V74"/><path d="M88 0 V74"/><path d="M132 0 V74"/><path d="M176 0 V74"/>
+      </g>
+      <rect x="0" y="70" width="200" height="5" fill="#4a3a2c"/>
+      <rect y="75" width="200" height="45" fill="#cdc08c"/>
+      <g stroke="#b7a86f" stroke-width="1.1" fill="none"><path d="M0 92 H200"/><path d="M0 108 H200"/><path d="M66 75 V120"/><path d="M134 75 V120"/></g>
+      <rect y="75" width="200" height="3" fill="#3f3529" opacity=".55"/>
+      <rect x="146" y="4" width="30" height="62" fill="#f3ecdb" stroke="#c2ae7e"/>
+      <rect x="144" y="2" width="34" height="4" fill="#6b5636"/>
+      <rect x="144" y="64" width="34" height="4" fill="#6b5636"/>
+      <g fill="#2f2620" font-family="Yu Mincho, Hiragino Mincho ProN, serif" font-size="11" text-anchor="middle">
+        <text x="161" y="20">和</text><text x="161" y="33">敬</text><text x="161" y="46">清</text><text x="161" y="59">寂</text>
+      </g>
+      <ellipse cx="86" cy="106" rx="44" ry="8" fill="#000" opacity=".08"/>
+      <use href="#s-bowl" x="58" y="66" width="46" height="46"/>
+      <use href="#s-chasen" x="100" y="58" width="40" height="40"/>
+      <g transform="translate(28 92)">
+        <ellipse cx="0" cy="6" rx="19" ry="6" fill="#8d3f38"/>
+        <ellipse cx="0" cy="4" rx="19" ry="6" fill="#a5514a"/>
+        <use href="#s-waka" x="-13" y="-14" width="26" height="26"/>
+      </g>
+    </symbol>
   </defs>
 </svg>
 
 <!-- overlays -->
 <div class="overlay" id="feverOv">
   <svg class="bigsvg" viewBox="0 0 120 120"><use href="#s-fumai"/></svg>
-  <div class="fname">不昧公さま 降臨</div>
-  <div class="fsub">― 大茶会 ―</div>
+  <div class="fname">不昧公 降臨</div>
+  <div class="fsub">― 大茶会・大爆発 ―</div>
 </div>
 <div class="overlay" id="pandaOv">
   <svg class="bigsvg" viewBox="0 0 100 100"><use href="#s-panda"/></svg>
@@ -560,52 +983,82 @@
       <svg viewBox="0 0 120 120"><use href="#s-fumai"/></svg>
     </div>
     <h2>若草かさね</h2>
-    <p class="openLead">彩雲堂の銘菓をそろえて<br>詰合せを完成させましょう。</p>
+    <p class="openLead">30手で どれだけ点を積めるか。<br>詰合せを詰め終えるたび、手数がのびます。</p>
     <div class="guestBox">
       <svg viewBox="0 0 100 100" id="guestSvg"><use id="guestUse" href="#s-manten"/></svg>
-      <div class="guestTxt">本日のお替わり銘菓<br><b id="guestName">満天</b><span id="guestNote"></span></div>
+      <div class="guestTxt"><span id="guestLead">今は夏 ― 季節のお替わり銘菓</span><br><b id="guestName">満天</b><span id="guestNote"></span></div>
     </div>
     <button id="startBtn">はじめる</button>
   </div>
 </div>
 <div class="overlay" id="chasenOv">
   <svg class="bigsvg shake" viewBox="0 0 100 100"><use href="#s-chasen"/></svg>
-  <div class="fname" style="font-family:'Yu Mincho',serif;font-size:22px;color:#fff8e0;letter-spacing:.2em;text-shadow:0 2px 6px rgba(0,0,0,.7)">シャカシャカ…</div>
+  <div class="fname" style="font-family:'Yu Mincho',serif;font-size:22px;color:#fff8e0;letter-spacing:.2em;text-shadow:0 2px 6px rgba(0,0,0,.7)">シャカシャカ</div>
 </div>
-<div class="overlay" id="winOv">
-  <div class="card">
-    <svg class="scene" viewBox="0 0 200 120"><use id="winScene" href="#s-shinji"/></svg>
-    <h2 id="winTitle">お見事でした</h2>
-    <div class="rankRow">段位：<b id="winRank">見習い</b></div>
-    <p><span id="winMsg">詰合せが完成しました。</span><br>点数：<b id="winScore">0</b>　最大連鎖：<b id="winChain">一服</b></p>
-    <button onclick="location.reload()">もう一箱つくる</button>
+<div class="overlay" id="cutinOv">
+  <div class="cutCard">
+    <div class="cutChain" id="cutChain">十服</div>
+    <svg class="cutScene" viewBox="0 0 200 120"><use id="cutScene" href="#s-yozakura"/></svg>
+    <div class="cutTitle" id="cutTitle">夜桜</div>
+    <div class="cutNote" id="cutNote"></div>
   </div>
 </div>
-<div class="overlay" id="loseOv">
+<div class="overlay" id="boxOv">
   <div class="card">
-    <h2>もう一服いかがですか</h2>
-    <p>手数が尽きてしまいました。<br>お茶を淹れ直して、ゆっくりまいりましょう。<br>点数：<b id="loseScore">0</b>　最大連鎖：<b id="loseChain">一服</b></p>
-    <button onclick="location.reload()">やり直す</button>
+    <svg class="scene" viewBox="0 0 200 120"><use id="boxScene" href="#s-shinji"/></svg>
+    <h2 id="boxTitle">一箱目 完成</h2>
+    <p id="boxMsg"></p>
+    <div class="boxGain">＋<b id="boxGainM">8</b>手　＋<b id="boxGainP">2000</b>点</div>
+    <div class="boxNext">次の箱は 一回り大きくなります</div>
+  </div>
+</div>
+<div class="overlay" id="resultOv">
+  <div class="card">
+    <svg class="scene" viewBox="0 0 200 120"><use id="resScene" href="#s-shinji"/></svg>
+    <h2>お手前、拝見しました</h2>
+    <div class="rankRow">段位：<b id="resRank">二級</b></div>
+    <div class="bigScore"><span>点数</span><b id="resScore">0</b></div>
+    <ul class="breakdown">
+      <li><span>詰合せ</span><b id="resBoxes">0箱</b><i id="resBonus">―</i></li>
+      <li><span>消した銘菓</span><b id="resPieces">0</b><i>個</i></li>
+      <li><span>最大連鎖</span><b id="resChain">一服</b><i></i></li>
+    </ul>
+    <button onclick="location.reload()">もう一服</button>
   </div>
 </div>
 
 <script>
 'use strict';
 const N = 7;
+const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
 const TYPES = ['waka','hoki','asa','anpan','kuri'];
 const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou',
              manten:'#s-manten',yuzu:'#s-yuzu',hana:'#s-hana'};
 const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#b8cf8e',
                 jou:'#f6cdd8',manten:'#3b5ea8',yuzu:'#f2c93c',hana:'#f2a8bd'};
-// 本日のお替わり銘菓: 毎回1種だけ入れ替わる（ミッション対象外の伯耆坊か栗まると交代）
-const VARIANTS = [
-  {key:'manten', name:'満天',   note:'夜空をうつした錦玉羹'},
-  {key:'yuzu',   name:'柚衣',   note:'まんま柚子の形の冬菓子'},
-  {key:'hana',   name:'はな桜', note:'桜色の春菓子'}
-];
-const GUEST = VARIANTS[Math.random()*VARIANTS.length|0];
-const REPLACED = ['hoki','kuri'][Math.random()*2|0];
-TYPES[TYPES.indexOf(REPLACED)] = GUEST.key;
+
+/* ---------- 四季 ---------- */
+const MON = new Date().getMonth() + 1;
+// ふだんは今日の日付で決まる。?season=spring|summer|autumn|winter で他の季節も見られる（お披露目用）
+const SEASON_Q = (location.search.match(/[?&]season=(spring|summer|autumn|winter)/) || [])[1];
+const SEASON = SEASON_Q || ((MON === 12 || MON <= 2) ? 'winter' : MON <= 5 ? 'spring' : MON <= 8 ? 'summer' : 'autumn');
+const SEASONS = {
+  spring:{name:'春', tag:'花の候',   guest:'hana',   glow:'rgba(247,198,212,.42)', fleck:'#f2a8bd', radius:'50% 0 50% 0', size:9,  op:.85},
+  summer:{name:'夏', tag:'涼の候',   guest:'manten', glow:'rgba(150,205,225,.36)', fleck:'#a9dcef', radius:'50%',         size:7,  op:.7},
+  autumn:{name:'秋', tag:'紅葉の候', guest:'kuri',   glow:'rgba(226,150,80,.34)',  fleck:'#e0762c', radius:'0 65% 0 65%', size:9,  op:.8},
+  winter:{name:'冬', tag:'雪の候',   guest:'yuzu',   glow:'rgba(206,226,244,.5)',  fleck:'#ffffff', radius:'50%',         size:7,  op:.9}
+};
+const SEA = SEASONS[SEASON];
+const GUESTINFO = {
+  manten:{name:'満天',   note:'夜空をうつした錦玉羹'},
+  yuzu:  {name:'柚衣',   note:'まんま柚子の形の冬菓子'},
+  hana:  {name:'はな桜', note:'桜色の春菓子'},
+  kuri:  {name:'栗まる', note:'栗を丸ごと包んだ秋菓子'}
+};
+// 伯耆坊は欠かせない ― 季節で入れ替わるのは栗まるの枠だけ
+const GUEST = SEA.guest;
+if(GUEST !== 'kuri') TYPES[TYPES.indexOf('kuri')] = GUEST;
+
 function kanjiNum(n){
   const K = ['','一','二','三','四','五','六','七','八','九'];
   if(n < 10) return K[n];
@@ -613,15 +1066,22 @@ function kanjiNum(n){
   if(n < 100) return K[Math.floor(n/10)] + '十' + K[n%10];
   return '百';
 }
-const TEA_MAX = 100, PANDA_MAX = 5;
-const JOU_RATE = 0.06;
-const TARGETS = {waka:26, asa:22, anpan:16};
-const YAMA_CELLS = [[2,2],[2,4],[4,1],[4,5]];
+const TEA_MAX = 240, PANDA_MAX = 12, JOU_MAX = 5;
+const MOVES0 = 30;
+// このゲームの成績は「点数」ひとつ。手数が尽きるまでに何点積めるかを競う。
+// 詰合せは勝敗ではなく、詰め終えるごとに手数と点がもらえるボーナス。
+// 次の箱は一回り大きくなるので、いつかは必ず手数が尽きる。
+const BOX0 = {waka:30, asa:26, anpan:22};
+const BOX_GROWTH = 2.0;    // 一箱ごとに目標が増える倍率
+const BOX_MOVES  = 5;      // 一箱ごとの追加手数
+const BOX_BONUS  = 2000;   // 一箱ごとの加点（箱数に比例）
+let TARGETS = {waka:BOX0.waka, asa:BOX0.asa, anpan:BOX0.anpan};
+let boxesDone = 0, bonusMoves = 0, totalPieces = 0;
 const JOU_CELLS = [[1,5],[5,1]];
 
 const board = document.getElementById('board');
-let grid, cell = 0, moves = 20, score = 0, teaGauge = 0, pandaGauge = 0, maxChain = 1;
-let busy = false, over = false, selected = null;
+let grid, cell = 0, moves = MOVES0, score = 0, teaGauge = 0, pandaGauge = 0, maxChain = 1;
+let busy = false, over = false, selected = null, chasenLeft = 1;
 
 /* ---------- 和風効果音（WebAudioでその場で合成・素材ファイル不要） ---------- */
 let AC = null, muted = false;
@@ -642,7 +1102,7 @@ function pluck(f, delay, vol){ // 琴の爪弾き
   g2.gain.setValueAtTime(v * .25, t); g2.gain.exponentialRampToValueAtTime(.001, t + .3);
   o2.connect(g2); g2.connect(a.destination); o2.start(t); o2.stop(t + .3);
 }
-function swish(hi){ // 菓子切りの刃 / 天狗の風
+function swish(hi){ // 菓子切りの刃 / 天狗の風 / 茶筅
   const a = ac(); if(!a || muted) return;
   const t = a.currentTime, dur = .3;
   const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
@@ -677,6 +1137,22 @@ function thud(soft){ // 太鼓
   g.gain.exponentialRampToValueAtTime(.001, t + .4);
   o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .45);
 }
+function blast(){ // 大爆発（太鼓＋ノイズの轟き）
+  const a = ac(); if(!a || muted) return;
+  const t = a.currentTime, dur = 1.1;
+  const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i = 0; i < d.length; i++){
+    const e = 1 - i / d.length;
+    d[i] = (Math.random() * 2 - 1) * e * e;
+  }
+  const s = a.createBufferSource(); s.buffer = buf;
+  const f = a.createBiquadFilter(); f.type = 'lowpass';
+  f.frequency.setValueAtTime(1800, t); f.frequency.exponentialRampToValueAtTime(90, t + dur);
+  const g = a.createGain(); g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+  thud(false);
+}
 const PENTA = [392, 440, 523.3, 587.3, 659.3, 784];
 document.addEventListener('pointerdown', () => { ac(); });
 
@@ -696,48 +1172,49 @@ function flute(f, delay, dur, vol){
   o.connect(g); g.connect(a.destination);
   o.start(t); o.stop(t + dur); lfo.start(t); lfo.stop(t + dur);
 }
-// 律音階(A C D E G)によるゆったりした琴の手 32歩
+// 律音階による優雅な琴の手 64歩（低音の相の手・かき手・笛の長音入り）
 const KOTO_SEQ = [
-  220,0,329.6,0, 293.7,0,261.6,0, 220,0,261.6,293.7, 0,0,329.6,0,
-  392,0,329.6,0, 293.7,261.6,0,0, 440,0,392,329.6, 0,293.7,0,0
+  220,0,261.6,293.7, 329.6,0,293.7,261.6, 220,0,196,0, 220,0,0,0,
+  329.6,0,392,440, 392,0,329.6,293.7, 261.6,0,293.7,0, 329.6,0,0,0,
+  440,0,523.3,0, 440,392,0,329.6, 392,0,440,523.3, 587.3,0,523.3,440,
+  392,0,329.6,0, 293.7,0,261.6,293.7, 220,0,0,196, 220,0,0,0
 ];
-const FLUTE_NOTES = [329.6, 440, 392, 293.7];
+const FLUTE_NOTES = [329.6, 440, 392, 587.3];
+function kotoGliss(delay){ // かき手（さらりと上る爪の運び）
+  [261.6, 293.7, 329.6, 392, 440, 523.3, 587.3].forEach((f, i) => pluck(f, delay + i * .055, .05));
+}
 let bgmOn = false, bgmStep = 0, bgmNext = 0;
 setInterval(() => {
   const a = AC;
   if(!bgmOn || !a || a.state !== 'running') return;
   if(bgmNext < a.currentTime) bgmNext = a.currentTime + .05;
   while(bgmNext < a.currentTime + 1.4){
-    const f = KOTO_SEQ[bgmStep % 32];
-    if(f) pluck(f, bgmNext - a.currentTime, .045);
-    if(bgmStep % 64 === 20) flute(FLUTE_NOTES[(bgmStep >> 6) % 4], bgmNext - a.currentTime, 2.6, .035);
+    const d = bgmNext - a.currentTime;
+    const f = KOTO_SEQ[bgmStep % 64];
+    if(f){
+      pluck(f, d, .045);
+      if(bgmStep % 8 === 0) pluck(f / 2, d, .02);      // 低音の相の手
+    }
+    if(bgmStep % 64 === 24) flute(FLUTE_NOTES[(bgmStep >> 6) % 4], d, 2.8, .034);
+    if(bgmStep % 128 === 120) kotoGliss(d);
     bgmNext += .45; bgmStep++;
   }
 }, 300);
 const collected = {waka:0, asa:0, anpan:0};
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+let speed = 1; // 検証用に演出を早送りできる
+const sleep = ms => new Promise(r => setTimeout(r, ms * speed));
 const key = (r,c) => r + ',' + c;
 const unkey = k => k.split(',').map(Number);
 const inB = (r,c) => r >= 0 && r < N && c >= 0 && c < N;
+const isWall = p => !p;
 
 function pieceSVG(p){
-  if(p.type === 'yama'){
-    // 実物の層: 上=薄緑のそぼろ(叢雨生地) / 中=黒糖羊羹 / 下=淡い皮むき小豆の朝汐餡
-    const L = [['8','#b8cf8e'],['30','#33251c'],['52','#e3d3b0']];
-    let s = '<svg viewBox="0 0 100 100"><rect x="14" y="6" width="72" height="72" rx="8" fill="#241812"/>';
-    for(let i = 3 - p.layers; i < 3; i++){ // 上の層から剥がれていく
-      s += `<rect x="19" y="${L[i][0]}" width="62" height="19" rx="4" fill="${L[i][1]}"/>`;
-      if(i === 0) s += '<g fill="#dcebbc" opacity=".9"><circle cx="28" cy="13" r="1.8"/><circle cx="40" cy="18" r="1.6"/><circle cx="52" cy="12" r="1.8"/><circle cx="64" cy="17" r="1.6"/><circle cx="74" cy="12" r="1.5"/></g>';
-    }
-    return s + '</svg>';
-  }
-  const href = p.special === 'sao' ? '#s-sao' : p.special === 'uchiwa' ? '#s-uchiwa' : SYM[p.type];
-  return `<svg viewBox="0 0 100 100"><use href="${href}"/></svg>`;
+  return `<svg viewBox="0 0 100 100"><use href="${SYM[p.type]}"/></svg>`;
 }
 function updateVisual(p){
   p.el.innerHTML = pieceSVG(p);
-  p.el.classList.toggle('special', !!p.special);
+  p.el.classList.toggle('fuse', p.type === 'jou');
 }
 function place(p, r, c, instant){
   p.r = r; p.c = c;
@@ -746,7 +1223,7 @@ function place(p, r, c, instant){
   if(instant){ p.el.offsetHeight; p.el.classList.remove('no-t'); }
 }
 function makePiece(type, r, c, spawnAbove){
-  const p = {type, special:null, layers: type === 'yama' ? 3 : 0, r, c, el: document.createElement('div')};
+  const p = {type, r, c, el: document.createElement('div')};
   p.el.className = 'piece';
   updateVisual(p);
   board.appendChild(p.el);
@@ -758,33 +1235,102 @@ function makePiece(type, r, c, spawnAbove){
   place(p, r, c, !spawnAbove);
   return p;
 }
+function countType(t){
+  let n = 0;
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
+    if(grid[r][c] && grid[r][c].type === t) n++;
+  return n;
+}
+// (r,c) と同種で地続きに繋がっているマスを数える（初期配置の重複よけ用）
+function groupSizeAt(r, c){
+  const p0 = grid[r][c]; if(!p0) return 0;
+  const t = p0.type, seen = {}, st = [[r,c]];
+  let n = 0;
+  seen[key(r,c)] = 1;
+  while(st.length){
+    const rc = st.pop(); n++;
+    for(let i = 0; i < 4; i++){
+      const nr = rc[0] + DIRS[i][0], nc = rc[1] + DIRS[i][1];
+      if(!inB(nr,nc) || seen[key(nr,nc)]) continue;
+      const q = grid[nr][nc];
+      if(q && q.type === t){ seen[key(nr,nc)] = 1; st.push([nr,nc]); }
+    }
+  }
+  return n;
+}
 
 function init(){
   board.style.height = board.clientWidth + 'px'; // aspect-ratio非対応ブラウザ向け
   cell = board.clientWidth / N;
   board.style.setProperty('--cell', cell + 'px');
   grid = Array.from({length:N}, () => Array(N).fill(null));
-  for(const [r,c] of YAMA_CELLS) grid[r][c] = makePiece('yama', r, c, 0);
   for(const [r,c] of JOU_CELLS) grid[r][c] = makePiece('jou', r, c, 0);
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
     if(grid[r][c]) continue;
-    let t;
-    do { t = TYPES[Math.random()*TYPES.length|0]; }
-    while((c >= 2 && grid[r][c-1] && grid[r][c-2] && grid[r][c-1].type === t && grid[r][c-2].type === t) ||
-          (r >= 2 && grid[r-1][c] && grid[r-2][c] && grid[r-1][c].type === t && grid[r-2][c].type === t));
+    let t, tries = 0;
+    do {
+      t = TYPES[Math.random()*TYPES.length|0];
+      grid[r][c] = {type:t};                     // 判定用の仮置き
+    } while(groupSizeAt(r,c) >= 3 && ++tries < 24);
     grid[r][c] = makePiece(t, r, c, 0);
   }
-  renderMissions(); updateHUD();
-  document.getElementById('guestUse').setAttribute('href', SYM[GUEST.key]);
-  document.getElementById('guestName').textContent = GUEST.name;
+  renderMissions(); updateHUD(); setupSeason();
+  document.getElementById('guestUse').setAttribute('href', SYM[GUEST]);
+  document.getElementById('guestName').textContent = GUESTINFO[GUEST].name;
   document.getElementById('guestNote').textContent =
-    GUEST.note + '／' + (REPLACED === 'hoki' ? '伯耆坊' : '栗まる') + 'とお替わり';
+    GUESTINFO[GUEST].note + (GUEST === 'kuri' ? '' : '／栗まるとお替わり');
+  document.getElementById('guestLead').textContent = '今は' + SEA.name + ' ― 季節のお替わり銘菓';
+}
+
+/* ---------- 四季の情景 ---------- */
+function setupSeason(){
+  document.documentElement.style.setProperty('--seasonGlow', SEA.glow);
+  document.getElementById('seasonTag').textContent = SEA.tag;
+  let h = '';
+  for(let i = 0; i < 14; i++){
+    const sz = Math.round(SEA.size * (.7 + Math.random() * .8));
+    h += '<span style="left:' + (Math.random()*100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px' +
+         ';background:' + SEA.fleck + ';border-radius:' + SEA.radius +
+         ';opacity:' + SEA.op +
+         ';--sx:' + ((Math.random()*2-1)*70).toFixed(0) + 'px' +
+         ';--rot:' + ((Math.random()*720-360)|0) + 'deg' +
+         ';animation-duration:' + (8 + Math.random()*9).toFixed(1) + 's' +
+         ';animation-delay:-' + (Math.random()*16).toFixed(1) + 's"></span>';
+  }
+  document.getElementById('seasonLayer').innerHTML = h;
 }
 
 function renderMissions(){
   document.getElementById('missions').innerHTML = Object.keys(TARGETS).map(t =>
     `<div class="chip"><svg viewBox="0 0 100 100"><use href="${SYM[t]}"/></svg><span class="cnt" id="m-${t}"></span></div>`
   ).join('');
+  document.getElementById('boxLabel').textContent = '詰合せ ' + kanjiNum(boxesDone + 1) + '箱目';
+}
+// 詰合せが一箱そろった：手数と点をもらって、一回り大きな次の箱へ
+async function checkBox(){
+  if(over) return;
+  if(!Object.keys(TARGETS).every(t => collected[t] >= TARGETS[t])) return;
+  boxesDone++;
+  const gain = BOX_MOVES, bonus = BOX_BONUS * boxesDone;
+  moves += gain; bonusMoves += gain; score += bonus;
+  const list = WIN_SCENES[SEASON], sc = list[(boxesDone - 1) % list.length];
+  document.getElementById('boxScene').setAttribute('href', sc.href);
+  document.getElementById('boxTitle').textContent = kanjiNum(boxesDone) + '箱目 完成';
+  document.getElementById('boxMsg').textContent = sc.t + '。' + sc.m;
+  document.getElementById('boxGainM').textContent = gain;
+  document.getElementById('boxGainP').textContent = bonus;
+  PENTA.forEach((f, i) => pluck(f, .05 + i * .07, .2));
+  rin();
+  const ov = document.getElementById('boxOv');
+  ov.classList.add('show');
+  await sleep(1700);
+  ov.classList.remove('show');
+  // 次の箱は一回り大きく
+  const f = Math.pow(BOX_GROWTH, boxesDone);
+  TARGETS = {waka: Math.round(BOX0.waka*f), asa: Math.round(BOX0.asa*f), anpan: Math.round(BOX0.anpan*f)};
+  collected.waka = 0; collected.asa = 0; collected.anpan = 0;
+  renderMissions(); updateHUD();
+  await sleep(200);
 }
 function updateHUD(){
   const mv = document.getElementById('moves');
@@ -798,71 +1344,111 @@ function updateHUD(){
   document.querySelector('#teaBar i').style.width = Math.min(100, teaGauge/TEA_MAX*100) + '%';
   document.querySelector('#pandaBar i').style.width = Math.min(100, pandaGauge/PANDA_MAX*100) + '%';
   document.getElementById('pandaBtn').classList.toggle('ready', pandaGauge >= PANDA_MAX && !over);
-  document.getElementById('pandaDesc').textContent = pandaGauge >= PANDA_MAX
-    ? 'タップで出動！一番多い銘菓をぱくり'
+  document.getElementById('pandaDesc').textContent = pandaCalled
+    ? 'パンダ待機中 ― 連鎖の切れ目でつなぎます'
+    : pandaGauge >= PANDA_MAX
+    ? 'タップで出動！連鎖中に押すと待機します'
     : 'あんぱん饅頭をあと' + (PANDA_MAX - pandaGauge) + '個消すと出動';
-  if(typeof chasenLeft !== 'undefined'){
-    document.getElementById('chasenLeft').textContent = chasenLeft > 0 ? '残1' : '残0';
-    document.getElementById('chasenBtn').classList.toggle('used', chasenLeft <= 0);
-  }
+  document.getElementById('chasenLeft').textContent = chasenLeft > 0 ? '残1' : '残0';
+  document.getElementById('chasenBtn').classList.toggle('used', chasenLeft <= 0);
 }
 
-/* ---------- match detection ---------- */
-function findRuns(){
-  const runs = [];
-  const scan = (horiz) => {
-    for(let a = 0; a < N; a++){
-      let run = [];
-      for(let b = 0; b <= N; b++){
-        const r = horiz ? a : b, c = horiz ? b : a;
-        const p = (b < N && grid[r]) ? grid[r][c] : null;
-        const t = (p && p.type !== 'yama' && p.type !== 'jou') ? p.type : null;
-        if(t && run.length && grid[run[0][0]][run[0][1]].type === t){ run.push([r,c]); }
-        else {
-          if(run.length >= 3) runs.push({cells:run, horiz});
-          run = t ? [[r,c]] : [];
-        }
+/* ---------- 消し込み判定：同種が3つ以上となり合っていれば、繋がっている分すべて ---------- */
+function findGroups(){
+  const seen = [];
+  for(let r = 0; r < N; r++){ const row = []; for(let c = 0; c < N; c++) row.push(false); seen.push(row); }
+  const groups = [];
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    const p = grid[r][c];
+    if(seen[r][c] || !p || p.type === 'jou') continue;
+    const t = p.type, st = [[r,c]], cells = [];
+    seen[r][c] = true;
+    while(st.length){
+      const rc = st.pop(); cells.push(rc);
+      for(let i = 0; i < 4; i++){
+        const nr = rc[0] + DIRS[i][0], nc = rc[1] + DIRS[i][1];
+        if(!inB(nr,nc) || seen[nr][nc]) continue;
+        const q = grid[nr][nc];
+        if(q && q.type === t){ seen[nr][nc] = true; st.push([nr,nc]); }
       }
     }
-  };
-  scan(true); scan(false);
-  return runs;
+    if(cells.length >= 3) groups.push({type:t, cells:cells});
+  }
+  return groups;
+}
+function isPlus(cells, r0, c0){
+  const s = {};
+  for(let i = 0; i < cells.length; i++) s[(cells[i][0]-r0) + ',' + (cells[i][1]-c0)] = 1;
+  return !!(s['0,1'] && s['1,0'] && s['1,1'] && s['1,2'] && s['2,1']);
+}
+// 「四つ」「五つ」…は数え方が自然だが「十つ」は無いので、十以上は「十連の」に切り替える
+function cnt(n){ return n <= 9 ? kanjiNum(n) + 'つ' : kanjiNum(n) + '連の'; }
+function shapeOf(cells){
+  let r0 = 99, r1 = -1, c0 = 99, c1 = -1;
+  for(let i = 0; i < cells.length; i++){
+    const r = cells[i][0], c = cells[i][1];
+    if(r < r0) r0 = r; if(r > r1) r1 = r;
+    if(c < c0) c0 = c; if(c > c1) c1 = c;
+  }
+  const h = r1 - r0 + 1, w = c1 - c0 + 1, n = cells.length;
+  const straight = (h === 1 || w === 1);
+  let name = '';
+  if(straight){
+    if(n === 4) name = 'まっすぐ四つ';
+    else if(n >= 5) name = cnt(n) + '一直線';
+  } else if(n === 4 && h === 2 && w === 2){ name = '田の字';
+  } else if(n === 5 && h === 3 && w === 3 && isPlus(cells, r0, c0)){ name = '十字';
+  } else if(n >= 7){ name = cnt(n) + '大かさね';
+  } else if(n >= 4){ name = cnt(n) + 'かさね'; }
+  return {straight:straight, h:h, w:w, n:n, name:name};
+}
+// レアな連なりほど高得点
+const GS = [0,0,0,30,70,130,220,340];
+function groupScore(n, straight){
+  const base = n < GS.length ? GS[n] : 340 + (n - 7) * 170;
+  return straight ? base : Math.round(base * 1.35);
 }
 function findMatches(swapKey){
-  const runs = findRuns();
-  const set = new Set(), inH = new Set(), inV = new Set();
-  for(const run of runs){
-    for(const [r,c] of run.cells){ set.add(key(r,c)); (run.horiz ? inH : inV).add(key(r,c)); }
+  const groups = findGroups();
+  const set = new Set(), plans = [];
+  let jn = countType('jou');
+  for(let i = 0; i < groups.length; i++){
+    const g = groups[i];
+    g.shape = shapeOf(g.cells);
+    for(let j = 0; j < g.cells.length; j++) set.add(key(g.cells[j][0], g.cells[j][1]));
   }
-  const plans = [];
-  const planned = new Set();
-  for(const k of set){ // L字/T字 → うちわ
-    if(inH.has(k) && inV.has(k) && !planned.has(k)){ plans.push({k, kind:'uchiwa'}); planned.add(k); }
+  // 一度に5つ以上まとめて消すと、発火剤の上生菓子が生まれる（ルールはこれひとつ）
+  for(let i = 0; i < groups.length; i++){
+    const g = groups[i];
+    if(g.shape.n < 5 || jn >= JOU_MAX) continue;
+    jn++;
+    const keys = [];
+    for(let j = 0; j < g.cells.length; j++) keys.push(key(g.cells[j][0], g.cells[j][1]));
+    const k = (swapKey && keys.indexOf(swapKey) >= 0) ? swapKey : keys[keys.length >> 1];
+    plans.push({k:k, kind:'jou'});
   }
-  for(const run of runs){
-    if(run.cells.length < 4) continue;
-    const keys = run.cells.map(([r,c]) => key(r,c));
-    if(keys.some(k => planned.has(k))) continue;
-    const kind = run.cells.length >= 5 ? 'uchiwa' : 'sao';
-    const k = (swapKey && keys.includes(swapKey)) ? swapKey : keys[keys.length >> 1];
-    plans.push({k, kind}); planned.add(k);
-  }
-  return {set, plans};
+  return {set:set, groups:groups, plans:plans};
 }
 
 /* ---------- effects ---------- */
-function fx(el){ board.appendChild(el); setTimeout(() => el.remove(), 700); }
-function bladeFX(r, c){
-  swish(true);
-  const h = document.createElement('div'); h.className = 'blade h'; h.style.top = (r*cell + cell/2 - 2) + 'px'; fx(h);
-  const v = document.createElement('div'); v.className = 'blade v'; v.style.left = (c*cell + cell/2 - 2) + 'px'; fx(v);
+function fx(el){ board.appendChild(el); setTimeout(() => el.remove(), 900); }
+function boomFX(r, c){        // 発火剤の小爆発
+  thud(true); pluck(1174.7, 0, .14);
+  const d = document.createElement('div'); d.className = 'boom';
+  const s = cell*3.2;
+  d.style.cssText = `width:${s}px;height:${s}px;left:${c*cell + cell/2 - s/2}px;top:${r*cell + cell/2 - s/2}px`;
+  fx(d);
 }
-function gustFX(r, c){
-  swish(false);
-  const g = document.createElement('div'); g.className = 'gust';
-  const s = cell*2.6;
-  g.style.cssText = `width:${s}px;height:${s}px;left:${c*cell + cell/2 - s/2}px;top:${r*cell + cell/2 - s/2}px`;
-  fx(g);
+function shockFX(r, c, mul){  // 大爆発の衝撃波
+  const d = document.createElement('div'); d.className = 'shock';
+  const s = cell*(mul || 3);
+  d.style.cssText = `width:${s}px;height:${s}px;left:${c*cell + cell/2 - s/2}px;top:${r*cell + cell/2 - s/2}px`;
+  fx(d);
+}
+function quake(){
+  const t = document.querySelector('.tray');
+  t.classList.remove('quake'); t.offsetHeight; t.classList.add('quake');
+  setTimeout(() => t.classList.remove('quake'), 600);
 }
 function particles(r, c, color){
   for(let i = 0; i < 5; i++){
@@ -872,99 +1458,158 @@ function particles(r, c, color){
     fx(d);
   }
 }
-function showChain(wave){
+function showChain(wave, label){
   const d = document.createElement('div'); d.className = 'chainText';
-  d.textContent = kanjiNum(wave) + '服！';
+  const lv = Math.min(wave, 12);
+  d.textContent = label || (kanjiNum(wave) + '服！');
+  d.style.fontSize = (42 + lv * 3) + 'px';
+  if(wave >= 5) d.classList.add('hot');
   board.appendChild(d); setTimeout(() => d.remove(), 850);
+  // 連鎖が深いほど華やかに ― 金箔が舞い、盆が輝き、花びらが混ざる
+  if(wave >= 3) goldRain(Math.min(2 + wave * 2, 26), wave >= 7);
+  if(wave >= 6){
+    const t = document.querySelector('.tray');
+    t.classList.remove('chainGlow'); t.offsetHeight; t.classList.add('chainGlow');
+    setTimeout(() => t.classList.remove('chainGlow'), 750);
+    pluck(1046.5 + lv * 30, .06, .1);
+  }
+}
+function goldRain(n, withPetals){
+  for(let i = 0; i < n; i++){
+    const d = document.createElement('div');
+    d.className = (withPetals && i % 3 === 0) ? 'kinpaku petal' : 'kinpaku';
+    d.style.cssText = 'left:' + (Math.random()*96 + 2).toFixed(1) + '%'
+      + ';animation-delay:' + (Math.random()*.3).toFixed(2) + 's'
+      + ';animation-duration:' + (.8 + Math.random()*.7).toFixed(2) + 's'
+      + ';--kx:' + (((Math.random()-.5)*60)|0) + 'px'
+      + ';--krot:' + ((Math.random()*720-360)|0) + 'deg';
+    board.appendChild(d); setTimeout(() => d.remove(), 1800);
+  }
+}
+function shapeTag(g, pts){
+  let sr = 0, sc = 0;
+  for(let i = 0; i < g.cells.length; i++){ sr += g.cells[i][0]; sc += g.cells[i][1]; }
+  sr /= g.cells.length; sc /= g.cells.length;
+  const d = document.createElement('div'); d.className = 'shapeTag';
+  d.innerHTML = g.shape.name + '<i>+' + pts + '</i>';
+  d.style.left = (sc*cell + cell/2) + 'px';
+  d.style.top  = (sr*cell + cell/2) + 'px';
+  board.appendChild(d); setTimeout(() => d.remove(), 1000);
 }
 
 /* ---------- clearing pipeline ---------- */
-function expandSpecials(set){
-  const q = [...set].filter(k => { const [r,c] = unkey(k); return grid[r][c] && grid[r][c].special; });
-  const seen = new Set(q);
-  while(q.length){
-    const [r,c] = unkey(q.pop());
-    const p = grid[r][c]; if(!p) continue;
-    const add = [];
-    if(p.special === 'sao'){
-      bladeFX(r, c);
-      for(let i = 0; i < N; i++){ add.push([r,i]); add.push([i,c]); }
-    } else if(p.special === 'uchiwa'){
-      gustFX(r, c);
-      for(let dr = -1; dr <= 1; dr++) for(let dc = -1; dc <= 1; dc++) add.push([r+dr, c+dc]);
-    }
-    for(const [ar,ac] of add){
-      if(!inB(ar,ac)) continue;
-      const t = grid[ar][ac];
-      if(!t || t.type === 'yama' || t.type === 'jou') continue;
-      const k = key(ar,ac);
-      if(!set.has(k)){ set.add(k); if(t.special && !seen.has(k)){ seen.add(k); q.push(k); } }
-    }
-  }
-}
-function damageYama(set){
+// 発火剤（上生菓子）：消し込みに巻き込まれると周囲に小爆発。近くの発火剤にも燃えうつる
+function igniteJou(set, ignited){
+  const fire = [];
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
     const p = grid[r][c];
-    if(!p || p.type !== 'yama') continue;
-    const hit = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].some(([ar,ac]) => inB(ar,ac) && set.has(key(ar,ac)));
-    if(hit){
-      p.layers--;
-      if(p.layers <= 0) set.add(key(r,c));
-      else { updateVisual(p); particles(r, c, PCOLOR.yama); }
+    if(!p || p.type !== 'jou') continue;
+    const k = key(r,c);
+    if(ignited.has(k)) continue;
+    let touch = set.has(k);
+    for(let i = 0; i < 4 && !touch; i++){
+      const nr = r + DIRS[i][0], nc = c + DIRS[i][1];
+      if(inB(nr,nc) && set.has(key(nr,nc))) touch = true;
+    }
+    if(touch) fire.push([r,c]);
+  }
+  if(!fire.length) return false;
+  for(let i = 0; i < fire.length; i++){
+    const r = fire[i][0], c = fire[i][1];
+    ignited.add(key(r,c)); set.add(key(r,c));
+    boomFX(r, c);
+    for(let dr = -1; dr <= 1; dr++) for(let dc = -1; dc <= 1; dc++){
+      const ar = r + dr, ac = c + dc;
+      if(!inB(ar,ac) || isWall(grid[ar][ac])) continue;
+      set.add(key(ar,ac));
     }
   }
+  return true;
 }
-async function clearWave(set, plans = [], mult = 1, gold = false){
-  expandSpecials(set);
-  damageYama(set);
-  const planPieces = [];
-  for(const pl of plans){
-    set.delete(pl.k);
-    const [r,c] = unkey(pl.k);
-    if(grid[r][c]) planPieces.push({p:grid[r][c], kind:pl.kind});
+function expandAll(set, ignited){
+  for(let guard = 0; guard < 14; guard++){
+    if(!igniteJou(set, ignited)) return;
   }
-  if(set.size === 0) return 0;
-  pluck(PENTA[Math.min((mult || 1) - 1, 5)]);
+}
+function applyPlan(pp){
+  pp.p.type = 'jou';              // 発火剤の上生菓子が生まれる
+  pluck(1318.5, 0, .18); pluck(1568, .09, .14);
+  updateVisual(pp.p);
+  const bel = pp.p.el;
+  bel.classList.remove('born'); bel.offsetHeight; bel.classList.add('born');
+  setTimeout(() => bel.classList.remove('born'), 620);
+}
+async function clearWave(set, opt){
+  opt = opt || {};
+  const mult = opt.mult || 1, groups = opt.groups || [], plans = opt.plans || [];
+  const ignited = new Set();
+  expandAll(set, ignited);
+  const planPieces = [];
+  for(let i = 0; i < plans.length; i++){
+    set.delete(plans[i].k);
+    const rc = unkey(plans[i].k);
+    if(grid[rc[0]][rc[1]]) planPieces.push({p:grid[rc[0]][rc[1]], kind:plans[i].kind});
+  }
+  if(set.size === 0){
+    for(let i = 0; i < planPieces.length; i++) applyPlan(planPieces[i]);
+    return 0;
+  }
+  pluck(PENTA[Math.min(mult - 1, 5)]);
+  // 得点：連なりはレア度に応じて、巻き込んだ分は一律
+  let pts = 0, groupCells = 0;
+  for(let i = 0; i < groups.length; i++){
+    pts += groupScore(groups[i].shape.n, groups[i].shape.straight);
+    groupCells += groups[i].shape.n;
+  }
+  pts += Math.max(0, set.size - groupCells) * 12;
   let n = 0;
-  for(const k of set){
-    const [r,c] = unkey(k);
-    const p = grid[r][c]; if(!p) continue;
-    n++;
+  set.forEach(k => {
+    const rc = unkey(k), p = grid[rc[0]][rc[1]];
+    if(!p) return;
+    n++; totalPieces++;
     if(p.type in collected) collected[p.type]++;
-    if(p.type === 'anpan') pandaGauge = Math.min(PANDA_MAX, pandaGauge + 1);
-    score += 10 * mult;
-    if(p.type === 'jou'){ score += 80; pluck(1046.5, .06, .16); }
-    p.el.classList.add('pop'); if(gold) p.el.classList.add('goldpop');
-    particles(r, c, PCOLOR[p.type] || '#fff');
+    if(p.type === 'anpan' && !opt.noCharge) pandaGauge = Math.min(PANDA_MAX, pandaGauge + 1);
+    if(p.type === 'jou') pts += 120;
+    p.el.classList.add('pop'); if(opt.gold) p.el.classList.add('goldpop');
+    particles(rc[0], rc[1], PCOLOR[p.type] || '#fff');
+  });
+  score += pts * mult;
+  for(let i = 0; i < groups.length; i++){
+    if(groups[i].shape.name) shapeTag(groups[i], groupScore(groups[i].shape.n, groups[i].shape.straight) * mult);
   }
   updateHUD();
   await sleep(280);
-  for(const k of set){
-    const [r,c] = unkey(k);
-    if(grid[r][c]){ grid[r][c].el.remove(); grid[r][c] = null; }
-  }
-  for(const {p, kind} of planPieces){ p.special = kind; updateVisual(p); }
+  set.forEach(k => {
+    const rc = unkey(k);
+    if(grid[rc[0]][rc[1]]){ grid[rc[0]][rc[1]].el.remove(); grid[rc[0]][rc[1]] = null; }
+  });
+  for(let i = 0; i < planPieces.length; i++) applyPlan(planPieces[i]);
   await gravity();
   return n;
 }
 async function gravity(){
-  let jouN = 0;
-  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
-    if(grid[r][c] && grid[r][c].type === 'jou') jouN++;
+  const holesPer = [];
   for(let c = 0; c < N; c++){
     const col = [];
     for(let r = N-1; r >= 0; r--) if(grid[r][c]) col.push(grid[r][c]);
-    let holes = 0;
     for(let r = N-1; r >= 0; r--){
       const p = col[N-1-r] || null;
       grid[r][c] = p;
-      if(p){ if(p.r !== r || p.c !== c) place(p, r, c, false); }
+      if(p && (p.r !== r || p.c !== c)) place(p, r, c, false);
     }
-    holes = N - col.length;
+    holesPer.push(N - col.length);
+  }
+  // 落ちきってから補充する。補充した菓子だけで揃ってしまわない種類を選ぶ
+  // （そうしないと降ってくるたびに勝手に消え続け、連鎖が止まらない）
+  for(let c = 0; c < N; c++){
+    const holes = holesPer[c];
     for(let i = 0; i < holes; i++){
       const r = holes - 1 - i;
-      let t = TYPES[Math.random()*TYPES.length|0];
-      if(jouN < 4 && Math.random() < JOU_RATE){ t = 'jou'; jouN++; }
+      let t, tries = 0;
+      do {
+        t = TYPES[Math.random()*TYPES.length|0];
+        grid[r][c] = {type:t};                   // 判定用の仮置き
+      } while(groupSizeAt(r,c) >= 3 && ++tries < 20);
       grid[r][c] = makePiece(t, r, c, holes);
     }
   }
@@ -973,69 +1618,151 @@ async function gravity(){
 
 /* ---------- main resolution ---------- */
 async function resolveAll(swapKey){
-  let wave = 0;
+  let wave = 0, lifeline = 1;   // パンダの橋渡しは1連鎖につき1回（無制限だと連鎖が終わらなくなる）
   while(true){
-    const {set, plans} = findMatches(wave === 0 ? swapKey : null);
-    if(set.size === 0){
+    const m = findMatches(wave === 0 ? swapKey : null);
+    if(m.set.size === 0){
       if(teaGauge >= TEA_MAX && !over){ await fever(); continue; }
+      // 連鎖が途切れそうなその時 ― 呼んでおいたパンダが繋ぐ。呼び忘れても「いま！」の合図で叩けば繋がる
+      if(lifeline > 0 && wave >= 2 && pandaGauge >= PANDA_MAX && !over){
+        let go = false;
+        if(pandaCalled){ go = true; setCalled(false); }
+        else go = await pandaChance();
+        if(go){
+          lifeline--;
+          pandaGauge = 0; updateHUD();
+          wave++; if(wave > maxChain) maxChain = wave;
+          showChain(wave, 'パンダつなぎ！');
+          if(cutDue(wave)) await cutIn(wave);
+          await pandaSweep(wave);
+          continue;
+        }
+      }
       break;
     }
     wave++;
     if(wave > maxChain) maxChain = wave;
     if(wave >= 2){
       showChain(wave);
-      // 二服(2連鎖)以上：消し込みに接した上生菓子が外れる
-      for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
-        const p = grid[r][c];
-        if(p && p.type === 'jou' &&
-           [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].some(([ar,ac]) => inB(ar,ac) && set.has(key(ar,ac))))
-          set.add(key(r,c));
-      }
+      if(cutDue(wave)) await cutIn(wave);
     }
-    const n = await clearWave(set, plans, wave);
+    const n = await clearWave(m.set, {plans:m.plans, groups:m.groups, mult:wave});
     teaGauge = Math.min(TEA_MAX, teaGauge + n + (wave-1)*5);
     updateHUD();
   }
 }
+
+/* ---------- 十服以上のカットイン ---------- */
+const CUT_ALL = [
+  {href:'#s-yozakura',  t:'夜桜',         n:'松江城のお堀ばたに、春の宵。'},
+  {href:'#s-hanabi',    t:'宍道湖の花火', n:'湖面いっぱいに、夏の大輪。'},
+  {href:'#s-momiji',    t:'紅葉に月',     n:'ススキの穂ごしに、秋の月。'},
+  {href:'#s-yukishiro', t:'雪の千鳥城',   n:'国宝・松江城に雪が積もる。'},
+  {href:'#s-tengu',     t:'伯耆坊',       n:'大山にすむと伝わる天狗。銘菓の名にいただきました。'},
+  {href:'#s-chashitsu', t:'不昧公の茶室', n:'松江に茶の湯を根づかせた殿さま、松平不昧。'}
+];
+const SEASON_IDX = {spring:0, summer:1, autumn:2, winter:3};
+const CUTINS = CUT_ALL.slice(SEASON_IDX[SEASON]).concat(CUT_ALL.slice(0, SEASON_IDX[SEASON]));
+// 十服で一枚目、以降は五服ごと（毎服だと連鎖のたびに止まってしまう）
+function cutDue(w){ return w === 10 || (w > 10 && (w - 10) % 5 === 0); }
+async function cutIn(wave){
+  const cu = CUTINS[Math.floor((wave - 10) / 5) % CUTINS.length];
+  document.getElementById('cutScene').setAttribute('href', cu.href);
+  document.getElementById('cutChain').textContent = kanjiNum(wave) + '服';
+  document.getElementById('cutTitle').textContent = cu.t;
+  document.getElementById('cutNote').textContent = cu.n;
+  const ov = document.getElementById('cutinOv');
+  ov.classList.add('show');
+  rin(); PENTA.forEach((f, i) => pluck(f, .08 + i*.07, .17));
+  await sleep(wave === 10 ? 1700 : 1200);
+  ov.classList.remove('show');
+  await sleep(200);
+}
+
+/* ---------- 大茶会：不昧公の大爆発 ---------- */
 async function fever(){
   teaGauge = 0; updateHUD();
   const ov = document.getElementById('feverOv');
-  rin();
-  ov.classList.add('show');
+  rin(); ov.classList.add('show');
   await sleep(1500);
   ov.classList.remove('show');
-  const cands = [];
-  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
-    if(grid[r][c] && grid[r][c].type !== 'yama' && grid[r][c].type !== 'jou') cands.push(key(r,c));
-  for(let i = cands.length-1; i > 0; i--){ const j = Math.random()*(i+1)|0; [cands[i],cands[j]] = [cands[j],cands[i]]; }
-  await clearWave(new Set(cands.slice(0, 12)), [], 2, true);
+  await sleep(150);
+  blast(); quake(); shockFX(3, 3, 3); showChain(0, '大爆発');
+  const inner = new Set(), outer = new Set();
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    if(isWall(grid[r][c])) continue;
+    const d = Math.max(Math.abs(r-3), Math.abs(c-3));
+    if(d <= 1) inner.add(key(r,c)); else if(d === 2) outer.add(key(r,c));
+  }
+  await clearWave(inner, {mult:2, gold:true});
+  shockFX(3, 3, 5.5); blast();
+  await clearWave(outer, {mult:3, gold:true});
   updateHUD();
+}
+
+/* ---------- おたすけパンダ ---------- */
+function topType(){
+  const count = {};
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    const p = grid[r][c];
+    if(p && p.type !== 'jou') count[p.type] = (count[p.type] || 0) + 1;
+  }
+  return Object.keys(count).sort((a,b) => count[b] - count[a])[0];
+}
+async function pandaSweep(mult){
+  const best = topType();
+  const set = new Set();
+  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
+    if(grid[r][c] && grid[r][c].type === best) set.add(key(r,c));
+  pluck(659.3, 0, .22); pluck(880, .13, .22);
+  // パンダ自身の一掃ではゲージを溜めない（あんぱんを食べて即おかわり、を防ぐ）
+  return clearWave(set, {mult:mult || 1, noCharge:true});
 }
 async function pandaHelp(){
   if(busy || over || pandaGauge < PANDA_MAX) return;
   busy = true; pandaGauge = 0; updateHUD();
-  const count = {};
-  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
-    const p = grid[r][c];
-    if(p && p.type !== 'yama' && p.type !== 'jou') count[p.type] = (count[p.type] || 0) + 1;
-  }
-  const best = Object.keys(count).sort((a,b) => count[b] - count[a])[0];
-  pluck(659.3, 0, .22); pluck(880, .13, .22);
   const ov = document.getElementById('pandaOv');
   document.getElementById('pandaMsg').textContent = 'いちばん多い銘菓を ぱくり！';
   ov.classList.add('show');
-  await sleep(1000);
+  await sleep(900);
   ov.classList.remove('show');
-  const set = new Set();
-  for(let r = 0; r < N; r++) for(let c = 0; c < N; c++)
-    if(grid[r][c] && grid[r][c].type === best) set.add(key(r,c));
-  await clearWave(set, [], 1);
+  await pandaSweep(1);
   await resolveAll(null);
+  await checkBox();
   busy = false;
   checkEnd();
   ensureMoves();
 }
-document.getElementById('pandaBtn').addEventListener('click', pandaHelp);
+// 連鎖の切れ目に開く「いま！」の窓。連鎖中にタップして「呼んでおく」こともできる
+let pandaWindow = null, pandaCalled = false;
+function setCalled(on){
+  pandaCalled = on;
+  document.getElementById('pandaBtn').classList.toggle('called', on);
+  updateHUD();
+}
+function pandaChance(){
+  const btn = document.getElementById('pandaBtn');
+  const call = document.createElement('div');
+  call.className = 'chanceCall';
+  call.innerHTML = 'いま！<b>パンダを叩く</b>';
+  board.appendChild(call);
+  btn.classList.add('chance');
+  pluck(880, 0, .18); pluck(1174.7, .1, .18);
+  return new Promise(res => {
+    pandaWindow = res;
+    setTimeout(() => { if(pandaWindow === res){ pandaWindow = null; res(false); } }, 1800 * speed);
+  }).then(ok => {
+    call.remove(); btn.classList.remove('chance');
+    return ok;
+  });
+}
+function pandaTap(){
+  if(pandaWindow){ const f = pandaWindow; pandaWindow = null; f(true); return; }
+  if(pandaCalled){ setCalled(false); return; }              // 呼び出しの取り消し
+  if(busy && !over && pandaGauge >= PANDA_MAX){ setCalled(true); pluck(783.99, 0, .16); return; }  // 連鎖中に呼んでおく
+  pandaHelp();
+}
+document.getElementById('pandaBtn').addEventListener('click', pandaTap);
 document.getElementById('sndBtn').addEventListener('click', function(){
   muted = !muted;
   this.classList.toggle('off', muted);
@@ -1045,25 +1772,30 @@ document.getElementById('quitBtn').addEventListener('click', function(){
   if(over) return;
   if(confirm('投了して、最初からやり直しますか？')) location.reload();
 });
+document.getElementById('bgmBtn').addEventListener('click', function(){
+  bgmOn = !bgmOn;
+  this.classList.toggle('off', !bgmOn);
+  if(bgmOn && AC) bgmNext = AC.currentTime + .2;
+  if(bgmOn) pluck(440, 0, .12);
+});
 document.getElementById('startBtn').addEventListener('click', function(){
   const a = ac();
   document.getElementById('openOv').classList.remove('show');
-  bgmOn = true;
+  bgmOn = !document.getElementById('bgmBtn').classList.contains('off');
   if(a) bgmNext = a.currentTime + .3;
   pluck(523.3, 0, .18); pluck(659.3, .1, .18);
 });
 
-/* ---------- 茶筅シャッフル ---------- */
-let chasenLeft = 1;
+/* ---------- 茶筅シャッフル（手短に、リズムよく） ---------- */
 function hasAnyMove(){
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
     for(const d of [[0,1],[1,0]]){
       const r2 = r + d[0], c2 = c + d[1];
       if(!inB(r2,c2)) continue;
       const a = grid[r][c], b = grid[r2][c2];
-      if(!a || !b || a.type === 'yama' || b.type === 'yama') continue;
+      if(isWall(a) || isWall(b)) continue;
       grid[r][c] = b; grid[r2][c2] = a;
-      const n = findMatches(null).set.size;
+      const n = findGroups().length;
       grid[r][c] = a; grid[r2][c2] = b;
       if(n > 0) return true;
     }
@@ -1080,24 +1812,28 @@ async function chasenShuffle(free){
   updateHUD();
   const ov = document.getElementById('chasenOv');
   ov.classList.add('show');
-  for(let i = 0; i < 4; i++) setTimeout(() => swish(i % 2 === 0), i * 110);
-  await sleep(900);
+  swish(true);
+  setTimeout(() => swish(true), 100);
+  setTimeout(() => swish(true), 200);
+  setTimeout(() => { swish(false); pluck(783.99, 0, .2); }, 310);
+  await sleep(400);
   ov.classList.remove('show');
   let tries = 0;
   do {
     const cells = [], pieces = [];
     for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
       const p = grid[r][c];
-      if(p && p.type !== 'yama'){ cells.push([r,c]); pieces.push(p); }
+      if(p){ cells.push([r,c]); pieces.push(p); }
     }
     for(let i = pieces.length - 1; i > 0; i--){
       const j = Math.random() * (i + 1) | 0;
       [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
     }
     cells.forEach((rc, i) => { grid[rc[0]][rc[1]] = pieces[i]; place(pieces[i], rc[0], rc[1], false); });
-  } while(!hasAnyMove() && findMatches(null).set.size === 0 && ++tries < 6);
-  await sleep(420);
+  } while(!hasAnyMove() && findGroups().length === 0 && ++tries < 6);
+  await sleep(220);
   await resolveAll(null);
+  await checkBox();
   busy = false;
   checkEnd();
   ensureMoves();
@@ -1107,8 +1843,8 @@ function ensureMoves(){
   if(!hasAnyMove()){
     const d = document.createElement('div'); d.className = 'chainText';
     d.style.fontSize = '26px'; d.textContent = '手詰まり…茶筅でひとまぜ';
-    board.appendChild(d); setTimeout(() => d.remove(), 850);
-    setTimeout(() => chasenShuffle(true), 700);
+    board.appendChild(d); setTimeout(() => d.remove(), 700);
+    setTimeout(() => chasenShuffle(true), 600 * speed);
   }
 }
 document.getElementById('chasenBtn').addEventListener('click', () => chasenShuffle(false));
@@ -1116,40 +1852,44 @@ document.getElementById('chasenBtn').addEventListener('click', () => chasenShuff
 function chainLabel(){
   return maxChain >= 2 ? kanjiNum(maxChain) + '服' : '一服';
 }
+// 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）
 function rankName(){
-  const pts = score + maxChain * 300;
-  if(pts >= 6500) return '不昧公さま級';
-  if(pts >= 5000) return '銘菓の匠';
-  if(pts >= 3800) return '本職';
-  if(pts >= 2800) return '若職人';
-  return '見習い';
+  const pts = score;
+  if(pts >= 300000) return '名人';
+  if(pts >= 240000) return '師範';
+  if(pts >= 190000) return '五段';
+  if(pts >= 150000) return '四段';
+  if(pts >= 120000) return '三段';
+  if(pts >=  90000) return '二段';
+  if(pts >=  60000) return '初段';
+  if(pts >=  30000) return '一級';
+  return '二級';
 }
+const WIN_SCENES = {
+  spring:[{href:'#s-castle',    t:'国宝 松江城', m:'千鳥城に桜の季節がやってきました。'},
+          {href:'#s-yozakura',  t:'夜桜',        m:'堀ばたの桜がひとしきり。'}],
+  summer:[{href:'#s-hanabi',    t:'宍道湖の花火', m:'湖面に大輪がひらきます。'},
+          {href:'#s-shinji',    t:'宍道湖の夕景', m:'嫁ヶ島の向こうに日が沈みます。'}],
+  autumn:[{href:'#s-momiji',    t:'紅葉に月',    m:'ススキの穂ごしに秋の月。'},
+          {href:'#s-shinji',    t:'宍道湖の夕景', m:'嫁ヶ島の向こうに日が沈みます。'}],
+  winter:[{href:'#s-yukishiro', t:'雪の千鳥城',  m:'松江城に雪が積もりました。'},
+          {href:'#s-horikawa',  t:'堀川めぐり',  m:'こたつ舟でゆるりと一巡り。'}]
+};
+// 終わりは「手数が尽きたとき」だけ。成績は点数ひとつ
 function checkEnd(){
-  if(over) return;
-  const win = Object.keys(TARGETS).every(t => collected[t] >= TARGETS[t]);
-  if(win){
-    over = true;
-    const SCENES = [
-      {href:'#s-shinji',   t:'宍道湖の夕景',  m:'嫁ヶ島の向こうに日が沈みます。詰合せも無事に完成。'},
-      {href:'#s-castle',   t:'国宝 松江城',   m:'千鳥城に桜の季節がやってきました。詰合せも無事に完成。'},
-      {href:'#s-horikawa', t:'堀川めぐり',    m:'こたつ舟でゆるりと一巡り。詰合せも無事に完成。'}
-    ];
-    const sc = SCENES[Math.random()*SCENES.length|0];
-    document.getElementById('winScene').setAttribute('href', sc.href);
-    document.getElementById('winTitle').textContent = sc.t;
-    document.getElementById('winMsg').textContent = sc.m;
-    document.getElementById('winScore').textContent = score;
-    document.getElementById('winChain').textContent = chainLabel();
-    document.getElementById('winRank').textContent = rankName();
-    PENTA.forEach((f, i) => pluck(f, .4 + i * .09, .2));
-    setTimeout(() => document.getElementById('winOv').classList.add('show'), 400);
-  } else if(moves <= 0){
-    over = true;
-    document.getElementById('loseScore').textContent = score;
-    document.getElementById('loseChain').textContent = chainLabel();
-    thud(false);
-    setTimeout(() => document.getElementById('loseOv').classList.add('show'), 400);
-  }
+  if(over || moves > 0) return;
+  over = true;
+  const list = WIN_SCENES[SEASON];
+  const sc = list[Math.random()*list.length|0];
+  document.getElementById('resScene').setAttribute('href', sc.href);
+  document.getElementById('resRank').textContent = rankName();
+  document.getElementById('resScore').textContent = score.toLocaleString();
+  document.getElementById('resPieces').textContent = totalPieces;
+  document.getElementById('resChain').textContent = chainLabel();
+  document.getElementById('resBoxes').textContent = boxesDone + '箱';
+  document.getElementById('resBonus').textContent = bonusMoves > 0 ? '＋' + bonusMoves + '手' : '―';
+  if(boxesDone > 0) PENTA.forEach((f, i) => pluck(f, .4 + i * .09, .2)); else thud(false);
+  setTimeout(() => document.getElementById('resultOv').classList.add('show'), 400);
   updateHUD();
 }
 
@@ -1157,14 +1897,15 @@ function checkEnd(){
 async function trySwap(r1, c1, r2, c2){
   if(busy || over || !inB(r2,c2)) return;
   const a = grid[r1][c1], b = grid[r2][c2];
-  if(!a || !b || a.type === 'yama' || b.type === 'yama') return;
+  if(isWall(a) || isWall(b)) return;
   busy = true;
   clearSel();
   grid[r1][c1] = b; grid[r2][c2] = a;
   place(a, r2, c2, false); place(b, r1, c1, false);
   await sleep(240);
-  const {set} = findMatches(null);
-  if(set.size === 0){
+  // 発火剤（上生菓子）は、揃わなくても寄せられる（手数は1つ使う）
+  const fuseMove = (a.type === 'jou' || b.type === 'jou');
+  if(findGroups().length === 0 && !fuseMove){
     thud(true);
     grid[r1][c1] = a; grid[r2][c2] = b;
     place(a, r1, c1, false); place(b, r2, c2, false);
@@ -1174,6 +1915,7 @@ async function trySwap(r1, c1, r2, c2){
   }
   moves--; updateHUD();
   await resolveAll(key(r2,c2));
+  await checkBox();
   busy = false;
   checkEnd();
   ensureMoves();
@@ -1212,7 +1954,7 @@ board.addEventListener('pointerup', e => {
   const wasDrag = drag.moved; const [r,c] = drag.rc; drag = null;
   if(wasDrag || busy || over) return;
   const p = grid[r][c];
-  if(!p || p.type === 'yama'){ clearSel(); return; }
+  if(isWall(p)){ clearSel(); return; }
   if(selected){
     const [sr,sc] = selected;
     if(Math.abs(sr-r) + Math.abs(sc-c) === 1){ trySwap(sr, sc, r, c); return; }
