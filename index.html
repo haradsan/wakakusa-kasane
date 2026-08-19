@@ -352,6 +352,67 @@
   .piece.born svg{animation:bornA .55s cubic-bezier(.2,1.5,.4,1)}
   @keyframes bornA{0%{transform:scale(.3) rotate(-20deg)}60%{transform:scale(1.18) rotate(6deg)}100%{transform:scale(1)}}
   @media (prefers-reduced-motion: reduce){ .piece.fuse svg,.piece.born svg{animation:none} }
+
+  /* ===== v0.8 追加分 ===== */
+
+  /* 季節がめぐる（五手ごと）― 盤の上を流れる季節札。遊びは止めない */
+  .seasonCard{
+    position:absolute;left:50%;top:5%;transform:translate(-50%,0);width:76%;
+    display:flex;align-items:center;gap:9px;padding:6px 8px;pointer-events:none;z-index:5;
+    background:rgba(24,14,6,.82);border:1px solid var(--gold);border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.45);animation:scardA 2.6s ease forwards;
+  }
+  .seasonCard svg{width:38%;flex-shrink:0;border-radius:6px;border:1px solid rgba(232,201,106,.5)}
+  .seasonCard .scTxt{text-align:left;color:#fff3d4;line-height:1.35}
+  .seasonCard .scTxt b{display:block;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:15px;letter-spacing:.2em}
+  .seasonCard .scTxt span{font-size:11px;color:#dfcda6;letter-spacing:.06em}
+  .seasonCard .scTxt small{display:block;font-size:9px;color:#b8a77e;letter-spacing:.15em;margin-top:2px}
+  @keyframes scardA{
+    0%{opacity:0;transform:translate(-50%,-14px)}
+    12%{opacity:1;transform:translate(-50%,0)}
+    82%{opacity:1;transform:translate(-50%,0)}
+    100%{opacity:0;transform:translate(-50%,-8px)}}
+  .seasonTag.turn{animation:tagTurn .9s ease}
+  @keyframes tagTurn{0%{transform:scale(1)}30%{transform:scale(1.18);background:#fff3d4;border-color:var(--gold)}100%{transform:scale(1)}}
+  #seasonLayer span{transition:opacity 1.2s}
+  #seasonLayer span.out{opacity:0 !important}
+
+  /* 結果：段階評価（背の高いカードは、小さな画面ではスクロールで逃がす） */
+  #resultOv,#openOv{justify-content:flex-start;overflow-y:auto}
+  #resultOv .card,#openOv .card{margin:auto}
+  #resultOv .card{padding:16px 26px 0}
+  #resultOv .scene{height:112px}
+  #resultOv h2{font-size:19px}
+  #resultOv .bigScore b{font-size:34px}
+  #resultOv .breakdown li{font-size:11.5px;padding:1px 4px}
+  #resultOv .breakdown li b{font-size:15px}
+  #resultOv .resComment{
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:12.5px;line-height:1.7;color:#4a3d2c;
+    margin:2px 0 6px;letter-spacing:.04em;
+  }
+  #resultOv .resNext{font-size:10.5px;color:#8a7a5e;letter-spacing:.08em;margin-bottom:6px}
+  #resultOv .ladder{display:flex;justify-content:center;gap:2px;flex-wrap:wrap;margin-bottom:8px}
+  #resultOv .ladder i{
+    font-style:normal;font-size:8.5px;letter-spacing:.05em;color:#b0a284;
+    border:1px solid #e2d8c2;border-radius:999px;padding:1px 5px;background:#fffdf6;
+  }
+  #resultOv .ladder i.got{color:#5c4f3c;border-color:#c9b98e}
+  #resultOv .ladder i.now{color:#fff;background:var(--azuki);border-color:var(--azuki);font-weight:700}
+  #resultOv .sceneCap{font-size:10px;color:#8a7a5e;letter-spacing:.12em;margin:-6px 0 8px}
+
+  /* 彩雲堂の控えめなご案内（題字看板と彩雲文様は差し替え可能なイメージ意匠） */
+  .shopRow{
+    display:flex;align-items:center;gap:9px;justify-content:center;margin:8px 0 2px;
+    padding:6px 8px;border-top:1px dashed #d8cbae;
+  }
+  .shopRow svg.kanban{width:74px;height:26px;flex-shrink:0}
+  .shopRow .shopTxt{font-size:9.5px;color:#7a6a52;letter-spacing:.1em;text-align:left;line-height:1.5}
+  .shopRow .shopTxt b{font-family:"Yu Mincho",serif;color:var(--sumi);font-size:11px;letter-spacing:.2em}
+  .prBand{margin:10px -26px 0;padding:8px 14px 10px;background:#fffdf6;border-top:1px solid #e2d8c2;
+    border-radius:0 0 12px 12px;text-align:center}
+  .prBand svg.saiun{display:block;width:100%;height:14px;margin-bottom:5px}
+  .prBand p{font-size:10.5px !important;line-height:1.55 !important;color:#6b5c46 !important;letter-spacing:.06em}
+  .prBand p b{font-family:"Yu Mincho",serif;color:var(--sumi);letter-spacing:.2em}
 </style>
 
 <div id="seasonLayer"></div>
@@ -359,7 +420,7 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.7</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.8</b></div>
     <div class="rule"></div>
     <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">夏の候</span></div>
   </header>
@@ -416,8 +477,9 @@
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
     ふだんにタップすれば一番多い銘菓をぱくり。<br>
     <b>茶筅</b>ボタン(1回きり)で盤面をひとまぜ。手詰まりの時は自動でまぜ直します。<br>
-    <b>十服(10連鎖)</b>から、四季の情景がカットインで入ります。<br>
-    季節ごとに<b>お替わり銘菓</b>が替わります。段位は点数だけで決まります。<br>
+    <b>五手ごとに季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の情景が盤の上を流れ、
+    舞い散るものや連鎖の景色も移ろいます。<b>十服(10連鎖)</b>からは情景がカットインで入ります。<br>
+    今の季節の<b>お替わり銘菓</b>が仲間入りします。段位は点数だけで決まります。<br>
     右上の<b>♪</b>で効果音、<b>♫</b>で調べ（BGM）、<b>投</b>で投了できます。
   </details>
   <div class="foot">松江・彩雲堂 ― 試作につき非売品</div>
@@ -598,71 +660,356 @@
       <circle cx="24" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/><circle cx="76" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/>
     </symbol>
 
-    <!-- 不昧公（松江の茶人大名。剃髪はそのままに、風流人・文化人として意匠化） -->
+    <!-- 不昧公（松江の茶人大名。剃髪の茶人。墨色の道服に、黒楽の茶碗と懐紙の若草） -->
     <symbol id="s-fumai" viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="url(#g-gold)" opacity=".95"/>
-      <g stroke="#fff8e0" stroke-width="2.5" opacity=".8">
+      <g stroke="#fff8e0" stroke-width="2.5" opacity=".7">
         <path d="M60 2 V14"/><path d="M60 106 V118"/><path d="M2 60 H14"/><path d="M106 60 H118"/>
         <path d="M19 19 L27 27"/><path d="M93 93 L101 101"/><path d="M101 19 L93 27"/><path d="M27 93 L19 101"/>
       </g>
-      <!-- 短冊（和歌をしたためる紙） -->
-      <g transform="translate(22 38) rotate(-9)">
-        <rect x="-6.5" y="-20" width="13" height="42" rx="1.5" fill="#fdf8ec" stroke="#c9a24b" stroke-width="1.2"/>
-        <g stroke="#8a7357" stroke-width="1.2" stroke-linecap="round" opacity=".85">
-          <path d="M0 -14 V-4"/><path d="M0 0 V12"/><path d="M-2.5 16 q2.5 2 5 0"/>
-        </g>
-        <circle cx="0" cy="-17" r="1.2" fill="#c25f7e"/>
-      </g>
-      <!-- 江戸紫の肩衣（裃）と着物 -->
-      <path d="M27 96 C25 78 40 68 60 68 C80 68 95 78 93 96 Z" fill="#5b3a76"/>
-      <path d="M60 68 L34 96 L27 96 C27 84 38 72 52 69 Z" fill="#6d4a8c"/>
-      <path d="M60 68 L86 96 L93 96 C93 84 82 72 68 69 Z" fill="#6d4a8c"/>
-      <path d="M52 72 L60 96 L68 72" fill="#f3ecdd"/>
-      <path d="M52 72 L60 80 L68 72 L60 76 Z" fill="#8a5c9e"/>
-      <!-- 胸元の紋（梅鉢ふう） -->
-      <g transform="translate(60 88)" fill="#e8c96a">
-        <circle r="1.9"/><circle cx="0" cy="-4.4" r="1.5"/><circle cx="4.2" cy="-1.4" r="1.5"/>
-        <circle cx="2.6" cy="3.6" r="1.5"/><circle cx="-2.6" cy="3.6" r="1.5"/><circle cx="-4.2" cy="-1.4" r="1.5"/>
-      </g>
-      <!-- 顔（剃髪は維持しつつ、目もとは涼やかに） -->
+      <!-- 墨色の道服（袖は広く、茶人らしく） -->
+      <path d="M22 102 C20 80 38 66 60 66 C82 66 100 80 98 102 Z" fill="#3a332e"/>
+      <path d="M60 66 C40 66 27 74 22 102 L38 102 C38 86 44 76 51 70 Z" fill="#2c2621"/>
+      <path d="M60 66 C80 66 93 74 98 102 L82 102 C82 86 76 76 69 70 Z" fill="#2c2621"/>
+      <path d="M46 88 Q60 92 74 88 L74 93 Q60 97 46 93 Z" fill="#8a7357"/>
+      <!-- 襟もと（生成りの下着） -->
+      <path d="M50 68 L60 90 L70 68 L65 69.5 L60 82 L55 69.5 Z" fill="#e9e0cc"/>
+      <path d="M50 68 L60 90 L70 68" fill="none" stroke="#5c5047" stroke-width="1.2"/>
+      <!-- 顔（剃髪は維持。眉は白く、目もとは穏やかに） -->
       <circle cx="60" cy="44" r="17" fill="#f0d8b8"/>
       <path d="M44 40 C46 31 52 27 60 27 C68 27 74 31 76 40" fill="none" stroke="#e0c29c" stroke-width="3" stroke-linecap="round"/>
       <circle cx="42.5" cy="46" r="3.5" fill="#f0d8b8"/><circle cx="77.5" cy="46" r="3.5" fill="#f0d8b8"/>
-      <path d="M49 41 Q53 38.5 57 40 M63 40 Q67 38.5 71 41" stroke="#6b5636" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-      <path d="M51 47 Q53.5 49 56 47 M64 47 Q66.5 49 69 47" stroke="#5c4530" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M55 57 Q60 60 65 57" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- 右手の金扇子（風流の証） -->
-      <g transform="translate(90 74) rotate(-16)">
-        <path d="M0 15 L-14 -7 A17.5 17.5 0 0 1 14 -7 Z" fill="url(#g-gold)" stroke="#8a6a3a" stroke-width="1.4"/>
-        <g stroke="#8a6a3a" stroke-width="1" opacity=".8">
-          <path d="M0 15 L-8.6 -10.6"/><path d="M0 15 L0 -12.5"/><path d="M0 15 L8.6 -10.6"/>
-        </g>
-        <path d="M-7 -3 q3.5 -3.5 7 0 q3.5 3.5 7 0" stroke="#c0392b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <circle cx="0" cy="15" r="2.2" fill="#6b4423"/>
+      <path d="M49 40 Q53 37.5 57 39.5 M63 39.5 Q67 37.5 71 40" stroke="#d6cfc2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <circle cx="53.5" cy="46" r="1.7" fill="#4a3a2c"/><circle cx="66.5" cy="46" r="1.7" fill="#4a3a2c"/>
+      <path d="M50 44.5 Q53.5 42.5 57 44.5 M63 44.5 Q66.5 42.5 70 44.5" stroke="#c9a888" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M46.5 48 l-2 1.2 M73.5 48 l2 1.2" stroke="#d3b18f" stroke-width="1" stroke-linecap="round"/>
+      <path d="M55 56 Q60 59.5 65 56" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- 両の手 -->
+      <ellipse cx="33" cy="91" rx="6.5" ry="4.5" fill="#f0d8b8"/>
+      <ellipse cx="88" cy="90" rx="6.5" ry="4.5" fill="#f0d8b8"/>
+      <!-- 左手：懐紙にのせた若草 -->
+      <g transform="translate(31 85) rotate(-8)">
+        <path d="M-11 -2 L11 -4.5 L12 4 L-10 6.5 Z" fill="#fdf8ec" stroke="#d8cbae" stroke-width=".8"/>
+        <rect x="-6.5" y="-5" width="13" height="7.5" rx="2" fill="#6d9138"/>
+        <rect x="-6.5" y="-6" width="13" height="7" rx="2" fill="#8fbf4d"/>
+        <rect x="-6.5" y="-6" width="13" height="3.2" rx="2" fill="#a4d05e" opacity=".8"/>
+        <g fill="#d9ecb0"><circle cx="-3.5" cy="-3.5" r=".8"/><circle cx="0.5" cy="-2" r=".8"/><circle cx="4" cy="-4" r=".8"/></g>
       </g>
-      <!-- 左手の茶杓（茶の湯の心） -->
-      <g transform="translate(30 82) rotate(22)">
-        <rect x="-1.3" y="-15" width="2.6" height="28" rx="1.3" fill="#d9b87c"/>
-        <path d="M-1.3 -15 C-1 -20 2 -22 3.5 -20.5 C2.5 -18 1.6 -16 1.3 -14 Z" fill="#c4a061"/>
+      <!-- 右手：黒楽の茶碗に点てたお茶 -->
+      <g transform="translate(89 83)">
+        <path d="M-9.5 -4 H9.5 C9.5 3.5 6 7.5 0 7.5 C-6 7.5 -9.5 3.5 -9.5 -4 Z" fill="#2a2320"/>
+        <ellipse cx="0" cy="-4" rx="9.5" ry="2.7" fill="#433a33"/>
+        <ellipse cx="0" cy="-3.7" rx="7.4" ry="1.9" fill="#6f9440"/>
+        <path d="M-4.5 -3.4 Q0 -2 4.5 -3.4" stroke="#9cc95a" stroke-width=".9" fill="none" opacity=".9"/>
+        <path d="M-7.5 -1 Q-6.5 4 -3 5.8" stroke="#6b5f57" stroke-width="1" fill="none" opacity=".8" stroke-linecap="round"/>
       </g>
     </symbol>
 
-    <!-- クリア演出：宍道湖の夕景（嫁ヶ島） -->
-    <symbol id="s-shinji" viewBox="0 0 200 120">
-      <rect width="200" height="120" fill="#f2b45e"/>
-      <rect width="200" height="34" fill="#e88f4d"/>
-      <circle cx="100" cy="58" r="15" fill="#e0512f"/>
-      <rect y="66" width="200" height="54" fill="#b05a40"/>
-      <rect y="66" width="200" height="54" fill="#8c4436" opacity=".45"/>
-      <g stroke="#f2b45e" stroke-width="2.5" opacity=".8">
-        <path d="M92 72 H108"/><path d="M88 79 H112"/><path d="M94 86 H106"/>
+    <!-- ===== v0.8 松江の情景（行事・風景） ===== -->
+    <linearGradient id="g-sunset" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a2f52"/><stop offset=".45" stop-color="#c95f45"/><stop offset="1" stop-color="#f7bd63"/>
+    </linearGradient>
+    <linearGradient id="g-morning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#aebccb"/><stop offset=".6" stop-color="#eef2f4"/><stop offset="1" stop-color="#f7f3ea"/>
+    </linearGradient>
+    <linearGradient id="g-day" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bcd8ee"/><stop offset="1" stop-color="#eef6fb"/>
+    </linearGradient>
+    <!-- 彩雲（瑞雲）の部品 -->
+    <path id="p-kumo" d="M2 18 c-4 -6 4 -12 10 -8 c2 -8 16 -8 18 -1 c6 -4 14 2 10 8 c6 2 4 9 -2 9 H6 c-5 0 -7 -5 -4 -8 Z"/>
+
+    <!-- 【夏】嫁ヶ島の夕日 -->
+    <symbol id="s-yomegashima" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-sunset)"/>
+      <circle cx="118" cy="56" r="24" fill="#ff9a5c" opacity=".28"/>
+      <circle cx="118" cy="56" r="14" fill="#ff6a3d"/>
+      <path d="M0 60 C30 55 60 58 90 59 C130 60 160 55 200 58 V66 H0 Z" fill="#6a3d3a" opacity=".6"/>
+      <rect y="64" width="200" height="56" fill="#b8563d"/>
+      <rect y="90" width="200" height="30" fill="#7c3a30" opacity=".5"/>
+      <g stroke="#ffd08a" stroke-linecap="round" opacity=".85" fill="none">
+        <path d="M113 68 H123" stroke-width="2"/><path d="M109 74 H127" stroke-width="2.4"/><path d="M111 81 H125" stroke-width="2"/>
+        <path d="M105 89 H131" stroke-width="2.6"/><path d="M110 97 H126" stroke-width="2"/><path d="M104 106 H132" stroke-width="2.6"/><path d="M110 114 H126" stroke-width="2"/>
       </g>
-      <g fill="#3e2723">
-        <path d="M26 66 C34 60 66 60 74 66 Z"/>
-        <path d="M38 52 L44 63 H32 Z"/><path d="M50 48 L57 63 H43 Z"/><path d="M62 53 L67 63 H57 Z"/>
+      <path d="M38 65 C44 60 60 59 76 60 C90 61 100 60 108 65 L108 67 H38 Z" fill="#2c1a14"/>
+      <g fill="#2c1a14">
+        <circle cx="50" cy="55" r="5"/><circle cx="58" cy="51" r="6.5"/><circle cx="68" cy="53.5" r="5.5"/><circle cx="78" cy="51" r="6.5"/><circle cx="88" cy="55" r="5"/>
+        <rect x="49" y="57" width="2" height="8"/><rect x="57" y="55" width="2" height="10"/><rect x="67" y="57" width="2" height="8"/><rect x="77" y="55" width="2" height="10"/><rect x="87" y="58" width="2" height="7"/>
       </g>
-      <g stroke="#7c4a2e" stroke-width="2" fill="none" stroke-linecap="round">
-        <path d="M140 34 q4 -4 8 0"/><path d="M154 28 q4 -4 8 0"/>
+      <g stroke="#2c1a14" stroke-width="1.6" fill="none"><path d="M97 66 V59.5 M102 66 V59.5 M95 60 H104 M96 62.5 H103"/></g>
+      <path d="M42 68 C56 72 90 72 104 68 L104 66 H42 Z" fill="#2c1a14" opacity=".35"/>
+      <g stroke="#5a2f24" stroke-width="1.5" fill="none" stroke-linecap="round">
+        <path d="M150 28 q4 -4 8 0"/><path d="M162 22 q4 -4 8 0"/><path d="M40 30 q4 -4 8 0"/>
+      </g>
+      <g stroke="#e8946a" stroke-width="1.4" stroke-linecap="round" opacity=".6"><path d="M14 100 h20"/><path d="M60 108 h26"/><path d="M150 96 h18"/><path d="M170 112 h16"/></g>
+    </symbol>
+
+    <!-- 【夏・冬】宍道湖のしじみ漁（朝もやの小舟と鋤簾） -->
+    <symbol id="s-shijimi" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-morning)"/>
+      <circle cx="162" cy="34" r="16" fill="#f6dfb0" opacity=".35"/><circle cx="162" cy="34" r="9" fill="#f6dfb0" opacity=".85"/>
+      <g fill="#8d97a3" opacity=".65">
+        <path d="M0 50 H118 V53 H0 Z"/>
+        <rect x="12" y="53" width="2.2" height="7"/><rect x="34" y="53" width="2.2" height="7"/><rect x="56" y="53" width="2.2" height="7"/><rect x="78" y="53" width="2.2" height="7"/><rect x="100" y="53" width="2.2" height="7"/>
+        <path d="M118 50 C124 50 130 52 136 54 L136 56 L118 53 Z"/>
+      </g>
+      <path d="M136 55 C150 52 170 50 200 52 V58 H136 Z" fill="#9aa5ae" opacity=".5"/>
+      <rect y="58" width="200" height="62" fill="#a4b5c3"/>
+      <rect y="58" width="200" height="16" fill="#e4eaee" opacity=".7"/>
+      <rect y="70" width="200" height="8" fill="#e4eaee" opacity=".35"/>
+      <path d="M148 76 h20 l-3 4 h-15 Z" fill="#525860"/>
+      <path d="M158 70 v6" stroke="#525860" stroke-width="1.5"/>
+      <path d="M36 98 C46 106 100 106 114 98 L106 89 H46 Z" fill="#33333a"/>
+      <path d="M46 89 H106 L102 85 H50 Z" fill="#55545c"/>
+      <g fill="#262630">
+        <ellipse cx="82" cy="70" rx="7" ry="2.6"/><circle cx="82" cy="67" r="4.2"/>
+        <path d="M74 73 L88 71 L92 87 H68 Z"/>
+      </g>
+      <g stroke="#262630" stroke-width="4" stroke-linecap="round" fill="none"><path d="M88 74 L106 68"/><path d="M70 76 L60 84"/></g>
+      <path d="M104 66 L138 92" stroke="#7a5b3a" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M132 88 L146 96 L141 101 L128 93 Z" fill="#5c4530"/>
+      <g stroke="#8a7357" stroke-width=".8"><path d="M131 91 L143 98"/><path d="M134 89 L145 96"/></g>
+      <g stroke="#cfdbe2" stroke-width="1.5" stroke-linecap="round" opacity=".85">
+        <path d="M14 104 h24"/><path d="M60 112 h30"/><path d="M124 106 h20"/><path d="M160 114 h22"/><path d="M20 90 h16"/>
+      </g>
+      <g stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M28 36 q5 -5 10 0"/><path d="M40 30 q4 -4 8 0"/></g>
+    </symbol>
+
+    <!-- 【秋】鼕行列（十一月三日・松江祭） -->
+    <symbol id="s-dogyoretsu" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-dusk)"/>
+      <path d="M0 78 H30 V64 H44 V72 H70 V60 H88 V70 H120 V62 H140 V72 H166 V64 H184 V74 H200 V120 H0 Z" fill="#2c1a24"/>
+      <circle cx="66" cy="104" r="11" fill="#3a2a1a" stroke="#c9a24b" stroke-width="2"/><circle cx="66" cy="104" r="3" fill="#c9a24b"/>
+      <circle cx="134" cy="104" r="11" fill="#3a2a1a" stroke="#c9a24b" stroke-width="2"/><circle cx="134" cy="104" r="3" fill="#c9a24b"/>
+      <g stroke="#c9a24b" stroke-width="1.2" opacity=".8">
+        <path d="M66 93 V115 M55 104 H77 M58.5 96.5 L73.5 111.5 M73.5 96.5 L58.5 111.5"/>
+        <path d="M134 93 V115 M123 104 H145 M126.5 96.5 L141.5 111.5 M141.5 96.5 L126.5 111.5"/>
+      </g>
+      <rect x="46" y="88" width="108" height="8" fill="#5c3a1e"/>
+      <rect x="46" y="80" width="108" height="8" fill="#2b4a8a"/>
+      <path d="M46 84 q6 -3 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" stroke="#fff" stroke-width="1.2" fill="none" opacity=".7"/>
+      <rect x="52" y="34" width="4" height="46" fill="#6b4423"/><rect x="144" y="34" width="4" height="46" fill="#6b4423"/>
+      <path d="M42 36 H158 L150 26 H50 Z" fill="#8a2f24"/>
+      <path d="M42 36 H158 V39 H42 Z" fill="#c9a24b"/>
+      <g>
+        <circle cx="64" cy="48" r="9" fill="#ff9d3c" opacity=".35"/><rect x="58" y="41" width="12" height="15" rx="5" fill="#ffb347"/><path d="M58 46 H70 M58 51 H70" stroke="#c0392b" stroke-width=".8"/>
+        <circle cx="82" cy="48" r="9" fill="#ff9d3c" opacity=".35"/><rect x="76" y="41" width="12" height="15" rx="5" fill="#ffb347"/><path d="M76 46 H88 M76 51 H88" stroke="#c0392b" stroke-width=".8"/>
+        <circle cx="118" cy="48" r="9" fill="#ff9d3c" opacity=".35"/><rect x="112" y="41" width="12" height="15" rx="5" fill="#ffb347"/><path d="M112 46 H124 M112 51 H124" stroke="#c0392b" stroke-width=".8"/>
+        <circle cx="136" cy="48" r="9" fill="#ff9d3c" opacity=".35"/><rect x="130" y="41" width="12" height="15" rx="5" fill="#ffb347"/><path d="M130 46 H142 M130 51 H142" stroke="#c0392b" stroke-width=".8"/>
+      </g>
+      <ellipse cx="100" cy="64" rx="26" ry="18" fill="#6b1f18"/>
+      <circle cx="100" cy="62" r="19" fill="#e8dcc0" stroke="#4a2f22" stroke-width="3"/>
+      <circle cx="100" cy="62" r="13" fill="none" stroke="#c9a24b" stroke-width="1"/>
+      <g fill="#8a6a3a"><circle cx="100" cy="45.5" r="1.3"/><circle cx="116.5" cy="62" r="1.3"/><circle cx="100" cy="78.5" r="1.3"/><circle cx="83.5" cy="62" r="1.3"/>
+        <circle cx="111.7" cy="50.3" r="1.3"/><circle cx="111.7" cy="73.7" r="1.3"/><circle cx="88.3" cy="50.3" r="1.3"/><circle cx="88.3" cy="73.7" r="1.3"/></g>
+      <circle cx="100" cy="62" r="4" fill="#c0392b" opacity=".85"/>
+      <g fill="#1d1420">
+        <circle cx="70" cy="62" r="4"/><path d="M65 66 H75 L77 80 H63 Z"/>
+        <circle cx="130" cy="62" r="4"/><path d="M125 66 H135 L137 80 H123 Z"/>
+      </g>
+      <g stroke="#1d1420" stroke-width="3" stroke-linecap="round" fill="none"><path d="M74 66 L84 52"/><path d="M126 66 L116 52"/></g>
+      <g stroke="#f3ecdd" stroke-width="2.4" stroke-linecap="round"><path d="M84 52 L90 46"/><path d="M116 52 L110 46"/></g>
+      <path d="M66 61 h8 M126 61 h8" stroke="#c0392b" stroke-width="1.6"/>
+      <g stroke="#ffe9a8" fill="none" stroke-width="1.2" opacity=".55"><circle cx="100" cy="62" r="24"/><circle cx="100" cy="62" r="29" opacity=".5"/></g>
+      <g fill="#1a1018">
+        <circle cx="14" cy="104" r="4"/><rect x="9" y="108" width="10" height="12"/>
+        <circle cx="28" cy="107" r="3.5"/><rect x="24" y="110" width="8" height="10"/>
+        <circle cx="176" cy="105" r="4"/><rect x="171" y="109" width="10" height="11"/>
+        <circle cx="190" cy="108" r="3.5"/><rect x="186" y="111" width="8" height="9"/>
+      </g>
+    </symbol>
+
+    <!-- 【秋】松江水燈路（お城のまわりに行灯の灯） -->
+    <symbol id="s-suitoro" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-night)"/>
+      <circle cx="34" cy="22" r="10" fill="url(#g-moon)"/>
+      <path d="M60 60 C80 42 120 42 140 60 Z" fill="#141a36"/>
+      <g fill="#1a1f3a">
+        <path d="M86 44 L89 36 H111 L114 44 Z"/><path d="M82 36 Q100 29 118 36 L113 31 H87 Z"/>
+        <path d="M90 31 L92 25 H108 L110 31 Z"/><path d="M87 25 Q100 19 113 25 L109 21 H91 Z"/>
+      </g>
+      <g fill="#ffd27a" opacity=".9"><rect x="93" y="38" width="3" height="3"/><rect x="104" y="38" width="3" height="3"/><rect x="98" y="27" width="3" height="3"/></g>
+      <path d="M92 21 C92 17 96 16 95 19 M108 21 C108 17 104 16 105 19" stroke="#c9a24b" stroke-width="1.6" fill="none"/>
+      <path d="M0 60 H200 V72 H0 Z" fill="#20263f"/>
+      <path d="M0 72 H200 V120 H0 Z" fill="#171c33"/>
+      <path d="M40 120 L84 72 H116 L160 120 Z" fill="#3a3550"/>
+      <g fill="#0f1326">
+        <circle cx="20" cy="50" r="12"/><circle cx="32" cy="42" r="10"/><rect x="18" y="56" width="4" height="16"/>
+        <circle cx="180" cy="48" r="12"/><circle cx="168" cy="42" r="9"/><rect x="178" y="54" width="4" height="18"/>
+      </g>
+      <g>
+        <circle cx="66" cy="102" r="14" fill="#ffb347" opacity=".22"/><rect x="59" y="94" width="14" height="16" rx="1.5" fill="#ffd27a" stroke="#5c3a1e" stroke-width="1"/><path d="M66 94 V110" stroke="#c0392b" stroke-width=".8" opacity=".7"/>
+        <circle cx="134" cy="102" r="14" fill="#ffb347" opacity=".22"/><rect x="127" y="94" width="14" height="16" rx="1.5" fill="#ffd27a" stroke="#5c3a1e" stroke-width="1"/><path d="M134 94 V110" stroke="#c0392b" stroke-width=".8" opacity=".7"/>
+        <circle cx="78" cy="88" r="10" fill="#ffb347" opacity=".2"/><rect x="73" y="82" width="10" height="12" rx="1.2" fill="#ffd27a"/>
+        <circle cx="122" cy="88" r="10" fill="#ffb347" opacity=".2"/><rect x="117" y="82" width="10" height="12" rx="1.2" fill="#ffd27a"/>
+        <circle cx="87" cy="78" r="7" fill="#ffb347" opacity=".2"/><rect x="83.5" y="74" width="7" height="8" rx="1" fill="#ffd27a"/>
+        <circle cx="113" cy="78" r="7" fill="#ffb347" opacity=".2"/><rect x="109.5" y="74" width="7" height="8" rx="1" fill="#ffd27a"/>
+        <rect x="92" y="68" width="4.5" height="5.5" rx=".8" fill="#ffd27a"/><rect x="103.5" y="68" width="4.5" height="5.5" rx=".8" fill="#ffd27a"/>
+      </g>
+      <g stroke="#ffd27a" stroke-width="1.5" opacity=".35" stroke-linecap="round"><path d="M14 90 h14"/><path d="M8 100 h20"/><path d="M174 92 h14"/><path d="M170 102 h20"/></g>
+    </symbol>
+
+    <!-- 【秋】松江城大茶会（野点） -->
+    <symbol id="s-ochakai" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-day)"/>
+      <g><circle cx="22" cy="46" r="16" fill="#d9822b"/><circle cx="40" cy="38" r="12" fill="#e8a33a"/><rect x="20" y="58" width="4" height="16" fill="#5c4530"/>
+        <circle cx="178" cy="44" r="15" fill="#c95a2b"/><circle cx="162" cy="38" r="11" fill="#e8a33a"/><rect x="176" y="56" width="4" height="18" fill="#5c4530"/></g>
+      <path d="M70 74 L78 60 H122 L130 74 Z" fill="#8a8578"/>
+      <g fill="#33393d">
+        <path d="M80 60 L84 50 H116 L120 60 Z"/><path d="M74 50 Q100 40 126 50 L118 44 H82 Z"/>
+        <path d="M86 44 L89 36 H111 L114 44 Z"/><path d="M82 36 Q100 29 118 36 L113 31 H87 Z"/>
+      </g>
+      <g fill="#e8e4d4"><rect x="92" y="52" width="4" height="5"/><rect x="104" y="52" width="4" height="5"/><rect x="98" y="38" width="4" height="4"/></g>
+      <path d="M92 31 C92 26 96 25 95 29 M108 31 C108 26 104 25 105 29" stroke="#c9a24b" stroke-width="2" fill="none"/>
+      <rect y="74" width="200" height="46" fill="#9bb26a"/>
+      <path d="M148 46 L112 78 H184 Z" fill="#c0392b"/>
+      <path d="M148 46 L112 78 H124 Z" fill="#a52d22" opacity=".6"/><path d="M148 46 L184 78 H172 Z" fill="#a52d22" opacity=".6"/>
+      <g stroke="#f3ecdd" stroke-width="1" opacity=".5"><path d="M148 46 L136 78"/><path d="M148 46 L160 78"/></g>
+      <rect x="147" y="46" width="2.4" height="60" fill="#6b4423"/>
+      <path d="M28 96 L172 96 L182 116 L18 116 Z" fill="#c0392b"/>
+      <path d="M28 96 L172 96 L174 100 L26 100 Z" fill="#d94a3a" opacity=".7"/>
+      <ellipse cx="60" cy="104" rx="10" ry="4" fill="#20140e"/><path d="M50 104 C50 96 70 96 70 104" fill="#33241c"/><rect x="58" y="93" width="4" height="4" fill="#33241c"/>
+      <use href="#s-bowl" x="80" y="88" width="24" height="24"/>
+      <ellipse cx="116" cy="106" rx="6" ry="2.6" fill="#1a1010"/><path d="M110 106 V102 C110 98 122 98 122 102 V106 Z" fill="#2a1c14"/>
+      <g transform="translate(140 100)"><ellipse cx="0" cy="6" rx="14" ry="4.5" fill="#8d3f38"/><ellipse cx="0" cy="4" rx="14" ry="4.5" fill="#a5514a"/><use href="#s-waka" x="-9" y="-9" width="18" height="18"/></g>
+      <g fill="#3f4a6b"><circle cx="38" cy="86" r="4.5"/><path d="M30 91 H46 L48 100 H28 Z"/></g>
+      <g fill="#6b3f4a"><circle cx="186" cy="88" r="4"/><path d="M179 93 H193 L195 101 H177 Z"/></g>
+    </symbol>
+
+    <!-- 【冬】松江の焼き物（雪の登り窯に火が入る） -->
+    <symbol id="s-yakimono" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-winter)"/>
+      <rect width="200" height="120" fill="#2b3550" opacity=".55"/>
+      <g fill="#fff" opacity=".9"><circle cx="20" cy="18" r="1.6"/><circle cx="60" cy="30" r="1.3"/><circle cx="110" cy="14" r="1.6"/><circle cx="150" cy="26" r="1.4"/><circle cx="184" cy="12" r="1.5"/><circle cx="36" cy="46" r="1.2"/><circle cx="170" cy="48" r="1.3"/><circle cx="90" cy="40" r="1.2"/></g>
+      <path d="M0 62 C30 48 60 54 90 46 C120 38 150 50 200 44 V70 H0 Z" fill="#c9d3dd"/>
+      <path d="M20 96 L20 84 L44 78 L44 90 Z" fill="#7a5b48"/><path d="M44 90 L44 78 L70 70 L70 84 Z" fill="#7a5b48"/><path d="M70 84 L70 70 L98 62 L98 78 Z" fill="#7a5b48"/><path d="M98 78 L98 62 L128 56 L128 72 Z" fill="#7a5b48"/>
+      <path d="M20 84 C24 74 40 72 44 78 Z" fill="#8f7060"/><path d="M44 78 C48 68 66 64 70 70 Z" fill="#8f7060"/><path d="M70 70 C74 60 94 56 98 62 Z" fill="#8f7060"/><path d="M98 62 C102 52 124 48 128 56 Z" fill="#8f7060"/>
+      <g fill="#fbfdff" opacity=".9"><path d="M20 84 C24 76 40 74 44 78 L44 80 C40 77 24 79 20 86 Z"/><path d="M44 78 C48 70 66 66 70 70 L70 72 C66 69 48 73 44 80 Z"/><path d="M70 70 C74 62 94 58 98 62 L98 64 C94 61 74 65 70 72 Z"/><path d="M98 62 C102 54 124 50 128 56 L128 58 C124 53 102 57 98 64 Z"/></g>
+      <g fill="#ff9d3c" opacity=".18"><circle cx="30" cy="91" r="12"/><circle cx="56" cy="85" r="12"/><circle cx="83" cy="78" r="12"/><circle cx="112" cy="71" r="12"/></g>
+      <g><ellipse cx="30" cy="91" rx="4" ry="3.2" fill="#ff9d3c"/><ellipse cx="30" cy="91" rx="2" ry="1.8" fill="#fff3c4"/>
+        <ellipse cx="56" cy="85" rx="4" ry="3.2" fill="#ff9d3c"/><ellipse cx="56" cy="85" rx="2" ry="1.8" fill="#fff3c4"/>
+        <ellipse cx="83" cy="78" rx="4" ry="3.2" fill="#ff9d3c"/><ellipse cx="83" cy="78" rx="2" ry="1.8" fill="#fff3c4"/>
+        <ellipse cx="112" cy="71" rx="4" ry="3.2" fill="#ff9d3c"/><ellipse cx="112" cy="71" rx="2" ry="1.8" fill="#fff3c4"/></g>
+      <rect x="130" y="40" width="7" height="18" fill="#5c4a40"/>
+      <g fill="#e6e9ee" opacity=".7"><circle cx="134" cy="36" r="4"/><circle cx="139" cy="29" r="5"/><circle cx="146" cy="22" r="6"/><circle cx="155" cy="16" r="6.5"/></g>
+      <path d="M0 120 V100 C40 96 80 104 120 98 C150 94 176 100 200 96 V120 Z" fill="#fbfdff"/>
+      <rect x="120" y="98" width="70" height="4" fill="#5c4530"/>
+      <g>
+        <path d="M128 98 V91 C128 88 140 88 140 91 V98 Z" fill="#d9b25c"/><ellipse cx="134" cy="91" rx="6" ry="1.8" fill="#e8c96a"/>
+        <path d="M148 98 V90 C148 87 162 87 162 90 V98 Z" fill="#8a5a3a"/><ellipse cx="155" cy="90" rx="7" ry="2" fill="#a06d45"/>
+        <path d="M170 98 V91 C170 88 182 88 182 91 V98 Z" fill="#2a2320"/><ellipse cx="176" cy="91" rx="6" ry="1.8" fill="#433a33"/>
+      </g>
+    </symbol>
+
+    <!-- 【春】松江武者行列（四月・堀尾吉晴公の入城を偲んで） -->
+    <symbol id="s-musha" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-day)"/>
+      <g fill="#f2c6cf"><circle cx="24" cy="40" r="17"/><circle cx="44" cy="30" r="13"/><circle cx="176" cy="38" r="16"/><circle cx="158" cy="30" r="12"/></g>
+      <g fill="#e9aebc" opacity=".8"><circle cx="30" cy="34" r="7"/><circle cx="170" cy="32" r="6"/></g>
+      <rect x="22" y="54" width="4" height="20" fill="#5c4530"/><rect x="174" y="52" width="4" height="22" fill="#5c4530"/>
+      <path d="M74 74 L80 62 H120 L126 74 Z" fill="#8a8578"/>
+      <g fill="#33393d">
+        <path d="M82 62 L86 52 H114 L118 62 Z"/><path d="M76 52 Q100 42 124 52 L116 46 H84 Z"/>
+        <path d="M88 46 L91 38 H109 L112 46 Z"/><path d="M84 38 Q100 31 116 38 L111 33 H89 Z"/>
+      </g>
+      <g fill="#e8e4d4"><rect x="92" y="54" width="4" height="5"/><rect x="104" y="54" width="4" height="5"/><rect x="98" y="40" width="4" height="4"/></g>
+      <path d="M92 33 C92 28 96 27 95 31 M108 33 C108 28 104 27 105 31" stroke="#c9a24b" stroke-width="2" fill="none"/>
+      <rect y="74" width="200" height="46" fill="#cfc2a3"/>
+      <path d="M0 74 H200 V78 H0 Z" fill="#b8ab8c"/>
+      <g>
+        <rect x="52" y="52" width="1.6" height="46" fill="#5c4530"/><rect x="53.6" y="54" width="10" height="26" fill="#2b4a8a"/><circle cx="58.6" cy="62" r="3" fill="#fff"/>
+        <rect x="128" y="50" width="1.6" height="48" fill="#5c4530"/><rect x="129.6" y="52" width="10" height="26" fill="#c0392b"/><circle cx="134.6" cy="60" r="3" fill="#fff"/>
+        <rect x="152" y="56" width="1.6" height="42" fill="#5c4530"/><rect x="153.6" y="58" width="9" height="24" fill="#2b4a8a"/>
+      </g>
+      <g fill="#3b2a1e">
+        <path d="M84 100 C82 90 90 84 100 84 C110 84 118 88 118 98 L116 106 L110 104 L110 98 L92 98 L92 106 L86 108 Z"/>
+        <path d="M118 90 C124 84 128 84 130 90 L128 96 L120 96 Z"/><rect x="88" y="104" width="4" height="12"/><rect x="108" y="102" width="4" height="14"/>
+      </g>
+      <g><rect x="94" y="72" width="12" height="16" rx="2" fill="#c0392b"/><path d="M94 76 H106 M94 80 H106 M94 84 H106" stroke="#7a1f16" stroke-width="1"/>
+        <circle cx="100" cy="66" r="5" fill="#f0d8b8"/>
+        <path d="M93 64 Q100 56 107 64 L107 66 H93 Z" fill="#33393d"/>
+        <path d="M100 56 C96 50 92 48 90 44 M100 56 C104 50 108 48 110 44" stroke="#c9a24b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M100 56 V52" stroke="#c9a24b" stroke-width="2.4"/></g>
+      <g><rect x="60" y="82" width="10" height="16" rx="2" fill="#2b4a8a"/><circle cx="65" cy="76" r="4" fill="#f0d8b8"/><path d="M60 74 Q65 68 70 74 L70 76 H60 Z" fill="#33393d"/><rect x="61" y="98" width="3" height="12" fill="#3f3529"/><rect x="66" y="98" width="3" height="12" fill="#3f3529"/></g>
+      <g><rect x="140" y="82" width="10" height="16" rx="2" fill="#4a5a3a"/><circle cx="145" cy="76" r="4" fill="#f0d8b8"/><path d="M140 74 Q145 68 150 74 L150 76 H140 Z" fill="#33393d"/><rect x="141" y="98" width="3" height="12" fill="#3f3529"/><rect x="146" y="98" width="3" height="12" fill="#3f3529"/></g>
+      <g><rect x="24" y="86" width="9" height="14" rx="2" fill="#c0392b"/><circle cx="28.5" cy="81" r="3.6" fill="#f0d8b8"/><path d="M24 79 Q28.5 74 33 79 L33 81 H24 Z" fill="#33393d"/><rect x="25" y="100" width="3" height="10" fill="#3f3529"/><rect x="29.5" y="100" width="3" height="10" fill="#3f3529"/></g>
+      <g fill="#f2a8bd" opacity=".9"><ellipse cx="70" cy="30" rx="3" ry="1.8" transform="rotate(30 70 30)"/><ellipse cx="140" cy="24" rx="2.6" ry="1.6" transform="rotate(-20 140 24)"/><ellipse cx="110" cy="20" rx="2.6" ry="1.6" transform="rotate(50 110 20)"/><ellipse cx="180" cy="66" rx="2.6" ry="1.6" transform="rotate(-40 180 66)"/></g>
+    </symbol>
+
+    <!-- 【春】ホーランエンヤ（十年に一度の船神事・大橋川） -->
+    <symbol id="s-horanenya" viewBox="0 0 200 120">
+      <rect width="200" height="120" fill="url(#g-day)"/>
+      <path d="M0 52 H200 V60 H0 Z" fill="#a9b7a1"/>
+      <g fill="#8a9a80"><rect x="10" y="44" width="16" height="9"/><rect x="34" y="46" width="12" height="7"/><rect x="60" y="43" width="20" height="10"/><rect x="150" y="45" width="14" height="8"/><rect x="172" y="42" width="18" height="11"/></g>
+      <path d="M0 52 C40 46 80 50 120 46 C150 43 180 48 200 46 V54 H0 Z" fill="#7f9c78" opacity=".6"/>
+      <rect y="60" width="200" height="60" fill="#5b8bb5"/>
+      <rect y="60" width="200" height="60" fill="#4b7aa6" opacity=".4"/>
+      <g><path d="M140 72 h30 l-4 5 h-24 Z" fill="#6b4423"/><rect x="146" y="60" width="1.6" height="12" fill="#5c4530"/><rect x="147.6" y="61" width="7" height="8" fill="#c0392b"/><rect x="158" y="58" width="1.6" height="14" fill="#5c4530"/><rect x="159.6" y="59" width="7" height="8" fill="#e8c96a"/></g>
+      <g><path d="M22 74 h26 l-3 4 h-21 Z" fill="#6b4423"/><rect x="28" y="62" width="1.6" height="12" fill="#5c4530"/><rect x="29.6" y="63" width="6" height="8" fill="#2b4a8a"/><rect x="40" y="60" width="1.6" height="14" fill="#5c4530"/><rect x="41.6" y="61" width="6" height="8" fill="#c0392b"/></g>
+      <path d="M40 100 C60 110 140 110 168 100 L158 92 H50 Z" fill="#8a5c33"/>
+      <path d="M50 92 H158 L152 88 H56 Z" fill="#a06d45"/>
+      <path d="M40 100 L36 94 L50 92 Z" fill="#6b4423"/><path d="M168 100 L174 92 L158 92 Z" fill="#6b4423"/>
+      <g>
+        <rect x="70" y="50" width="1.8" height="42" fill="#5c4530"/><rect x="71.8" y="52" width="9" height="30" fill="#c0392b"/><path d="M71.8 60 H80.8 M71.8 68 H80.8" stroke="#fff" stroke-width="1"/>
+        <rect x="96" y="44" width="1.8" height="48" fill="#5c4530"/><rect x="97.8" y="46" width="10" height="34" fill="#e8c96a"/><path d="M97.8 56 H107.8 M97.8 66 H107.8" stroke="#c0392b" stroke-width="1"/>
+        <rect x="124" y="50" width="1.8" height="42" fill="#5c4530"/><rect x="125.8" y="52" width="9" height="30" fill="#2b4a8a"/><path d="M125.8 60 H134.8 M125.8 68 H134.8" stroke="#fff" stroke-width="1"/>
+        <rect x="146" y="50" width="1.8" height="42" fill="#5c4530"/><path d="M148 56 L162 52 L162 66 L148 62 Z" fill="#7cbf6a"/>
+      </g>
+      <g fill="#2b4a8a"><rect x="60" y="82" width="7" height="10" rx="1.5"/><rect x="82" y="82" width="7" height="10" rx="1.5"/><rect x="110" y="82" width="7" height="10" rx="1.5"/><rect x="134" y="82" width="7" height="10" rx="1.5"/></g>
+      <g fill="#f0d8b8"><circle cx="63.5" cy="78" r="3.2"/><circle cx="85.5" cy="78" r="3.2"/><circle cx="113.5" cy="78" r="3.2"/><circle cx="137.5" cy="78" r="3.2"/></g>
+      <g stroke="#c0392b" stroke-width="1.6"><path d="M60.5 77.5 h6 M82.5 77.5 h6 M110.5 77.5 h6 M134.5 77.5 h6"/></g>
+      <g stroke="#d9b87c" stroke-width="2" stroke-linecap="round"><path d="M64 88 L54 106"/><path d="M86 88 L76 106"/><path d="M114 88 L104 106"/><path d="M138 88 L128 106"/></g>
+      <g><rect x="46" y="74" width="8" height="12" rx="1.5" fill="#c0392b"/><circle cx="50" cy="70" r="3.6" fill="#f0d8b8"/><path d="M46 68 Q50 62 54 68 L54 70 H46 Z" fill="#20140e"/>
+        <path d="M54 76 L66 62" stroke="#f0d8b8" stroke-width="2.2" stroke-linecap="round"/><path d="M62 66 L72 56" stroke="#c9a24b" stroke-width="3" stroke-linecap="round"/></g>
+      <g><rect x="150" y="76" width="7" height="12" rx="1.5" fill="#e8c96a"/><circle cx="153.5" cy="72" r="3.4" fill="#f0d8b8"/><path d="M157 80 L166 68" stroke="#f0d8b8" stroke-width="2" stroke-linecap="round"/><circle cx="168" cy="65" r="4.5" fill="#fff" opacity=".9"/><circle cx="168" cy="65" r="2.2" fill="#c0392b"/></g>
+      <g stroke="#a9d0ec" stroke-width="1.5" stroke-linecap="round" opacity=".8"><path d="M10 110 h18"/><path d="M180 108 h14"/><path d="M96 114 h24"/><path d="M60 68 h12"/></g>
+    </symbol>
+
+    <!-- 【夏】八雲の書斎（塩見縄手の旧居。高い机に向かう後ろ姿） -->
+    <symbol id="s-yakumo" viewBox="0 0 200 120">
+      <rect width="200" height="80" fill="#7a6552"/>
+      <rect y="80" width="200" height="40" fill="#b8b07a"/>
+      <g stroke="#9a9260" stroke-width="1"><path d="M0 100 H200 M66 80 V120 M134 80 V120"/></g>
+      <rect x="106" y="14" width="80" height="54" fill="url(#g-day)"/>
+      <path d="M106 50 H186 V68 H106 Z" fill="#7fa39b"/>
+      <g fill="#3d5a3a"><circle cx="128" cy="34" r="10"/><circle cx="140" cy="28" r="8"/><rect x="127" y="42" width="3" height="10"/><circle cx="170" cy="36" r="9"/><rect x="169" y="43" width="3" height="9"/></g>
+      <path d="M106 52 H186" stroke="#5c4530" stroke-width="2"/>
+      <g stroke="#3f2f22" stroke-width="2.4" fill="none"><rect x="106" y="14" width="80" height="54"/><path d="M146 14 V68 M106 41 H186"/></g>
+      <rect x="24" y="58" width="72" height="5" fill="#3f2f22"/>
+      <rect x="28" y="63" width="4" height="52" fill="#3f2f22"/><rect x="88" y="63" width="4" height="52" fill="#3f2f22"/>
+      <rect x="30" y="52" width="26" height="6" fill="#f3ecdd"/>
+      <g stroke="#7a6552" stroke-width=".8"><path d="M33 54 h18 M33 56 h14"/></g>
+      <circle cx="83" cy="42" r="14" fill="#ffb347" opacity=".18"/>
+      <rect x="80" y="44" width="6" height="14" rx="1" fill="#c9a24b"/><ellipse cx="83" cy="42" rx="7" ry="4" fill="#ffd27a"/>
+      <g fill="#2a2420">
+        <path d="M44 100 C40 80 46 66 60 66 C74 66 80 80 76 100 Z"/>
+        <circle cx="60" cy="58" r="8"/>
+        <path d="M52 66 H68 L66 74 H54 Z"/>
+      </g>
+      <path d="M52 62 Q60 60 68 62" stroke="#3f3630" stroke-width="1" fill="none"/>
+      <rect x="42" y="98" width="36" height="4" fill="#5c4530"/><rect x="44" y="102" width="3" height="14" fill="#5c4530"/><rect x="73" y="102" width="3" height="14" fill="#5c4530"/>
+      <g><rect x="140" y="102" width="26" height="4" fill="#8a2f24"/><rect x="142" y="98" width="22" height="4" fill="#2b4a8a"/><rect x="144" y="94" width="20" height="4" fill="#c9a24b"/></g>
+      <ellipse cx="180" cy="104" rx="10" ry="4" fill="#3a332e"/><path d="M170 104 V96 C170 92 190 92 190 96 V104 Z" fill="#4a423c"/><ellipse cx="180" cy="96" rx="10" ry="3.5" fill="#6b5f57"/><ellipse cx="180" cy="96" rx="4" ry="1.5" fill="#ff9d3c" opacity=".8"/>
+    </symbol>
+
+    <!-- 彩雲堂の看板（イメージ意匠。実物の題字画像に差し替え可） -->
+    <symbol id="s-kanban" viewBox="0 0 220 60">
+      <rect x="2" y="2" width="216" height="56" rx="3" fill="#2b1d14"/>
+      <rect x="6" y="6" width="208" height="48" rx="2" fill="none" stroke="#c9a24b" stroke-width="1.5"/>
+      <text x="110" y="43" text-anchor="middle" font-family="Yu Mincho, Hiragino Mincho ProN, serif" font-size="34" font-weight="700" fill="#f3ecdd" letter-spacing="8">彩雲堂</text>
+      <text x="204" y="18" text-anchor="end" font-family="Yu Mincho, serif" font-size="8" fill="#c9a24b" letter-spacing="2">御菓子司</text>
+    </symbol>
+
+    <!-- 彩雲文様の帯（包装紙のイメージ意匠。実物の画像に差し替え可） -->
+    <symbol id="s-saiun" viewBox="0 0 400 40">
+      <rect width="400" height="40" fill="#fbf6ea"/>
+      <g fill="#9cc95a" opacity=".55">
+        <use href="#p-kumo" x="8" y="6"/><use href="#p-kumo" x="150" y="8"/><use href="#p-kumo" x="292" y="5"/>
+      </g>
+      <g fill="#e9aebc" opacity=".55">
+        <use href="#p-kumo" x="58" y="12"/><use href="#p-kumo" x="200" y="11"/><use href="#p-kumo" x="342" y="12"/>
+      </g>
+      <g fill="#c9a24b" opacity=".45">
+        <use href="#p-kumo" x="106" y="4"/><use href="#p-kumo" x="248" y="6"/><use href="#p-kumo" x="-40" y="10"/><use href="#p-kumo" x="388" y="8"/>
       </g>
     </symbol>
 
@@ -1072,12 +1419,16 @@
       <svg viewBox="0 0 220 120"><use href="#s-wakakusa-moriawase"/></svg>
     </div>
     <h2>若草かさね</h2>
-    <p class="openLead">20手で どれだけ点を積めるか。<br>詰合せを詰め終えるたび、手数がのびます。</p>
+    <p class="openLead">20手で どれだけ点を積めるか。<br>五手ごとに季節がめぐり、詰合せを詰め終えるたび手数がのびます。</p>
     <div class="guestBox">
       <svg viewBox="0 0 100 100" id="guestSvg"><use id="guestUse" href="#s-manten"/></svg>
       <div class="guestTxt"><span id="guestLead">今は夏 ― 季節のお替わり銘菓</span><br><b id="guestName">満天</b><span id="guestNote"></span></div>
     </div>
     <button id="startBtn">はじめる</button>
+    <div class="shopRow">
+      <svg class="kanban" viewBox="0 0 220 60"><use href="#s-kanban"/></svg>
+      <div class="shopTxt"><b>彩雲堂</b>　明治七年創業<br>松江・天神町の本店で、若草をどうぞ</div>
+    </div>
   </div>
 </div>
 <div class="overlay" id="chasenOv">
@@ -1094,7 +1445,7 @@
 </div>
 <div class="overlay" id="boxOv">
   <div class="card">
-    <svg class="scene" viewBox="0 0 200 120"><use id="boxScene" href="#s-shinji"/></svg>
+    <svg class="scene" viewBox="0 0 200 120"><use id="boxScene" href="#s-yomegashima"/></svg>
     <h2 id="boxTitle">一箱目 完成</h2>
     <p id="boxMsg"></p>
     <div class="boxGain">＋<b id="boxGainM">8</b>手　＋<b id="boxGainP">2000</b>点</div>
@@ -1103,9 +1454,13 @@
 </div>
 <div class="overlay" id="resultOv">
   <div class="card">
-    <svg class="scene" viewBox="0 0 200 120"><use id="resScene" href="#s-shinji"/></svg>
+    <svg class="scene" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid slice"><use id="resScene" href="#s-yomegashima"/></svg>
+    <div class="sceneCap" id="resCap"></div>
     <h2>お手前、拝見しました</h2>
     <div class="rankRow">段位：<b id="resRank">二級</b></div>
+    <div class="ladder" id="resLadder"></div>
+    <p class="resComment" id="resComment"></p>
+    <div class="resNext" id="resNext"></div>
     <div class="bigScore"><span>点数</span><b id="resScore">0</b></div>
     <ul class="breakdown">
       <li><span>詰合せ</span><b id="resBoxes">0箱</b><i id="resBonus">―</i></li>
@@ -1113,6 +1468,10 @@
       <li><span>最大連鎖</span><b id="resChain">一服</b><i></i></li>
     </ul>
     <button onclick="location.reload()">もう一服</button>
+    <div class="prBand">
+      <svg class="saiun" viewBox="0 0 400 40" preserveAspectRatio="none"><use href="#s-saiun"/></svg>
+      <p><b>彩雲堂</b>　松江・天神町本店<br>銘菓「若草」は、お店でもどうぞ。お越しをお待ちしております。</p>
+    </div>
   </div>
 </div>
 
@@ -1138,6 +1497,11 @@ const SEASONS = {
   winter:{name:'冬', tag:'雪の候',   guest:'yuzu',   glow:'rgba(206,226,244,.5)',  fleck:'#ffffff', radius:'50%',         size:7,  op:.9}
 };
 const SEA = SEASONS[SEASON];
+// 演出の季節は手数でめぐる（五手でひと季節、二十手でひとめぐり）。
+// 追加ピース（季節の銘菓）は実際の季節のままだが、盤の景色は春夏秋冬を流れていく
+const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
+const SEASON_MOVES = 5;
+let fxSeason = SEASON, usedMoves = 0;
 const GUESTINFO = {
   manten:{name:'満天',   note:'夜空をうつした錦玉羹'},
   yuzu:  {name:'柚衣',   note:'まんま柚子の形の冬菓子'},
@@ -1362,20 +1726,93 @@ function init(){
 
 /* ---------- 四季の情景 ---------- */
 function setupSeason(){
-  document.documentElement.style.setProperty('--seasonGlow', SEA.glow);
-  document.getElementById('seasonTag').textContent = SEA.tag;
+  const S = SEASONS[fxSeason];
+  document.documentElement.style.setProperty('--seasonGlow', S.glow);
+  document.getElementById('seasonTag').textContent = S.tag;
+  const layer = document.getElementById('seasonLayer');
+  // 前の季節の舞い散るものは、ふわりと消えていく
+  const olds = layer.querySelectorAll('span:not(.out)');
+  olds.forEach(s => s.classList.add('out'));
+  setTimeout(() => olds.forEach(s => s.remove()), 1400);
   let h = '';
   for(let i = 0; i < 14; i++){
-    const sz = Math.round(SEA.size * (.7 + Math.random() * .8));
+    const sz = Math.round(S.size * (.7 + Math.random() * .8));
     h += '<span style="left:' + (Math.random()*100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px' +
-         ';background:' + SEA.fleck + ';border-radius:' + SEA.radius +
-         ';opacity:' + SEA.op +
+         ';background:' + S.fleck + ';border-radius:' + S.radius +
+         ';opacity:' + S.op +
          ';--sx:' + ((Math.random()*2-1)*70).toFixed(0) + 'px' +
          ';--rot:' + ((Math.random()*720-360)|0) + 'deg' +
          ';animation-duration:' + (8 + Math.random()*9).toFixed(1) + 's' +
          ';animation-delay:-' + (Math.random()*16).toFixed(1) + 's"></span>';
   }
-  document.getElementById('seasonLayer').innerHTML = h;
+  layer.insertAdjacentHTML('beforeend', h);
+}
+// 松江の情景。季節ごとに札の山（デッキ）を切って、同じ絵が続かないように順に引く
+const SCENES = {
+  spring:[
+    {href:'#s-castle',    t:'お城まつり',     n:'国宝松江城に、桜の季節がやってきました。'},
+    {href:'#s-yozakura',  t:'夜桜',           n:'お堀ばたの桜が、春の宵にひとしきり。'},
+    {href:'#s-musha',     t:'松江武者行列',   n:'四月、城下を練り歩く甲冑の列。堀尾吉晴公の入城を偲んで。'},
+    {href:'#s-horanenya', t:'ホーランエンヤ', n:'十年に一度、大橋川を彩る船神事。日本三大船神事のひとつ。'}
+  ],
+  summer:[
+    {href:'#s-hanabi',      t:'水郷祭の花火',     n:'八月、宍道湖の湖面いっぱいに夏の大輪。'},
+    {href:'#s-yomegashima', t:'嫁ヶ島の夕日',     n:'宍道湖に浮かぶ小島の向こうへ、日が沈みます。'},
+    {href:'#s-shijimi',     t:'宍道湖のしじみ漁', n:'朝もやの湖に小舟。鋤簾でしじみを掻く、松江の朝。'},
+    {href:'#s-yakumo',      t:'八雲の書斎',       n:'塩見縄手の旧居で、松江の面影を書きとめた小泉八雲。'}
+  ],
+  autumn:[
+    {href:'#s-momiji',     t:'紅葉に月',     n:'ススキの穂ごしに、秋の月。'},
+    {href:'#s-dogyoretsu', t:'鼕行列',       n:'十一月三日、大鼕を打ち鳴らして城下を練る松江祭。'},
+    {href:'#s-suitoro',    t:'松江水燈路',   n:'秋の宵、お城のまわりに行灯の灯がともります。'},
+    {href:'#s-ochakai',    t:'松江城大茶会', n:'十月、お城で野点。不昧公ゆかりの茶どころならでは。'}
+  ],
+  winter:[
+    {href:'#s-yukishiro', t:'雪の千鳥城',   n:'国宝・松江城に雪が積もる。'},
+    {href:'#s-horikawa',  t:'堀川めぐり',   n:'冬はこたつ舟で、ゆるりと堀を一巡り。'},
+    {href:'#s-yakimono',  t:'松江の焼き物', n:'楽山焼・布志名焼。不昧公も愛でた茶陶の窯に、火が入ります。'},
+    {href:'#s-shijimi',   t:'寒しじみ',     n:'冬の宍道湖。寒さで身のしまった、寒しじみの漁。'}
+  ]
+};
+// 季節を問わない札（カットインの二枚目・四枚目に）
+const ALWAYS = [
+  {href:'#s-tengu',     t:'伯耆坊',       n:'大山にすむと伝わる天狗。銘菓の名にいただきました。'},
+  {href:'#s-chashitsu', t:'不昧公の茶室', n:'松江に茶の湯を根づかせた殿さま、松平不昧。'}
+];
+const DECK = {}, DECK_POS = {};
+for(const s in SCENES){
+  const d = SCENES[s].slice();
+  for(let i = d.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [d[i], d[j]] = [d[j], d[i]]; }
+  DECK[s] = d; DECK_POS[s] = 0;
+}
+function takeScene(s){
+  const d = DECK[s], sc = d[DECK_POS[s] % d.length];
+  DECK_POS[s]++;
+  return sc;
+}
+// 盤の上を流れる季節札（遊びは止めない）
+function showSeasonCard(S, sc, first){
+  const d = document.createElement('div'); d.className = 'seasonCard';
+  d.innerHTML = '<svg viewBox="0 0 200 120"><use href="' + sc.href + '"/></svg>'
+    + '<div class="scTxt"><b>' + S.tag + '</b><span>' + sc.t + '</span>'
+    + '<small>' + (first ? '― 五手ごとに季節がめぐります ―' : '― 季節がめぐる ―') + '</small></div>';
+  board.appendChild(d); setTimeout(() => d.remove(), 2700);
+}
+function changeSeason(s){
+  fxSeason = s;
+  const S = SEASONS[s];
+  setupSeason();
+  const tag = document.getElementById('seasonTag');
+  tag.classList.remove('turn'); tag.offsetHeight; tag.classList.add('turn');
+  showSeasonCard(S, takeScene(s), false);
+  pluck(659.3, 0, .12); pluck(880, .12, .1); flute(587.3, .2, 1.4, .03);
+}
+// 手を打つたびに数え、五手ごとに次の季節へ
+function tickSeason(){
+  usedMoves++;
+  if(usedMoves % SEASON_MOVES === 0 && moves > 0){
+    changeSeason(SEASON_ORDER[(SEASON_ORDER.indexOf(fxSeason) + 1) % 4]);
+  }
 }
 
 function renderMissions(){
@@ -1391,10 +1828,10 @@ async function checkBox(){
   boxesDone++;
   const gain = BOX_MOVES, bonus = BOX_BONUS * boxesDone;
   moves += gain; bonusMoves += gain; score += bonus;
-  const list = WIN_SCENES[SEASON], sc = list[(boxesDone - 1) % list.length];
+  const sc = takeScene(fxSeason);
   document.getElementById('boxScene').setAttribute('href', sc.href);
   document.getElementById('boxTitle').textContent = kanjiNum(boxesDone) + '箱目 完成';
-  document.getElementById('boxMsg').textContent = sc.t + '。' + sc.m;
+  document.getElementById('boxMsg').textContent = '「' + sc.t + '」 ' + sc.n;
   document.getElementById('boxGainM').textContent = gain;
   document.getElementById('boxGainP').textContent = bonus;
   PENTA.forEach((f, i) => pluck(f, .05 + i * .07, .2));
@@ -1594,14 +2031,14 @@ function sweep(html, size, x0, y0, x1, y1, dur, rot){
 function seasonFX(wave){
   if(wave < 3) return;
   const bw = board.clientWidth, n = Math.min(1 + wave, 10);
-  if(SEASON === 'spring'){
+  if(fxSeason === 'spring'){
     // 桜吹雪 ― 風に乗って斜めに舞い抜ける
     for(let i = 0; i < n; i++){
       const x0 = -30 + Math.random()*bw*.5, sz = 11 + Math.random()*9;
       sweep('<svg viewBox="0 0 20 20" style="color:#f2a8bd;width:100%;height:100%"><use href="#s-sakurabana"/></svg>',
         sz, x0, -30 - Math.random()*40, x0 + bw*.55 + Math.random()*bw*.3, bw + 40, 1.1 + Math.random()*.9);
     }
-  } else if(SEASON === 'summer'){
+  } else if(fxSeason === 'summer'){
     // 蛍 ― ふわりふわりと明滅しながら昇る
     for(let i = 0; i < Math.min(n, 7); i++){
       const x0 = Math.random()*bw;
@@ -1614,7 +2051,7 @@ function seasonFX(wave){
       sweep('<svg viewBox="0 0 100 60" style="width:100%;height:100%"><use href="#s-kingyo"/></svg>',
         52, -64, y, bw + 64, y - 24, 2.1, -6);
     }
-  } else if(SEASON === 'autumn'){
+  } else if(fxSeason === 'autumn'){
     // 紅葉の流れ ― 川面をゆくように横へ
     const cols = ['#d94f2b', '#e87b2f', '#f0a83c'];
     for(let i = 0; i < n; i++){
@@ -1799,20 +2236,13 @@ async function resolveAll(swapKey){
 }
 
 /* ---------- 十服以上のカットイン ---------- */
-const CUT_ALL = [
-  {href:'#s-yozakura',  t:'夜桜',         n:'松江城のお堀ばたに、春の宵。'},
-  {href:'#s-hanabi',    t:'宍道湖の花火', n:'湖面いっぱいに、夏の大輪。'},
-  {href:'#s-momiji',    t:'紅葉に月',     n:'ススキの穂ごしに、秋の月。'},
-  {href:'#s-yukishiro', t:'雪の千鳥城',   n:'国宝・松江城に雪が積もる。'},
-  {href:'#s-tengu',     t:'伯耆坊',       n:'大山にすむと伝わる天狗。銘菓の名にいただきました。'},
-  {href:'#s-chashitsu', t:'不昧公の茶室', n:'松江に茶の湯を根づかせた殿さま、松平不昧。'}
-];
-const SEASON_IDX = {spring:0, summer:1, autumn:2, winter:3};
-const CUTINS = CUT_ALL.slice(SEASON_IDX[SEASON]).concat(CUT_ALL.slice(0, SEASON_IDX[SEASON]));
-// 十服で一枚目、以降は五服ごと（毎服だと連鎖のたびに止まってしまう）
+// 十服で一枚目、以降は五服ごと（毎服だと連鎖のたびに止まってしまう）。
+// 奇数枚目はいまの季節の情景、偶数枚目は伯耆坊・不昧公の茶室（季節を問わない札）
+let cutCount = 0;
 function cutDue(w){ return w === 10 || (w > 10 && (w - 10) % 5 === 0); }
 async function cutIn(wave){
-  const cu = CUTINS[Math.floor((wave - 10) / 5) % CUTINS.length];
+  cutCount++;
+  const cu = (cutCount % 2 === 0) ? ALWAYS[(cutCount / 2 - 1) % ALWAYS.length] : takeScene(fxSeason);
   document.getElementById('cutScene').setAttribute('href', cu.href);
   document.getElementById('cutChain').textContent = kanjiNum(wave) + '服';
   document.getElementById('cutTitle').textContent = cu.t;
@@ -1933,6 +2363,8 @@ document.getElementById('startBtn').addEventListener('click', function(){
   bgmOn = !document.getElementById('bgmBtn').classList.contains('off');
   if(a) bgmNext = a.currentTime + .3;
   pluck(523.3, 0, .18); pluck(659.3, .1, .18);
+  // 最初の季節札。ここから五手ごとに季節がめぐる
+  showSeasonCard(SEASONS[fxSeason], takeScene(fxSeason), true);
 });
 
 /* ---------- 茶筅シャッフル（手短に、リズムよく） ---------- */
@@ -2001,37 +2433,49 @@ document.getElementById('chasenBtn').addEventListener('click', () => chasenShuff
 function chainLabel(){
   return maxChain >= 2 ? kanjiNum(maxChain) + '服' : '一服';
 }
-// 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）
-function rankName(){
-  const pts = score;
-  if(pts >= 40000) return '名人';
-  if(pts >= 30000) return '師範';
-  if(pts >= 24000) return '五段';
-  if(pts >= 19000) return '四段';
-  if(pts >= 15000) return '三段';
-  if(pts >= 11000) return '二段';
-  if(pts >=  7000) return '初段';
-  if(pts >=  4000) return '一級';
-  return '二級';
+// 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）。
+// 段位ごとに、お手前を段階的に講評する
+const RANKS = [
+  {min:0,     name:'二級', c:'まずは一服。盆をよく見て、大きなかたまりを狙ってみましょう。'},
+  {min:4000,  name:'一級', c:'筋がいい。次は詰合せを一箱、詰めきってみましょう。'},
+  {min:7000,  name:'初段', c:'お見事、初段。連鎖の味を覚えましたね。'},
+  {min:11000, name:'二段', c:'なかなかの腕前。上生菓子の発火剤を活かせています。'},
+  {min:15000, name:'三段', c:'上手いお手前。連鎖がよく伸びました。'},
+  {min:19000, name:'四段', c:'玄人の域。茶席の空気を読む手つきです。'},
+  {min:24000, name:'五段', c:'見事な茶席でした。不昧公も目を細めておいでです。'},
+  {min:30000, name:'師範', c:'師範の腕前。八雲も筆を止めて、この連鎖の音に耳をすませたことでしょう。'},
+  {min:40000, name:'名人', c:'名人位。不昧公より一服、進ぜよう。'}
+];
+function rankIndex(){
+  let i = 0;
+  for(let k = 0; k < RANKS.length; k++) if(score >= RANKS[k].min) i = k;
+  return i;
 }
-const WIN_SCENES = {
-  spring:[{href:'#s-castle',    t:'国宝 松江城', m:'千鳥城に桜の季節がやってきました。'},
-          {href:'#s-yozakura',  t:'夜桜',        m:'堀ばたの桜がひとしきり。'}],
-  summer:[{href:'#s-hanabi',    t:'宍道湖の花火', m:'湖面に大輪がひらきます。'},
-          {href:'#s-shinji',    t:'宍道湖の夕景', m:'嫁ヶ島の向こうに日が沈みます。'}],
-  autumn:[{href:'#s-momiji',    t:'紅葉に月',    m:'ススキの穂ごしに秋の月。'},
-          {href:'#s-shinji',    t:'宍道湖の夕景', m:'嫁ヶ島の向こうに日が沈みます。'}],
-  winter:[{href:'#s-yukishiro', t:'雪の千鳥城',  m:'松江城に雪が積もりました。'},
-          {href:'#s-horikawa',  t:'堀川めぐり',  m:'こたつ舟でゆるりと一巡り。'}]
-};
+function rankName(){ return RANKS[rankIndex()].name; }
+// お手前の中身に応じた一言を添える
+function playNote(){
+  if(maxChain >= 10) return '十服を超える大連鎖、見応えがありました。';
+  if(boxesDone >= 3) return '詰合せ三箱。手際のよさが光ります。';
+  if(boxesDone >= 2) return '詰合せを二箱。手数の伸ばし方を心得ていますね。';
+  if(maxChain >= 6) return '六服の連鎖、盆が金色に輝きました。';
+  if(boxesDone === 0) return '次は詰合せを一箱、詰めきると手数がのびます。';
+  return '一箱詰めきりました。次はもう一箱を目指して。';
+}
 // 終わりは「手数が尽きたとき」だけ。成績は点数ひとつ
 function checkEnd(){
   if(over || moves > 0) return;
   over = true;
-  const list = WIN_SCENES[SEASON];
-  const sc = list[Math.random()*list.length|0];
+  const sc = takeScene(fxSeason);
   document.getElementById('resScene').setAttribute('href', sc.href);
-  document.getElementById('resRank').textContent = rankName();
+  document.getElementById('resCap').textContent = SEASONS[fxSeason].name + ' ― ' + sc.t;
+  const ri = rankIndex(), R = RANKS[ri];
+  document.getElementById('resRank').textContent = R.name;
+  document.getElementById('resComment').textContent = R.c + ' ' + playNote();
+  document.getElementById('resNext').textContent = (ri < RANKS.length - 1)
+    ? '次の段位「' + RANKS[ri + 1].name + '」まで あと ' + (RANKS[ri + 1].min - score).toLocaleString() + ' 点'
+    : '最高位です。お見事。';
+  document.getElementById('resLadder').innerHTML = RANKS.map((r, i) =>
+    '<i class="' + (i < ri ? 'got' : i === ri ? 'now' : '') + '">' + r.name + '</i>').join('');
   document.getElementById('resScore').textContent = score.toLocaleString();
   document.getElementById('resPieces').textContent = totalPieces;
   document.getElementById('resChain').textContent = chainLabel();
@@ -2063,6 +2507,7 @@ async function trySwap(r1, c1, r2, c2){
     return;
   }
   moves--; updateHUD();
+  tickSeason();
   await resolveAll(key(r2,c2));
   await checkBox();
   busy = false;
