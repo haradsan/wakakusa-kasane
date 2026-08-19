@@ -444,9 +444,9 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.9</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.10</b></div>
     <div class="rule"></div>
-    <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">夏の候</span></div>
+    <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">花の候</span></div>
   </header>
   <button id="sndBtn" aria-label="音の切り替え" title="音">♪</button>
   <button id="bgmBtn" aria-label="BGMの切り替え" title="調べ（BGM）">♫</button>
@@ -501,7 +501,7 @@
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
     ふだんにタップすれば一番多い銘菓をぱくり。<br>
     <b>茶筅</b>ボタン(1回きり)で盤面をひとまぜ。手詰まりの時は自動でまぜ直します。<br>
-    <b>五手ごとに季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の名勝が画面上部に大きく映り、
+    <b>五手ごとに、春から順に季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の名勝が画面上部に大きく映り、
     舞い散るものや連鎖の景色も移ろいます。<b>十服(10連鎖)</b>からは情景がカットインで入ります。<br>
     今の季節の<b>お替わり銘菓</b>が仲間入りします。段位は点数だけで決まります。<br>
     右上の<b>♪</b>で効果音、<b>♫</b>で調べ（BGM）、<b>投</b>で投了できます。
@@ -663,7 +663,7 @@
       <g fill="#fff"><circle cx="42.5" cy="49.5" r="1.7"/><circle cx="60.5" cy="49.5" r="1.7"/></g>
     </symbol>
 
-    <!-- 栗まる（断面：餡の中央に栗が丸ごと。底がわずかに平らなほぼ円形） -->
+    <!-- 栗まる（断面：餡の中央に栗が丸ごと。底がわずかに平らなほぼ円形。秋の季節ピース） -->
     <symbol id="s-kuri" viewBox="0 0 100 100">
       <path d="M34.5 81 A32 32 0 1 1 65.5 81 Z" fill="#d9c39a"/>
       <path d="M34.5 78 A32 32 0 1 1 65.5 78 Z" fill="#f3ead4"/>
@@ -1418,7 +1418,7 @@
       </g>
     </symbol>
 
-    <!-- やまかつら（三層の郷土菓子。秋の定番ピース） -->
+    <!-- やまかつら（三層の郷土菓子。定番ピース） -->
     <symbol id="s-yamak" viewBox="0 0 100 100">
       <rect x="16" y="8" width="68" height="76" rx="8" fill="#241812"/>
       <rect x="21" y="13" width="58" height="20" rx="4" fill="#b8cf8e"/>
@@ -1514,7 +1514,7 @@
       <svg viewBox="0 0 220 120"><use href="#s-wakakusa-moriawase"/></svg>
     </div>
     <h2>若草かさね</h2>
-    <p class="openLead">20手で どれだけ点を積めるか。<br>五手ごとに季節がめぐり、詰合せを詰め終えるたび手数がのびます。</p>
+    <p class="openLead">20手で どれだけ点を積めるか。<br>五手ごとに春から季節がめぐり、詰合せを詰め終えるたび手数がのびます。</p>
     <div class="guestBox">
       <svg viewBox="0 0 100 100" id="guestSvg"><use id="guestUse" href="#s-manten"/></svg>
       <div class="guestTxt"><span id="guestLead">今は夏 ― 季節のお替わり銘菓</span><br><b id="guestName">満天</b><span id="guestNote"></span></div>
@@ -1566,7 +1566,7 @@
     <div class="prBand">
       <svg class="saiun" viewBox="0 0 400 40" preserveAspectRatio="none"><use href="#s-saiun"/></svg>
       <p class="prBy">提供　<b>彩雲堂</b></p>
-      <p>本店（松江・天神町）にお越しください。</p>
+      <p>ご来店をおまちしております。</p>
       <a class="shopLink" href="https://netshop.saiundo.co.jp/" target="_blank" rel="noopener">オンラインショップ ▸</a>
     </div>
   </div>
@@ -1576,7 +1576,7 @@
 'use strict';
 const N = 7;
 const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
-const TYPES = ['waka','hoki','asa','anpan','kuri'];
+const TYPES = ['waka','hoki','asa','anpan','yamak'];   // 定番5種（v0.10でやまかつらが定番入り、栗まるは秋の季節枠へ）
 const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou',
              manten:'#s-manten',yuzu:'#s-yuzu',hana:'#s-hana',yamak:'#s-yamak'};
 const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#b8cf8e',
@@ -1590,22 +1590,22 @@ const SEASON = SEASON_Q || ((MON === 12 || MON <= 2) ? 'winter' : MON <= 5 ? 'sp
 const SEASONS = {
   spring:{name:'春', tag:'花の候',   guest:'hana',   glow:'rgba(247,198,212,.42)', fleck:'#f2a8bd', radius:'50% 0 50% 0', size:9,  op:.85},
   summer:{name:'夏', tag:'涼の候',   guest:'manten', glow:'rgba(150,205,225,.36)', fleck:'#a9dcef', radius:'50%',         size:7,  op:.7},
-  autumn:{name:'秋', tag:'紅葉の候', guest:'yamak',   glow:'rgba(226,150,80,.34)',  fleck:'#e0762c', radius:'0 65% 0 65%', size:9,  op:.8},
+  autumn:{name:'秋', tag:'紅葉の候', guest:'kuri',   glow:'rgba(226,150,80,.34)',  fleck:'#e0762c', radius:'0 65% 0 65%', size:9,  op:.8},
   winter:{name:'冬', tag:'雪の候',   guest:'yuzu',   glow:'rgba(206,226,244,.5)',  fleck:'#ffffff', radius:'50%',         size:7,  op:.9}
 };
 const SEA = SEASONS[SEASON];
-// 演出の季節は手数でめぐる（五手でひと季節、二十手でひとめぐり）。
+// 演出の季節は手数でめぐる（五手でひと季節、二十手でひとめぐり）。**必ず春から**春→夏→秋→冬の順（v0.10。実際の季節から始めると順番に違和感が出るため）。
 // 追加ピース（季節の銘菓）は実際の季節のままだが、盤の景色は春夏秋冬を流れていく
 const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
 const SEASON_MOVES = 5;
-let fxSeason = SEASON, usedMoves = 0;
+let fxSeason = 'spring', usedMoves = 0;
 const GUESTINFO = {
   manten:{name:'満天',   note:'夏の夜空 ― 星々と天の川をうつした錦玉羹'},
   yuzu:  {name:'柚衣',   note:'まんま柚子の形の冬菓子'},
   hana:  {name:'はな桜', note:'桜色の春菓子'},
-  yamak: {name:'やまかつら', note:'黒糖香る三層の郷土菓子'}
+  kuri:  {name:'栗まる', note:'栗を丸ごとひとつ包んだ秋の菓子'}
 };
-// 伯耆坊も栗まるも定番のまま、季節の銘菓が6種目として仲間入りする。
+// 定番5種（若草・伯耆坊・朝汐・あんぱん饅頭・やまかつら）に、季節の銘菓が6種目として仲間入りする。
 // 種類が増えるほど偶然には揃いにくくなり、狙って形を作る腕の見せどころが生まれる
 const GUEST = SEA.guest;
 TYPES.push(GUEST);
@@ -1896,7 +1896,7 @@ function showSeasonCard(S, sc, first){
   d.innerHTML = '<svg viewBox="0 0 200 120"><use href="' + sc.href + '"/></svg>'
     + '<div class="scHead"><em>' + S.name + ' ― ' + S.tag + '</em><b>' + sc.t + '</b></div>'
     + '<div class="scTxt"><span>' + sc.n + '</span>'
-    + '<small>' + (first ? '― 五手ごとに季節がめぐります ―' : '― 季節がめぐる ―') + '</small></div>';
+    + '<small>' + (first ? '― 五手ごとに、春から順に季節がめぐります ―' : '― 季節がめぐる ―') + '</small></div>';
   wrap.appendChild(d); setTimeout(() => d.remove(), 3500);
 }
 function changeSeason(s){
@@ -2535,6 +2535,7 @@ function chainLabel(){
   return maxChain >= 2 ? kanjiNum(maxChain) + '服' : '一服';
 }
 // 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）。
+// 名人・達人は難所（v0.10で名人4万→6万、達人10万を新設。1手先読みの自動プレイは中央値1万・最高4万程度）。
 // 段位ごとに、お手前を段階的に講評する
 // h = 結果画面の表題（段位ごとに数通り。同じ「お手前、拝見しました」ばかりでは味気ないので）
 const RANKS = [
@@ -2546,7 +2547,8 @@ const RANKS = [
   {min:19000, name:'四段', h:['お見事！','玄人の手つき'], c:'玄人の域。茶席の空気を読む手つきです。'},
   {min:24000, name:'五段', h:['感服いたしました','見事な茶席でした'], c:'見事な茶席でした。不昧公も目を細めておいでです。'},
   {min:30000, name:'師範', h:['感服いたしました','恐れ入りました'], c:'師範の腕前。八雲も筆を止めて、この連鎖の音に耳をすませたことでしょう。'},
-  {min:40000, name:'名人', h:['天晴れ、名人','不昧公も脱帽'], c:'名人位。不昧公より一服、進ぜよう。'}
+  {min:60000, name:'名人', h:['天晴れ、名人','不昧公も脱帽'], c:'名人位。不昧公より一服、進ぜよう。'},
+  {min:100000, name:'達人', h:['達人の域、恐れ入りました','天下一のお手前'], c:'達人位。松江の茶席で末永く語り草になる、見事な一服でした。'}
 ];
 function rankIndex(){
   let i = 0;
