@@ -216,7 +216,7 @@
   #feverOv .fsub{color:#f5e6bb;font-size:13px;letter-spacing:.25em;margin-top:6px}
   #feverOv .teaRow{display:flex;gap:16px;margin-top:8px;align-items:flex-end}
   #feverOv .teaRow svg{width:40px;height:40px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
-  #feverOv .bigsvg{width:190px;height:190px;animation:appear .9s ease-out}
+  #feverOv .bigsvg{width:min(86vw,300px);height:auto;aspect-ratio:170/120;animation:appear .9s ease-out}
   #pandaOv .bigsvg{width:150px;height:150px;animation:appear .5s cubic-bezier(.2,1.4,.5,1)}
   #pandaOv .fname{font-size:22px;color:#fff8e0;font-family:"Yu Mincho",serif;letter-spacing:.2em;
     text-shadow:0 2px 6px rgba(0,0,0,.7);margin-top:2px}
@@ -359,23 +359,39 @@
 
   /* ===== v0.8 追加分 ===== */
 
-  /* 季節がめぐる（五手ごと）― 盤の上を流れる季節札。遊びは止めない */
+  /* 季節がめぐる（五手ごと）― 松江の名勝札。v0.9から盤の上ではなく、見出し〜詰合せ窓の上部いっぱいに大きく出す。遊びは止めない */
   .seasonCard{
-    position:absolute;left:50%;top:5%;transform:translate(-50%,0);width:76%;
-    display:flex;align-items:center;gap:9px;padding:6px 8px;pointer-events:none;z-index:5;
-    background:rgba(24,14,6,.82);border:1px solid var(--gold);border-radius:10px;
-    box-shadow:0 6px 18px rgba(0,0,0,.45);animation:scardA 2.6s ease forwards;
+    position:absolute;left:0;right:0;top:6px;height:var(--sch,150px);overflow:hidden;
+    pointer-events:none;z-index:6;background:#120a04;
+    border:1.5px solid var(--gold);border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 0 0 1px rgba(232,201,106,.25);
+    animation:scardA 3.4s ease forwards;
   }
-  .seasonCard svg{width:38%;flex-shrink:0;border-radius:6px;border:1px solid rgba(232,201,106,.5)}
-  .seasonCard .scTxt{text-align:left;color:#fff3d4;line-height:1.35}
-  .seasonCard .scTxt b{display:block;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:15px;letter-spacing:.2em}
-  .seasonCard .scTxt span{font-size:11px;color:#dfcda6;letter-spacing:.06em}
-  .seasonCard .scTxt small{display:block;font-size:9px;color:#b8a77e;letter-spacing:.15em;margin-top:2px}
+  /* 情景は札いっぱいに（切らずに収める）。題は左上の札、添え書きは下の帯に */
+  .seasonCard svg{position:absolute;left:0;top:0;width:100%;height:100%}
+  .seasonCard .scHead{
+    position:absolute;left:8px;top:8px;display:flex;align-items:baseline;gap:8px;
+    padding:3px 12px 4px 10px;border-radius:999px;background:rgba(18,10,4,.74);border:1px solid rgba(232,201,106,.55);
+    color:#fff3d4;white-space:nowrap;
+  }
+  .seasonCard .scHead em{font-style:normal;font-size:10px;color:#e8c96a;letter-spacing:.2em}
+  .seasonCard .scHead b{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:17px;letter-spacing:.14em;
+    text-shadow:0 0 10px rgba(232,201,106,.35)}
+  .seasonCard .scTxt{
+    position:absolute;left:0;right:0;bottom:0;padding:16px 12px 7px;text-align:left;color:#fff3d4;
+    background:linear-gradient(180deg,rgba(18,10,4,0),rgba(18,10,4,.8) 40%,rgba(18,10,4,.94));
+  }
+  .seasonCard .scTxt span{display:block;font-size:10.5px;color:#f1e6cc;letter-spacing:.03em;line-height:1.5}
+  .seasonCard .scTxt small{display:block;font-size:9px;color:#b8a77e;letter-spacing:.15em;margin-top:2px;text-align:right}
   @keyframes scardA{
-    0%{opacity:0;transform:translate(-50%,-14px)}
-    12%{opacity:1;transform:translate(-50%,0)}
-    82%{opacity:1;transform:translate(-50%,0)}
-    100%{opacity:0;transform:translate(-50%,-8px)}}
+    0%{opacity:0;transform:translateY(-16px) scale(.97)}
+    9%{opacity:1;transform:translateY(0) scale(1)}
+    86%{opacity:1;transform:translateY(0) scale(1)}
+    100%{opacity:0;transform:translateY(-10px) scale(.98)}}
+  @media (max-width:360px){
+    .seasonCard .scHead b{font-size:15px}
+    .seasonCard .scTxt span{font-size:10px}
+  }
   .seasonTag.turn{animation:tagTurn .9s ease}
   @keyframes tagTurn{0%{transform:scale(1)}30%{transform:scale(1.18);background:#fff3d4;border-color:var(--gold)}100%{transform:scale(1)}}
   #seasonLayer span{transition:opacity 1.2s}
@@ -417,6 +433,14 @@
   .prBand svg.saiun{display:block;width:100%;height:14px;margin-bottom:5px}
   .prBand p{font-size:10.5px !important;line-height:1.55 !important;color:#6b5c46 !important;letter-spacing:.06em}
   .prBand p b{font-family:"Yu Mincho",serif;color:var(--sumi);letter-spacing:.2em}
+  .prBand .prBy{font-family:"Yu Mincho",serif;font-size:9.5px !important;color:#8a7a5e !important;letter-spacing:.2em;margin-bottom:1px}
+  .prBand .prBy b{font-size:13px}
+  .prBand .shopLink{
+    display:inline-block;margin-top:5px;padding:3px 14px;border-radius:999px;border:1px solid var(--gold);
+    background:linear-gradient(180deg,#fffbe8,#f3e7c6);color:var(--azuki);text-decoration:none;
+    font-family:"Yu Mincho",serif;font-size:11px;letter-spacing:.14em;
+  }
+  .prBand .shopLink:active{background:#f0e2bc}
 </style>
 </head>
 <body>
@@ -426,7 +450,7 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.8</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.9</b></div>
     <div class="rule"></div>
     <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">夏の候</span></div>
   </header>
@@ -483,7 +507,7 @@
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
     ふだんにタップすれば一番多い銘菓をぱくり。<br>
     <b>茶筅</b>ボタン(1回きり)で盤面をひとまぜ。手詰まりの時は自動でまぜ直します。<br>
-    <b>五手ごとに季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の情景が盤の上を流れ、
+    <b>五手ごとに季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の名勝が画面上部に大きく映り、
     舞い散るものや連鎖の景色も移ろいます。<b>十服(10連鎖)</b>からは情景がカットインで入ります。<br>
     今の季節の<b>お替わり銘菓</b>が仲間入りします。段位は点数だけで決まります。<br>
     右上の<b>♪</b>で効果音、<b>♫</b>で調べ（BGM）、<b>投</b>で投了できます。
@@ -507,16 +531,43 @@
       <stop offset="0" stop-color="#3b5ea8"/><stop offset="1" stop-color="#17264d"/>
     </radialGradient>
 
-    <!-- 満天（夜空の錦玉羹） -->
+    <!-- 満天（夏の夜空の錦玉羹。月は模されていない ― 無数の星々と、斜めに流れる天の川） -->
     <symbol id="s-manten" viewBox="0 0 100 100">
+      <clipPath id="c-manten"><rect x="20" y="22" width="60" height="50" rx="8"/></clipPath>
       <rect x="20" y="26" width="60" height="52" rx="8" fill="#101c3a"/>
       <rect x="20" y="22" width="60" height="50" rx="8" fill="url(#g-manten)"/>
-      <path d="M62 30 A9 9 0 1 0 70 44 A11 11 0 0 1 62 30 Z" fill="#f6e7b3" opacity=".95"/>
-      <g fill="#f6e7b3">
-        <circle cx="34" cy="34" r="1.8"/><circle cx="44" cy="52" r="1.4"/><circle cx="58" cy="60" r="1.7"/>
-        <circle cx="30" cy="58" r="1.3"/><circle cx="50" cy="40" r="1.2"/><circle cx="70" cy="56" r="1.3"/>
+      <g clip-path="url(#c-manten)">
+        <!-- 天の川：右上から左下へ流れる淡い帯（外側ほど薄く、芯はほのかに明るい） -->
+        <path d="M84 14 C70 30 56 44 46 54 C38 62 30 70 20 82 L8 82 C20 68 30 58 38 50 C50 38 64 24 74 12 Z" fill="#dfe8ff" opacity=".13"/>
+        <path d="M82 18 C68 32 58 42 48 52 C40 60 32 68 22 78 L16 78 C26 66 34 58 42 50 C52 40 66 26 76 16 Z" fill="#eef2ff" opacity=".16"/>
+        <path d="M80 22 C68 34 60 42 51 51 C44 58 36 65 27 74 L23 74 C32 64 40 56 47 49 C56 40 68 28 76 20 Z" fill="#fff" opacity=".12"/>
+        <!-- 天の川の星屑 -->
+        <g fill="#fff" opacity=".85">
+          <circle cx="72" cy="27" r=".7"/><circle cx="67" cy="33" r=".6"/><circle cx="63" cy="36" r=".8"/><circle cx="59" cy="41" r=".6"/>
+          <circle cx="55" cy="45" r=".7"/><circle cx="52" cy="49" r=".6"/><circle cx="48" cy="52" r=".8"/><circle cx="44" cy="57" r=".6"/>
+          <circle cx="40" cy="60" r=".7"/><circle cx="36" cy="64" r=".6"/><circle cx="32" cy="68" r=".7"/><circle cx="29" cy="72" r=".6"/>
+          <circle cx="69" cy="30" r=".5"/><circle cx="61" cy="39" r=".5"/><circle cx="50" cy="46" r=".5"/><circle cx="42" cy="55" r=".5"/><circle cx="34" cy="66" r=".5"/>
+          <circle cx="75" cy="24" r=".6"/><circle cx="57" cy="47" r=".5"/><circle cx="46" cy="55" r=".5"/><circle cx="38" cy="62" r=".5"/><circle cx="26" cy="75" r=".5"/>
+        </g>
+        <!-- 無数の星々（大小・淡いものも混ぜて） -->
+        <g fill="#f6e7b3">
+          <circle cx="30" cy="30" r="1.6"/><circle cx="66" cy="60" r="1.5"/><circle cx="72" cy="40" r="1.3"/><circle cx="26" cy="50" r="1.2"/>
+          <circle cx="42" cy="34" r="1.1"/><circle cx="60" cy="27" r="1.1"/><circle cx="34" cy="44" r=".9"/><circle cx="52" cy="66" r="1.2"/>
+          <circle cx="76" cy="52" r=".9"/><circle cx="24" cy="66" r="1"/><circle cx="46" cy="27" r=".8"/><circle cx="70" cy="66" r=".9"/>
+        </g>
+        <g fill="#ffffff" opacity=".7">
+          <circle cx="37" cy="27" r=".7"/><circle cx="54" cy="31" r=".7"/><circle cx="64" cy="48" r=".7"/><circle cx="30" cy="38" r=".6"/>
+          <circle cx="58" cy="56" r=".7"/><circle cx="74" cy="32" r=".6"/><circle cx="40" cy="42" r=".6"/><circle cx="28" cy="58" r=".6"/>
+          <circle cx="47" cy="63" r=".6"/><circle cx="68" cy="45" r=".6"/><circle cx="76" cy="60" r=".6"/><circle cx="36" cy="52" r=".5"/>
+          <circle cx="62" cy="66" r=".5"/><circle cx="24" cy="42" r=".5"/><circle cx="50" cy="35" r=".5"/><circle cx="56" cy="62" r=".5"/>
+        </g>
+        <!-- ひときわ煌めく星（四芒） -->
+        <path d="M32 61 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z" fill="#fff" opacity=".95"/>
+        <path d="M68 30 l1.1 2.7 2.7 1.1 -2.7 1.1 -1.1 2.7 -1.1 -2.7 -2.7 -1.1 2.7 -1.1 Z" fill="#fff" opacity=".9"/>
+        <path d="M45 40 l.8 2 2 .8 -2 .8 -.8 2 -.8 -2 -2 -.8 2 -.8 Z" fill="#f6e7b3" opacity=".9"/>
       </g>
-      <path d="M38 62 l1.6 3.6 3.6 1.6 -3.6 1.6 -1.6 3.6 -1.6 -3.6 -3.6 -1.6 3.6 -1.6 Z" fill="#fff" opacity=".9"/>
+      <!-- 錦玉羹のつや -->
+      <path d="M26 30 Q40 25 56 27" stroke="#fff" stroke-width="1.6" fill="none" opacity=".18" stroke-linecap="round"/>
     </symbol>
 
     <!-- 柚衣（まんま柚子の形） -->
@@ -666,43 +717,87 @@
       <circle cx="24" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/><circle cx="76" cy="67" r="6.5" fill="#f5b8ac" opacity=".8"/>
     </symbol>
 
-    <!-- 不昧公（松江の茶人大名。剃髪の茶人。墨色の道服に、黒楽の茶碗と懐紙の若草） -->
-    <symbol id="s-fumai" viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="56" fill="url(#g-gold)" opacity=".95"/>
+    <!-- 不昧公（松江の茶人大名。剃髪の茶人。墨色の道服。懐紙の若草に菓子楊枝を入れ、まさに一口という構図。
+         脇に黒楽の茶碗と茶釜（風炉）。背には「不昧公好」の掛け軸） -->
+    <symbol id="s-fumai" viewBox="0 0 170 120">
+      <circle cx="82" cy="60" r="57" fill="url(#g-gold)" opacity=".95"/>
       <g stroke="#fff8e0" stroke-width="2.5" opacity=".7">
-        <path d="M60 2 V14"/><path d="M60 106 V118"/><path d="M2 60 H14"/><path d="M106 60 H118"/>
-        <path d="M19 19 L27 27"/><path d="M93 93 L101 101"/><path d="M101 19 L93 27"/><path d="M27 93 L19 101"/>
+        <path d="M82 1 V13"/><path d="M82 107 V119"/><path d="M23 60 H35"/><path d="M129 60 H141"/>
+        <path d="M40 18 L48 26"/><path d="M116 94 L124 102"/><path d="M124 18 L116 26"/><path d="M48 94 L40 102"/>
+      </g>
+      <!-- 掛け軸「不昧公好」（床の間に掛かる、殿さま好みの品のしるし） -->
+      <g>
+        <path d="M42 2 V5" stroke="#8a7357" stroke-width=".8"/>
+        <rect x="30" y="5" width="24" height="2.6" rx="1" fill="#5a4030"/>
+        <rect x="33" y="7.6" width="18" height="60" fill="#e6dcc4" stroke="#b8a77e" stroke-width=".8"/>
+        <rect x="36" y="7.6" width="1.8" height="11" fill="#c9b98e" opacity=".9"/><rect x="46.2" y="7.6" width="1.8" height="11" fill="#c9b98e" opacity=".9"/>
+        <rect x="35.5" y="14" width="13" height="46" fill="#faf6ec"/>
+        <g fill="#2f2620" font-family="Yu Mincho, Hiragino Mincho ProN, serif" font-size="8.2" text-anchor="middle" font-weight="600">
+          <text x="42" y="24">不</text><text x="42" y="34.5">昧</text><text x="42" y="45">公</text><text x="42" y="55.5">好</text>
+        </g>
+        <rect x="45" y="56" width="3.2" height="3.2" fill="#b03a2e" opacity=".85"/>
+        <rect x="30" y="67.6" width="24" height="3" rx="1.2" fill="#3a2a1e"/>
+        <circle cx="30" cy="69.1" r="1.9" fill="#6b5636"/><circle cx="54" cy="69.1" r="1.9" fill="#6b5636"/>
       </g>
       <!-- 墨色の道服（袖は広く、茶人らしく） -->
-      <path d="M22 102 C20 80 38 66 60 66 C82 66 100 80 98 102 Z" fill="#3a332e"/>
-      <path d="M60 66 C40 66 27 74 22 102 L38 102 C38 86 44 76 51 70 Z" fill="#2c2621"/>
-      <path d="M60 66 C80 66 93 74 98 102 L82 102 C82 86 76 76 69 70 Z" fill="#2c2621"/>
-      <path d="M46 88 Q60 92 74 88 L74 93 Q60 97 46 93 Z" fill="#8a7357"/>
+      <path d="M38 102 C36 80 54 66 76 66 C98 66 116 80 114 102 Z" fill="#3a332e"/>
+      <path d="M76 66 C56 66 43 74 38 102 L54 102 C54 86 60 76 67 70 Z" fill="#2c2621"/>
+      <path d="M76 66 C96 66 109 74 114 102 L98 102 C98 86 92 76 85 70 Z" fill="#2c2621"/>
+      <path d="M62 88 Q76 92 90 88 L90 93 Q76 97 62 93 Z" fill="#8a7357"/>
       <!-- 襟もと（生成りの下着） -->
-      <path d="M50 68 L60 90 L70 68 L65 69.5 L60 82 L55 69.5 Z" fill="#e9e0cc"/>
-      <path d="M50 68 L60 90 L70 68" fill="none" stroke="#5c5047" stroke-width="1.2"/>
-      <!-- 顔（剃髪は維持。眉は白く、目もとは穏やかに） -->
-      <circle cx="60" cy="44" r="17" fill="#f0d8b8"/>
-      <path d="M44 40 C46 31 52 27 60 27 C68 27 74 31 76 40" fill="none" stroke="#e0c29c" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="42.5" cy="46" r="3.5" fill="#f0d8b8"/><circle cx="77.5" cy="46" r="3.5" fill="#f0d8b8"/>
-      <path d="M49 40 Q53 37.5 57 39.5 M63 39.5 Q67 37.5 71 40" stroke="#d6cfc2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      <circle cx="53.5" cy="46" r="1.7" fill="#4a3a2c"/><circle cx="66.5" cy="46" r="1.7" fill="#4a3a2c"/>
-      <path d="M50 44.5 Q53.5 42.5 57 44.5 M63 44.5 Q66.5 42.5 70 44.5" stroke="#c9a888" stroke-width="1" fill="none" stroke-linecap="round"/>
-      <path d="M46.5 48 l-2 1.2 M73.5 48 l2 1.2" stroke="#d3b18f" stroke-width="1" stroke-linecap="round"/>
-      <path d="M55 56 Q60 59.5 65 56" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- 両の手 -->
-      <ellipse cx="33" cy="91" rx="6.5" ry="4.5" fill="#f0d8b8"/>
-      <ellipse cx="88" cy="90" rx="6.5" ry="4.5" fill="#f0d8b8"/>
-      <!-- 左手：懐紙にのせた若草 -->
-      <g transform="translate(31 85) rotate(-8)">
-        <path d="M-11 -2 L11 -4.5 L12 4 L-10 6.5 Z" fill="#fdf8ec" stroke="#d8cbae" stroke-width=".8"/>
-        <rect x="-6.5" y="-5" width="13" height="7.5" rx="2" fill="#6d9138"/>
-        <rect x="-6.5" y="-6" width="13" height="7" rx="2" fill="#8fbf4d"/>
-        <rect x="-6.5" y="-6" width="13" height="3.2" rx="2" fill="#a4d05e" opacity=".8"/>
-        <g fill="#d9ecb0"><circle cx="-3.5" cy="-3.5" r=".8"/><circle cx="0.5" cy="-2" r=".8"/><circle cx="4" cy="-4" r=".8"/></g>
+      <path d="M66 68 L76 90 L86 68 L81 69.5 L76 82 L71 69.5 Z" fill="#e9e0cc"/>
+      <path d="M66 68 L76 90 L86 68" fill="none" stroke="#5c5047" stroke-width="1.2"/>
+      <!-- 顔（剃髪は維持。眉は白く、目もとは穏やかに、視線は手もとの若草へ） -->
+      <circle cx="76" cy="44" r="17" fill="#f0d8b8"/>
+      <path d="M60 40 C62 31 68 27 76 27 C84 27 90 31 92 40" fill="none" stroke="#e0c29c" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="58.5" cy="46" r="3.5" fill="#f0d8b8"/><circle cx="93.5" cy="46" r="3.5" fill="#f0d8b8"/>
+      <path d="M65 40 Q69 37.5 73 39.5 M79 39.5 Q83 37.5 87 40" stroke="#d6cfc2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <circle cx="70" cy="47" r="1.7" fill="#4a3a2c"/><circle cx="82.5" cy="47" r="1.7" fill="#4a3a2c"/>
+      <path d="M66 44.5 Q69.5 42.5 73 44.5 M79 44.5 Q82.5 42.5 86 44.5" stroke="#c9a888" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M62.5 48 l-2 1.2 M89.5 48 l2 1.2" stroke="#d3b18f" stroke-width="1" stroke-linecap="round"/>
+      <path d="M71 56 Q76 59.5 81 56" stroke="#a5765a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- 左の手：懐紙にのせた若草を、胸もとに -->
+      <ellipse cx="60" cy="88.5" rx="7.5" ry="4.8" fill="#f0d8b8"/>
+      <g transform="translate(64 83) rotate(-6)">
+        <path d="M-13 -3 L13 -5.5 L14 4 L-12 6.5 Z" fill="#fdf8ec" stroke="#d8cbae" stroke-width=".8"/>
+        <rect x="-7" y="-6" width="14" height="8" rx="2" fill="#6d9138"/>
+        <rect x="-7" y="-7" width="14" height="7.5" rx="2" fill="#8fbf4d"/>
+        <rect x="-7" y="-7" width="14" height="3.4" rx="2" fill="#a4d05e" opacity=".8"/>
+        <g fill="#d9ecb0"><circle cx="-4" cy="-4.5" r=".8"/><circle cx="0" cy="-3" r=".8"/><circle cx="4" cy="-5" r=".8"/></g>
       </g>
-      <!-- 右手：黒楽の茶碗に点てたお茶 -->
-      <g transform="translate(89 83)">
+      <path d="M53 90 q3 2 7 1.5" stroke="#d3b18f" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- 右の手：菓子楊枝（黒文字）を若草へ ― まさに一口 -->
+      <ellipse cx="91" cy="84.5" rx="6.8" ry="4.6" fill="#f0d8b8"/>
+      <path d="M95.5 85.4 L69.2 78.6 L67.4 78.9 L95.5 87.4 Z" fill="#8a5c33"/>
+      <path d="M95 85.6 L69.5 79" stroke="#5a3a1e" stroke-width=".7" stroke-linecap="round"/>
+      <ellipse cx="88.6" cy="82.6" rx="3.3" ry="2.1" fill="#f0d8b8" transform="rotate(18 88.6 82.6)"/>
+      <path d="M92 88.5 q3 .5 5 -1" stroke="#d3b18f" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- 脇に置かれた茶釜（風炉にかけて、湯気がたつ）と黒楽の茶碗 -->
+      <g>
+        <path d="M133 97 C133 107.5 138 111 145 111 C152 111 157 107.5 157 97 Z" fill="#3b332c"/>
+        <ellipse cx="145" cy="97" rx="12" ry="3" fill="#4a4038"/>
+        <ellipse cx="145" cy="104" rx="5" ry="2.4" fill="#e0742e" opacity=".85"/>
+        <ellipse cx="145" cy="104" rx="2.6" ry="1.2" fill="#f6b26b"/>
+        <ellipse cx="145" cy="88" rx="14" ry="11" fill="#3a3a3a"/>
+        <ellipse cx="145" cy="88" rx="14" ry="11" fill="none" stroke="#242424" stroke-width=".8"/>
+        <path d="M134 84 Q136 78 142 78" stroke="#666" stroke-width="1.2" fill="none" opacity=".7" stroke-linecap="round"/>
+        <g fill="#575757" opacity=".8">
+          <circle cx="138" cy="86" r=".8"/><circle cx="142" cy="90" r=".8"/><circle cx="147" cy="86" r=".8"/><circle cx="151" cy="90" r=".8"/>
+          <circle cx="140" cy="94" r=".8"/><circle cx="145" cy="93" r=".8"/><circle cx="150" cy="95" r=".8"/><circle cx="154" cy="87" r=".8"/>
+          <circle cx="136" cy="91" r=".8"/><circle cx="147" cy="98" r=".7"/><circle cx="143" cy="98" r=".7"/>
+        </g>
+        <ellipse cx="145" cy="79.5" rx="11.5" ry="3.2" fill="#2a2a2a"/>
+        <ellipse cx="145" cy="78.6" rx="8" ry="2.6" fill="#7a6142"/>
+        <ellipse cx="145" cy="78" rx="8" ry="2" fill="#8f7550"/>
+        <circle cx="145" cy="76" r="1.9" fill="#4a3a2c"/>
+        <circle cx="131.5" cy="85" r="2.4" fill="none" stroke="#7a7a7a" stroke-width=".9"/>
+        <circle cx="158.5" cy="85" r="2.4" fill="none" stroke="#7a7a7a" stroke-width=".9"/>
+        <g stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".55">
+          <path d="M141 73 q-2.5 -4 0 -8 q2.5 -4 0 -7"/><path d="M149 72 q2.5 -4 0 -8 q-2.5 -4 0 -7"/>
+        </g>
+      </g>
+      <g transform="translate(120 100)">
+        <ellipse cx="0" cy="8" rx="11" ry="2.5" fill="#000" opacity=".15"/>
         <path d="M-9.5 -4 H9.5 C9.5 3.5 6 7.5 0 7.5 C-6 7.5 -9.5 3.5 -9.5 -4 Z" fill="#2a2320"/>
         <ellipse cx="0" cy="-4" rx="9.5" ry="2.7" fill="#433a33"/>
         <ellipse cx="0" cy="-3.7" rx="7.4" ry="1.9" fill="#6f9440"/>
@@ -1410,7 +1505,7 @@
 
 <!-- overlays -->
 <div class="overlay" id="feverOv">
-  <svg class="bigsvg" viewBox="0 0 120 120"><use href="#s-fumai"/></svg>
+  <svg class="bigsvg" viewBox="0 0 170 120"><use href="#s-fumai"/></svg>
   <div class="fname">不昧公 降臨</div>
   <div class="teaRow"><svg viewBox="0 0 100 100"><use href="#s-bowl"/></svg><svg viewBox="0 0 100 100"><use href="#s-chasen"/></svg></div>
   <div class="fsub">― 大茶会 ―</div>
@@ -1433,7 +1528,7 @@
     <button id="startBtn">はじめる</button>
     <div class="shopRow">
       <svg class="kanban" viewBox="0 0 220 60"><use href="#s-kanban"/></svg>
-      <div class="shopTxt"><b>彩雲堂</b>　明治七年創業<br>松江・天神町の本店で、若草をどうぞ</div>
+      <div class="shopTxt">提供　<b>彩雲堂</b>　明治七年創業<br>松江・天神町</div>
     </div>
   </div>
 </div>
@@ -1462,7 +1557,7 @@
   <div class="card">
     <svg class="scene" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid slice"><use id="resScene" href="#s-yomegashima"/></svg>
     <div class="sceneCap" id="resCap"></div>
-    <h2>お手前、拝見しました</h2>
+    <h2 id="resHead">結構なお手前で</h2>
     <div class="rankRow">段位：<b id="resRank">二級</b></div>
     <div class="ladder" id="resLadder"></div>
     <p class="resComment" id="resComment"></p>
@@ -1476,7 +1571,9 @@
     <button onclick="location.reload()">もう一服</button>
     <div class="prBand">
       <svg class="saiun" viewBox="0 0 400 40" preserveAspectRatio="none"><use href="#s-saiun"/></svg>
-      <p><b>彩雲堂</b>　松江・天神町本店<br>銘菓「若草」は、お店でもどうぞ。お越しをお待ちしております。</p>
+      <p class="prBy">提供　<b>彩雲堂</b></p>
+      <p>本店（松江・天神町）にお越しください。</p>
+      <a class="shopLink" href="https://netshop.saiundo.co.jp/" target="_blank" rel="noopener">オンラインショップ ▸</a>
     </div>
   </div>
 </div>
@@ -1509,7 +1606,7 @@ const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
 const SEASON_MOVES = 5;
 let fxSeason = SEASON, usedMoves = 0;
 const GUESTINFO = {
-  manten:{name:'満天',   note:'夜空をうつした錦玉羹'},
+  manten:{name:'満天',   note:'夏の夜空 ― 星々と天の川をうつした錦玉羹'},
   yuzu:  {name:'柚衣',   note:'まんま柚子の形の冬菓子'},
   hana:  {name:'はな桜', note:'桜色の春菓子'},
   yamak: {name:'やまかつら', note:'黒糖香る三層の郷土菓子'}
@@ -1796,13 +1893,17 @@ function takeScene(s){
   DECK_POS[s]++;
   return sc;
 }
-// 盤の上を流れる季節札（遊びは止めない）
+// 松江の名勝札。盤の上ではなく、見出しから詰合せ窓までの上部に大きく出す（盤を隠さない・遊びは止めない）
 function showSeasonCard(S, sc, first){
+  const wrap = document.querySelector('.wrap'), tray = document.querySelector('.tray');
+  wrap.querySelectorAll('.seasonCard').forEach(e => e.remove());
   const d = document.createElement('div'); d.className = 'seasonCard';
+  d.style.setProperty('--sch', Math.max(120, tray.offsetTop - 12) + 'px');
   d.innerHTML = '<svg viewBox="0 0 200 120"><use href="' + sc.href + '"/></svg>'
-    + '<div class="scTxt"><b>' + S.tag + '</b><span>' + sc.t + '</span>'
+    + '<div class="scHead"><em>' + S.name + ' ― ' + S.tag + '</em><b>' + sc.t + '</b></div>'
+    + '<div class="scTxt"><span>' + sc.n + '</span>'
     + '<small>' + (first ? '― 五手ごとに季節がめぐります ―' : '― 季節がめぐる ―') + '</small></div>';
-  board.appendChild(d); setTimeout(() => d.remove(), 2700);
+  wrap.appendChild(d); setTimeout(() => d.remove(), 3500);
 }
 function changeSeason(s){
   fxSeason = s;
@@ -2441,16 +2542,17 @@ function chainLabel(){
 }
 // 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）。
 // 段位ごとに、お手前を段階的に講評する
+// h = 結果画面の表題（段位ごとに数通り。同じ「お手前、拝見しました」ばかりでは味気ないので）
 const RANKS = [
-  {min:0,     name:'二級', c:'まずは一服。盆をよく見て、大きなかたまりを狙ってみましょう。'},
-  {min:4000,  name:'一級', c:'筋がいい。次は詰合せを一箱、詰めきってみましょう。'},
-  {min:7000,  name:'初段', c:'お見事、初段。連鎖の味を覚えましたね。'},
-  {min:11000, name:'二段', c:'なかなかの腕前。上生菓子の発火剤を活かせています。'},
-  {min:15000, name:'三段', c:'上手いお手前。連鎖がよく伸びました。'},
-  {min:19000, name:'四段', c:'玄人の域。茶席の空気を読む手つきです。'},
-  {min:24000, name:'五段', c:'見事な茶席でした。不昧公も目を細めておいでです。'},
-  {min:30000, name:'師範', c:'師範の腕前。八雲も筆を止めて、この連鎖の音に耳をすませたことでしょう。'},
-  {min:40000, name:'名人', c:'名人位。不昧公より一服、進ぜよう。'}
+  {min:0,     name:'二級', h:['精進が必要ですな','まずは一服、また参られよ'], c:'まずは一服。盆をよく見て、大きなかたまりを狙ってみましょう。'},
+  {min:4000,  name:'一級', h:['もう一息、精進なされ','筋はよろしい'], c:'筋がいい。次は詰合せを一箱、詰めきってみましょう。'},
+  {min:7000,  name:'初段', h:['結構なお手前で','よい一服でした'], c:'お見事、初段。連鎖の味を覚えましたね。'},
+  {min:11000, name:'二段', h:['結構なお手前で','なかなかの腕前'], c:'なかなかの腕前。上生菓子の発火剤を活かせています。'},
+  {min:15000, name:'三段', h:['お見事！','見事なお手前'], c:'上手いお手前。連鎖がよく伸びました。'},
+  {min:19000, name:'四段', h:['お見事！','玄人の手つき'], c:'玄人の域。茶席の空気を読む手つきです。'},
+  {min:24000, name:'五段', h:['感服いたしました','見事な茶席でした'], c:'見事な茶席でした。不昧公も目を細めておいでです。'},
+  {min:30000, name:'師範', h:['感服いたしました','恐れ入りました'], c:'師範の腕前。八雲も筆を止めて、この連鎖の音に耳をすませたことでしょう。'},
+  {min:40000, name:'名人', h:['天晴れ、名人','不昧公も脱帽'], c:'名人位。不昧公より一服、進ぜよう。'}
 ];
 function rankIndex(){
   let i = 0;
@@ -2475,6 +2577,7 @@ function checkEnd(){
   document.getElementById('resScene').setAttribute('href', sc.href);
   document.getElementById('resCap').textContent = SEASONS[fxSeason].name + ' ― ' + sc.t;
   const ri = rankIndex(), R = RANKS[ri];
+  document.getElementById('resHead').textContent = R.h[Math.random() * R.h.length | 0];
   document.getElementById('resRank').textContent = R.name;
   document.getElementById('resComment').textContent = R.c + ' ' + playNote();
   document.getElementById('resNext').textContent = (ri < RANKS.length - 1)
