@@ -164,6 +164,14 @@
     25%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
     75%{opacity:1;transform:translate(-50%,-55%) scale(1)}
     100%{opacity:0;transform:translate(-50%,-75%) scale(1)}}
+  /* 連鎖の調べの曲名（二服で歌がはじまるとき、盤の下辺に小さく） */
+  .songTag{
+    position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:11px;letter-spacing:.18em;color:#fff6d6;
+    background:rgba(40,26,18,.72);border:1px solid rgba(232,201,106,.55);border-radius:999px;padding:2px 12px;
+    pointer-events:none;white-space:nowrap;animation:songTagA 2.6s ease-out forwards;
+  }
+  @keyframes songTagA{0%{opacity:0;transform:translate(-50%,8px)}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
 
   /* footer controls */
   .controls{display:flex;gap:10px;align-items:stretch}
@@ -351,8 +359,8 @@
   /* 発火剤（上生菓子）はほのかに脈打つ */
   .piece.fuse svg{animation:fuseA 1.5s ease-in-out infinite}
   @keyframes fuseA{
-    0%,100%{filter:drop-shadow(0 0 2px rgba(246,205,216,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
-    50%{filter:drop-shadow(0 0 9px rgba(255,150,180,.95)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}}
+    0%,100%{filter:drop-shadow(0 0 2px rgba(255,236,190,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+    50%{filter:drop-shadow(0 0 9px rgba(255,214,140,.95)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}}
   .piece.born svg{animation:bornA .55s cubic-bezier(.2,1.5,.4,1)}
   @keyframes bornA{0%{transform:scale(.3) rotate(-20deg)}60%{transform:scale(1.18) rotate(6deg)}100%{transform:scale(1)}}
   @media (prefers-reduced-motion: reduce){ .piece.fuse svg,.piece.born svg{animation:none} }
@@ -411,13 +419,26 @@
     margin:2px 0 6px;letter-spacing:.04em;
   }
   #resultOv .resNext{font-size:10.5px;color:#8a7a5e;letter-spacing:.08em;margin-bottom:6px}
-  #resultOv .ladder{display:flex;justify-content:center;gap:2px;flex-wrap:wrap;margin-bottom:8px}
-  #resultOv .ladder i{
-    font-style:normal;font-size:8.5px;letter-spacing:.05em;color:#b0a284;
-    border:1px solid #e2d8c2;border-radius:999px;padding:1px 5px;background:#fffdf6;
+  /* 段位の図：ピラミッド（v0.12）。頂点が名人。通過した段は濃く、いまの段は小豆色で一段高く。
+     隠れ階級「大名茶人」は到達したときだけ、金の冠石として名人の上に現れる（.legend） */
+  #resultOv .pyra{display:flex;flex-direction:column;align-items:center;gap:1px;margin:4px auto 8px}
+  #resultOv .pyra i{
+    display:flex;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;
+    font-style:normal;font-size:8.5px;letter-spacing:.08em;color:#b0a284;height:12px;line-height:1;
+    background:#f8f2e4;border:1px solid #e2d8c2;border-radius:2px;white-space:nowrap;
   }
-  #resultOv .ladder i.got{color:#5c4f3c;border-color:#c9b98e}
-  #resultOv .ladder i.now{color:#fff;background:var(--azuki);border-color:var(--azuki);font-weight:700}
+  #resultOv .pyra i small{font-size:7.5px;color:#c8bc9f;letter-spacing:0}
+  #resultOv .pyra i.got{color:#5c4f3c;background:#eee2c6;border-color:#cbbb92}
+  #resultOv .pyra i.got small{color:#9a8a68}
+  #resultOv .pyra i.now{color:#fff;background:var(--azuki);border-color:var(--azuki);font-weight:700;height:16px;font-size:10px;margin:1px 0;border-radius:3px}
+  #resultOv .pyra i.now small{color:#f3dede}
+  #resultOv .pyra i.legend{
+    color:#5a3d00;background:linear-gradient(180deg,#fff6cc,#e6bf55);border-color:#c9a24b;font-weight:700;
+    height:17px;font-size:10.5px;letter-spacing:.16em;border-radius:3px 3px 2px 2px;
+    box-shadow:0 0 9px rgba(232,196,92,.75),0 1px 0 #fff inset;margin-bottom:2px;
+  }
+  #resultOv.legend h2{color:#8a6a12;text-shadow:0 0 10px rgba(232,196,92,.6)}
+  #resultOv.legend .rankRow b{color:#8a6a12}
   #resultOv .sceneCap{font-size:10px;color:#8a7a5e;letter-spacing:.12em;margin:-6px 0 8px}
 
   /* 彩雲堂の控えめなご案内（題字看板と彩雲文様は差し替え可能なイメージ意匠） */
@@ -450,7 +471,7 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.11</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.12</b></div>
     <div class="rule"></div>
     <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">花の候</span></div>
   </header>
@@ -500,8 +521,8 @@
     繋がっている分が<b>まるごと消えます</b>。たくさん・めずらしい形ほど高得点。<br>
     <b>詰合せ</b>を一箱詰め終えるごとに<b>手数と点</b>がもらえます。次の箱は一回り大きくなります。<br>
     <b>一度に5つ以上</b>消すと<b>上生菓子（発火剤）</b>が生まれます。となりで消し込みが起きると
-    <b>小爆発</b>してまわりを巻き込み、近くの上生菓子にも燃えうつります。手数1つで動かせます。<br>
-    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。
+    <b>小爆発</b>してまわりを巻き込み、近くの上生菓子にも燃えうつります。手数1つで動かせます。意匠はそのときの季節の練り切り（桜・梅・菜の花／紫陽花・朝顔・水の彩／菊・紅葉・月のうさぎ／椿・雪うさぎ・花びら餅）。<br>
+    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。<b>二服からは季節の唱歌</b>（さくらさくら・茶摘み・紅葉・雪 など）が琴で一節ずつ奏でられ、連鎖が続くほど歌が進みます。
     茶碗ゲージが満ちると<b>不昧公</b>が降臨し、大茶会の<b>百花繚乱</b> ― 盤の真ん中から二度の大払い。<br>
     <b>パンダは連鎖の命綱</b>。ゲージが満タンなら連鎖中にタップして<b>呼んでおく</b>と、
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
@@ -686,8 +707,23 @@
       <ellipse cx="35" cy="32" rx="8" ry="4.5" fill="#ffffff" opacity=".6" transform="rotate(-32 35 32)"/>
     </symbol>
 
-    <!-- 上生菓子（練り切り・桜） -->
-    <symbol id="s-jou" viewBox="0 0 100 100">
+    <!-- ===== 上生菓子（発火剤）―― 季節ごとに三種ずつ十二の意匠（v0.12）。
+         五つ以上の大かさねで生まれるとき、そのときの演出の季節の意匠が順に選ばれる（pickJou）。
+         彩雲堂の実物を写したものではなく、季節の練り切り・きんとん・錦玉のイメージ意匠 ===== -->
+    <linearGradient id="g-jmizu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d7f1fa"/><stop offset="1" stop-color="#6fb6d8"/>
+    </linearGradient>
+    <linearGradient id="g-jmomiji" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f39a3e"/><stop offset="1" stop-color="#cf3a2a"/>
+    </linearGradient>
+    <!-- 紫陽花の小花（四弁）。<use> の fill で色を変える -->
+    <g id="jou-floret">
+      <circle cx="0" cy="-3" r="2.7"/><circle cx="3" cy="0" r="2.7"/><circle cx="0" cy="3" r="2.7"/><circle cx="-3" cy="0" r="2.7"/>
+      <circle cx="0" cy="0" r="1.1" fill="#fffbe6"/>
+    </g>
+
+    <!-- 春: 桜（練り切り） -->
+    <symbol id="s-jou-sakura" viewBox="0 0 100 100">
       <circle cx="50" cy="53" r="31" fill="#e9aebc"/>
       <g fill="#f6cdd8">
         <ellipse cx="50" cy="31" rx="12" ry="16"/>
@@ -700,7 +736,193 @@
       <circle cx="50" cy="53" r="3" fill="#d6a53d"/>
       <ellipse cx="40" cy="36" rx="6" ry="3.5" fill="#fff" opacity=".65" transform="rotate(-30 40 36)"/>
     </symbol>
+    <!-- 春: 梅（紅梅のかたちの練り切り） -->
+    <symbol id="s-jou-ume" viewBox="0 0 100 100">
+      <circle cx="50" cy="53" r="27" fill="#d9607c"/>
+      <g fill="#ea7f97">
+        <circle cx="50" cy="36" r="14"/><circle cx="66.2" cy="47.7" r="14"/><circle cx="60" cy="66.8" r="14"/>
+        <circle cx="40" cy="66.8" r="14"/><circle cx="33.8" cy="47.7" r="14"/>
+      </g>
+      <g fill="#f4a6b8" opacity=".75">
+        <circle cx="49" cy="33" r="6"/><circle cx="65" cy="45" r="6"/><circle cx="59" cy="64" r="6"/><circle cx="39" cy="64" r="6"/><circle cx="33" cy="45" r="6"/>
+      </g>
+      <circle cx="50" cy="53" r="8.5" fill="#f7dc86"/>
+      <g fill="#d9a53a">
+        <circle cx="50" cy="46.5" r="1.7"/><circle cx="56" cy="51" r="1.7"/><circle cx="54" cy="58.5" r="1.7"/><circle cx="46" cy="58.5" r="1.7"/><circle cx="44" cy="51" r="1.7"/>
+      </g>
+      <ellipse cx="39" cy="33" rx="5" ry="3" fill="#fff" opacity=".5" transform="rotate(-30 39 33)"/>
+    </symbol>
+    <symbol id="s-jou-nanohana" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="31" fill="#e3bf34"/>
+      <g fill="#f6da5c">
+        <circle cx="38" cy="40" r="6"/><circle cx="52" cy="34" r="5.5"/><circle cx="64" cy="42" r="6"/><circle cx="30" cy="56" r="5.5"/>
+        <circle cx="46" cy="50" r="6"/><circle cx="60" cy="56" r="5.5"/><circle cx="72" cy="57" r="5"/><circle cx="40" cy="66" r="6"/>
+        <circle cx="54" cy="70" r="5.5"/><circle cx="66" cy="70" r="5"/><circle cx="28" cy="68" r="4.5"/><circle cx="50" cy="80" r="4"/>
+      </g>
+      <g fill="#8fbb4e">
+        <circle cx="44" cy="29" r="4"/><circle cx="60" cy="28" r="3.5"/><circle cx="26" cy="46" r="4"/><circle cx="75" cy="47" r="3.5"/>
+        <circle cx="34" cy="77" r="4"/><circle cx="62" cy="79" r="3.5"/><circle cx="51" cy="60" r="3.5"/><circle cx="70" cy="66" r="3"/>
+        <circle cx="78" cy="63" r="3"/><circle cx="23" cy="59" r="3"/><circle cx="42" cy="42" r="2.5"/>
+      </g>
+      <g fill="#fff4b0" opacity=".8">
+        <circle cx="36" cy="38" r="1.6"/><circle cx="50" cy="32" r="1.5"/><circle cx="44" cy="48" r="1.6"/><circle cx="62" cy="40" r="1.5"/><circle cx="38" cy="64" r="1.5"/>
+      </g>
+      <ellipse cx="40" cy="35" rx="6" ry="3.5" fill="#fff" opacity=".4" transform="rotate(-30 40 35)"/>
+    </symbol>
 
+    <!-- 夏: 紫陽花（青紫のきんとん。葉を一枚そえて） -->
+    <symbol id="s-jou-ajisai" viewBox="0 0 100 100">
+      <path d="M20 76 Q10 64 22 56 Q34 54 36 66 Q35 78 20 76Z" fill="#5f9b4f"/>
+      <path d="M22 74 Q26 66 33 60" stroke="#9fd08c" stroke-width="1.2" fill="none"/>
+      <circle cx="52" cy="51" r="30" fill="#8793d0"/>
+      <use href="#jou-floret" x="40" y="35" fill="#c4b9f0"/><use href="#jou-floret" x="57" y="31" fill="#a6b1ea"/>
+      <use href="#jou-floret" x="70" y="44" fill="#d9d3f8"/><use href="#jou-floret" x="34" y="50" fill="#a6b1ea"/>
+      <use href="#jou-floret" x="52" y="48" fill="#dcd6f9"/><use href="#jou-floret" x="66" y="60" fill="#c4b9f0"/>
+      <use href="#jou-floret" x="40" y="66" fill="#d9d3f8"/><use href="#jou-floret" x="56" y="68" fill="#a6b1ea"/>
+      <use href="#jou-floret" x="74" y="58" fill="#b9c2f0" opacity=".8"/><use href="#jou-floret" x="30" y="38" fill="#b9c2f0" opacity=".8"/>
+      <use href="#jou-floret" x="50" y="78" fill="#b9c2f0" opacity=".8"/>
+      <ellipse cx="40" cy="33" rx="6" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-30 40 33)"/>
+    </symbol>
+    <!-- 夏: 朝顔（藍色に白い星のすじ） -->
+    <symbol id="s-jou-asagao" viewBox="0 0 100 100">
+      <path d="M70 78 Q86 72 82 58 Q72 56 66 66 Q62 76 70 78Z" fill="#4f8f48"/>
+      <path d="M70 76 Q75 68 80 62" stroke="#9fd08c" stroke-width="1.2" fill="none"/>
+      <circle cx="50" cy="52" r="31" fill="#4b77c8"/>
+      <circle cx="50" cy="52" r="31" fill="none" stroke="#3a5fa8" stroke-width="1.2"/>
+      <g fill="#eef2ff" opacity=".92">
+        <path d="M50 52 L46 30 Q50 20 54 30 Z"/>
+        <path d="M50 52 L46 30 Q50 20 54 30 Z" transform="rotate(72 50 52)"/>
+        <path d="M50 52 L46 30 Q50 20 54 30 Z" transform="rotate(144 50 52)"/>
+        <path d="M50 52 L46 30 Q50 20 54 30 Z" transform="rotate(216 50 52)"/>
+        <path d="M50 52 L46 30 Q50 20 54 30 Z" transform="rotate(288 50 52)"/>
+      </g>
+      <circle cx="50" cy="52" r="9" fill="#f7f8ff"/>
+      <circle cx="50" cy="52" r="4" fill="#f2d36b"/>
+      <ellipse cx="38" cy="36" rx="6" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-30 38 36)"/>
+    </symbol>
+    <!-- 夏: 水の彩（澄んだ錦玉に金魚ひと尾） -->
+    <symbol id="s-jou-mizu" viewBox="0 0 100 100">
+      <circle cx="50" cy="53" r="31" fill="url(#g-jmizu)"/>
+      <g fill="none" stroke="#ffffff" stroke-width="1.6" opacity=".6">
+        <path d="M27 45 Q35 40 43 45 T59 45 T75 45"/>
+        <path d="M24 58 Q32 53 40 58 T56 58 T72 58"/>
+        <path d="M29 70 Q37 65 45 70 T61 70"/>
+      </g>
+      <ellipse cx="57" cy="56" rx="7.5" ry="4.8" fill="#e5432f"/>
+      <path d="M64 56 L73 49 L70.5 56 L73 63 Z" fill="#e5432f" opacity=".9"/>
+      <path d="M56 51.5 Q58 47 61 50.5" fill="#e5432f" opacity=".9"/>
+      <circle cx="52.5" cy="55" r="1.2" fill="#222"/>
+      <ellipse cx="38" cy="38" rx="7" ry="4" fill="#fff" opacity=".55" transform="rotate(-30 38 38)"/>
+      <circle cx="50" cy="53" r="31" fill="none" stroke="#8fc7de" stroke-width="1"/>
+    </symbol>
+
+    <!-- 秋: 菊（黄菊の針切り） -->
+    <symbol id="s-jou-kiku" viewBox="0 0 100 100">
+      <circle cx="50" cy="53" r="31" fill="#e6b535"/>
+      <g fill="#f6d55e">
+        <ellipse cx="50" cy="38" rx="4.2" ry="14"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(22.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(45 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(67.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(90 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(112.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(135 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(157.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(180 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(202.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(225 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(247.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(270 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(292.5 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(315 50 53)"/>
+        <ellipse cx="50" cy="38" rx="4.2" ry="14" transform="rotate(337.5 50 53)"/>
+      </g>
+      <g fill="#fbe690">
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(11 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(56 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(101 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(146 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(191 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(236 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(281 50 53)"/>
+        <ellipse cx="50" cy="45" rx="3.4" ry="9" transform="rotate(326 50 53)"/>
+      </g>
+      <circle cx="50" cy="53" r="5.5" fill="#dc9f2c"/>
+      <circle cx="50" cy="53" r="2.5" fill="#f5d76e"/>
+      <ellipse cx="39" cy="36" rx="6" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-30 39 36)"/>
+    </symbol>
+    <!-- 秋: 紅葉（葉のかたちの練り切り） -->
+    <symbol id="s-jou-momiji" viewBox="0 0 100 100">
+      <circle cx="50" cy="53" r="31" fill="#f6ead6"/>
+      <path d="M50 22 L55 36 L67 27 L64 44 L80 46 L67 55 L75 69 L59 63 L50 82 L41 63 L25 69 L33 55 L20 46 L36 44 L33 27 L45 36 Z" fill="url(#g-jmomiji)"/>
+      <g stroke="#fbd9a8" stroke-width="1.1" fill="none" opacity=".75">
+        <path d="M50 76 L50 30"/><path d="M50 54 L70 32"/><path d="M50 54 L30 32"/><path d="M50 56 L75 48"/><path d="M50 56 L25 48"/>
+        <path d="M50 60 L70 65"/><path d="M50 60 L30 65"/>
+      </g>
+      <path d="M50 80 Q49 86 46 88" stroke="#8a4b23" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <ellipse cx="40" cy="34" rx="6" ry="3.5" fill="#fff" opacity=".45" transform="rotate(-30 40 34)"/>
+    </symbol>
+    <!-- 秋: 月のうさぎ（満月色のこなしに白兎） -->
+    <symbol id="s-jou-tsuki" viewBox="0 0 100 100">
+      <circle cx="50" cy="53" r="31" fill="#f4d976"/>
+      <circle cx="50" cy="53" r="31" fill="none" stroke="#e2bd4c" stroke-width="1.2"/>
+      <ellipse cx="53" cy="62" rx="16" ry="10.5" fill="#fffdf7"/>
+      <circle cx="38" cy="56" r="8.5" fill="#fffdf7"/>
+      <ellipse cx="34" cy="41" rx="3.2" ry="9.5" fill="#fffdf7" transform="rotate(-12 34 41)"/>
+      <ellipse cx="41.5" cy="41" rx="3.2" ry="9.5" fill="#fffdf7" transform="rotate(8 41.5 41)"/>
+      <ellipse cx="34" cy="42" rx="1.5" ry="6.5" fill="#f6c1c8" transform="rotate(-12 34 42)"/>
+      <ellipse cx="41.5" cy="42" rx="1.5" ry="6.5" fill="#f6c1c8" transform="rotate(8 41.5 42)"/>
+      <circle cx="35.5" cy="56" r="1.4" fill="#d8323d"/>
+      <circle cx="68" cy="60" r="3.2" fill="#fffdf7"/>
+      <ellipse cx="58" cy="36" rx="6" ry="3.5" fill="#fff" opacity=".5" transform="rotate(-30 58 36)"/>
+    </symbol>
+
+    <!-- 冬: 椿（紅い花弁に黄の蕊、葉を一枚） -->
+    <symbol id="s-jou-tsubaki" viewBox="0 0 100 100">
+      <path d="M70 80 Q88 76 85 60 Q74 58 68 69 Q63 78 70 80Z" fill="#4c8b49"/>
+      <path d="M70 78 Q76 70 83 63" stroke="#8bc27f" stroke-width="1.2" fill="none"/>
+      <circle cx="47" cy="52" r="30" fill="#cf333f"/>
+      <g fill="#e04e5a">
+        <ellipse cx="47" cy="31" rx="12" ry="15"/>
+        <ellipse cx="47" cy="31" rx="12" ry="15" transform="rotate(72 47 52)"/>
+        <ellipse cx="47" cy="31" rx="12" ry="15" transform="rotate(144 47 52)"/>
+        <ellipse cx="47" cy="31" rx="12" ry="15" transform="rotate(216 47 52)"/>
+        <ellipse cx="47" cy="31" rx="12" ry="15" transform="rotate(288 47 52)"/>
+      </g>
+      <g stroke="#b8252f" stroke-width="1" opacity=".55" fill="none">
+        <path d="M47 52 L47 22"/><path d="M47 52 L47 22" transform="rotate(72 47 52)"/><path d="M47 52 L47 22" transform="rotate(144 47 52)"/>
+        <path d="M47 52 L47 22" transform="rotate(216 47 52)"/><path d="M47 52 L47 22" transform="rotate(288 47 52)"/>
+      </g>
+      <circle cx="47" cy="52" r="8.5" fill="#f3cc4e"/>
+      <g fill="#e0a62a">
+        <circle cx="47" cy="46.5" r="1.7"/><circle cx="52" cy="50" r="1.7"/><circle cx="50.5" cy="56" r="1.7"/><circle cx="43.5" cy="56" r="1.7"/><circle cx="42" cy="50" r="1.7"/><circle cx="47" cy="52" r="1.5"/>
+      </g>
+      <ellipse cx="36" cy="35" rx="6" ry="3.5" fill="#fff" opacity=".4" transform="rotate(-30 36 35)"/>
+    </symbol>
+    <!-- 冬: 雪うさぎ（白いこなしに南天の目、葉の耳） -->
+    <symbol id="s-jou-yukiusagi" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="86" rx="27" ry="3.5" fill="#b9cfdc" opacity=".45"/>
+      <path d="M40 44 Q28 20 24 30 Q23 40 40 48Z" fill="#5b9b4e"/>
+      <path d="M49 42 Q53 17 60 26 Q62 37 51 46Z" fill="#5b9b4e"/>
+      <path d="M38 46 Q32 36 27 31" stroke="#9fd08c" stroke-width="1" fill="none"/>
+      <path d="M50 44 Q54 34 58 27" stroke="#9fd08c" stroke-width="1" fill="none"/>
+      <ellipse cx="50" cy="62" rx="31" ry="23" fill="#fbfbfb"/>
+      <ellipse cx="50" cy="62" rx="31" ry="23" fill="none" stroke="#dde7ef" stroke-width="1.5"/>
+      <circle cx="34" cy="57" r="2.8" fill="#d8323d"/><circle cx="45" cy="55" r="2.8" fill="#d8323d"/>
+      <ellipse cx="62" cy="52" rx="9" ry="5" fill="#fff" opacity=".9" transform="rotate(-15 62 52)"/>
+    </symbol>
+    <!-- 冬: 花びら餅（初釜の菓子。白い餅に菱の桃色が透け、ごぼうをはさむ） -->
+    <symbol id="s-jou-hanabira" viewBox="0 0 100 100">
+      <rect x="8" y="50" width="84" height="5.5" rx="2.7" fill="#9c7548"/>
+      <rect x="8" y="50" width="84" height="2" rx="1" fill="#b58d5c" opacity=".8"/>
+      <path d="M17 54 Q50 96 83 54 Z" fill="#fbfaf6"/>
+      <ellipse cx="50" cy="64" rx="23" ry="12" fill="#f0aebb" opacity=".75"/>
+      <path d="M17 54 Q50 40 83 54 Q50 63 17 54 Z" fill="#fbfaf6"/>
+      <path d="M17 54 Q50 40 83 54" stroke="#eadfd6" stroke-width="1" fill="none"/>
+      <path d="M17 54 Q50 96 83 54" stroke="#eadfd6" stroke-width="1" fill="none"/>
+      <path d="M28 49.5 Q50 43 72 49.5 Q50 47 28 49.5Z" fill="#f0aebb" opacity=".7"/>
+      <ellipse cx="40" cy="64" rx="8" ry="3.5" fill="#fff" opacity=".6" transform="rotate(-20 40 64)"/>
+    </symbol>
     <!-- 茶碗（ゲージ） -->
     <symbol id="s-bowl" viewBox="0 0 100 100">
       <path d="M18 40 H82 C82 66 70 82 50 82 C30 82 18 66 18 40 Z" fill="#4a3a2c"/>
@@ -1573,7 +1795,7 @@
     <div class="sceneCap" id="resCap"></div>
     <h2 id="resHead">結構なお手前で</h2>
     <div class="rankRow">段位：<b id="resRank">二級</b></div>
-    <div class="ladder" id="resLadder"></div>
+    <div class="pyra" id="resLadder"></div>
     <p class="resComment" id="resComment"></p>
     <div class="resNext" id="resNext"></div>
     <div class="bigScore"><span>点数</span><b id="resScore">0</b></div>
@@ -1597,7 +1819,7 @@
 const N = 7;
 const DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
 const TYPES = ['waka','hoki','asa','anpan','yamak'];   // 定番5種（v0.10でやまかつらが定番入り、栗まるは秋の季節枠へ）
-const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou',
+const SYM = {waka:'#s-waka',hoki:'#s-hoki',asa:'#s-asa',anpan:'#s-anpan',kuri:'#s-kuri',jou:'#s-jou-sakura',
              manten:'#s-manten',yuzu:'#s-yuzu',hana:'#s-hana',yamak:'#s-yamak'};
 const PCOLOR = {waka:'#9cc95a',hoki:'#8f5546',asa:'#f5efe0',anpan:'#e8c07a',kuri:'#ecc25a',yama:'#b8cf8e',
                 jou:'#f6cdd8',manten:'#3b5ea8',yuzu:'#f2c93c',hana:'#f2a8bd',yamak:'#b8cf8e'};
@@ -1751,7 +1973,7 @@ setInterval(() => {
   while(bgmNext < a.currentTime + 1.4){
     const d = bgmNext - a.currentTime;
     const f = KOTO_SEQ[bgmStep % 64];
-    if(f){
+    if(f && bgmNext > melodyUntil){                     // 連鎖の歌が鳴っているあいだは調べを休ませる（v0.12）
       pluck(f, d, .045);
       if(bgmStep % 8 === 0) pluck(f / 2, d, .02);      // 低音の相の手
     }
@@ -1760,6 +1982,106 @@ setInterval(() => {
     bgmNext += .45; bgmStep++;
   }
 }, 300);
+
+/* ---------- 連鎖の調べ（v0.12）―― 連鎖が続くほど、季節の唱歌がひと節ずつ奏でられる ----------
+   一服（ただの消し込み）は従来どおり琴のひと爪。二服からは「いまの季節の歌」を、服が進むごとに一節ずつ琴で。
+   節の位置は手番をまたいで進む（同じ季節のあいだは同じ歌のつづき。五手のうちに半曲ほど進む）。季節が移れば次の歌、歌い終えても次の歌（季節ごとに三曲を順繰り）。
+   曲はすべて著作権保護期間の満了した童謡・唱歌・古謡（音源ファイルは使わず WebAudio の琴 pluck で合成） */
+const NOTE_IDX = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+function nf(name){ const m = /^([A-G][#b]?)(\d)$/.exec(name); return m ? 440 * Math.pow(2, (NOTE_IDX[m[1]] + (m[2] - 4) * 12 - 9) / 12) : 0; }
+// ph: 一節ずつ（一服につき一節）。'A4 A4 B4:2' ＝ 音名[:長さ] を空白区切り。長さの単位は u 秒（既定1）、r は休み
+// 十二曲（季節ごとに三曲）。いずれも作曲者の没後70年超／作者不詳の古謡・文部省唱歌で、著作権保護期間は満了。
+// 旋律は楽譜（Wikipedia LilyPond譜・おとタマ・mu-tech 等）で照合した（2026-08-20）。u = 四分音符の秒数
+const SONGS = {
+  spring:[
+    {t:'さくらさくら', u:.17, ph:[
+      'A4 A4 B4:2','A4 A4 B4:2','A4 B4 C5 B4','A4 B4:.5 A4:.5 F4:2',
+      'E4 C4 E4 F4','E4 E4:.5 C4:.5 B3:2','A4 B4 C5 B4','A4 B4:.5 A4:.5 F4:2',
+      'E4 C4 E4 F4','E4 E4:.5 C4:.5 B3:2','A4 A4 B4:2','A4 A4 B4:2',
+      'E4 F4 B4:.5 A4:.5 F4','E4:3']},
+    {t:'春が来た', u:.17, ph:[
+      'G4 E4:.5 F4:.5 G4 A4','G4 E4:.5 F4:.5 G4 C5','A4 G4 E4:1.5 C4:.5','D4:3',
+      'G4 A4:.5 G4:.5 E4 G4','C5 D5:.5 C5:.5 A4 C5','G4 E5 D5:1.5 G4:.5','C5:3']},
+    {t:'茶摘み', u:.16, ph:[
+      'D4 G4 A4','B4:1.5 B4:.5 B4 B4','D5:1.5 D5:.5 D5 B4','A4 G4 A4:2',
+      'B4 B4 D5','B4:1.5 B4:.5 B4 A4','B4:1.5 B4:.5 A4 G4','E4 E4 D4:2',
+      'D4 G4 A4','B4:1.5 B4:.5 B4 B4','D5:1.5 D5:.5 D5 B4','A4 G4 A4:2',
+      'D5 D5 B4','A4:1.5 A4:.5 G4 E4','D4 G4 A4:1.5 B4:.5','G4:3']}
+  ],
+  summer:[
+    {t:'ほたるこい', u:.18, ph:[
+      'A4:2 A4:2','A4 G4:.5 G4:.5 A4:2','A4 G4:.5 G4:.5 A4 B4:.5 B4:.5','A4 A4:.5 G4:.5 E4:2',
+      'A4 G4:.5 G4:.5 A4 B4:.5 B4:.5','A4 A4:.5 G4:.5 E4:2','A4:2 A4:2','A4 G4:.5 G4:.5 A4:2']},
+    {t:'たなばたさま', u:.18, ph:[
+      'C4 C4 F4 G4','A4 A4:.5 A4:.5 A4:2','A4 C5 C5 A4','F4 A4 G4:2',
+      'A4 A4:.5 A4:.5 C5 A4','G4 F4:.5 F4:.5 D4:2','F4 D4 C4 F4','G4 A4 F4:2']},
+    {t:'夏は来ぬ', u:.18, ph:[
+      'G4 E4:.5 F4:.5 G4:1.5 G4:.5','A4:.5 C5:.5 G4:.5 D5:.5 C5:.5 A4:.5 G4','A4 C5:.5 A4:.5 G4:1.5 G4:.5','A4:.5 D4:.5 D4:.5 G4:.5 E4:.5 C4:.5 D4',
+      'C4 E4 G4:1.5 G4:.5','A4:.5 G4:.5 A4:.5 C5:.5 G4:1.5 G4:.5','C5:1.5 E5:.5 D5 D5','C5:3']}
+  ],
+  autumn:[
+    {t:'紅葉', u:.17, ph:[
+      'A4 G4:.5 F4:.5 G4 A4','F4:2 C4','F4 E4:.5 F4:.5 G4 C5','A4 G4:.5 F4:.5 G4:2',
+      'A4 G4:.5 F4:.5 G4 A4','F4:2 C4','F4 E4:.5 F4:.5 G4 C5','A4 G4 F4:2',
+      'C5 A4:.5 Bb4:.5 C5 D5','C5:2 A4','C5 D5:.5 C5:.5 A4 G4:.5 F4:.5','G4 A4 G4:2',
+      'C5 D5:.5 C5:.5 A4 G4','F4:2 C4','F4 E4:.5 F4:.5 A4 G4','F4:3']},
+    {t:'赤とんぼ', u:.2, ph:[
+      'C4:.5 F4:.5 F4:1.5 G4:.5','A4:.5 C5:.5 F5:.5 D5:.5 C5','D5:.5 F4:.5 F4 G4 A4:2',
+      'A4:.5 D5:.5 C5:1.5 D5:.5','F5:.5 D5:.5 C5:.5 D5:.5 C5:.5 A4:.5','C5:.5 A4:.5 F4:.5 A4:.5 G4:.5 F4:.5 F4:2']},
+    {t:'虫のこえ', u:.18, ph:[
+      'G4:.5 E4:.5 A4:.5 A4:.5 G4:.5 G4:.5 E4','C5:.5 C5:.5 A4:.5 A4:.5 G4:2','G4:.5 A4:.5 G4:.5 A4:.5 G4:.5 G4:.5 G4',
+      'G4:.5 E4:.5 A4:.5 A4:.5 G4:.5 G4:.5 E4','C5:.5 C5:.5 A4:.5 A4:.5 G4:2','G4:.5 A4:.5 G4:.5 A4:.5 G4:.5 G4:.5 G4',
+      'G4 E4:.5 A4:.5 G4:.5 G4:.5 E4:.5 E4:.5','C5:.5 C5:.5 B4:.5 A4:.5 G4:2','C5 B4:.5 A4:.5 G4:.5 G4:.5 E4','A4:.5 A4:.5 G4:.5 G4:.5 C4:2']}
+  ],
+  winter:[
+    {t:'雪', u:.18, ph:[
+      'C5:.75 D5:.25 C5:.75 D5:.25 C5 A4:.5','A4:.75 Bb4:.25 A4:.75 Bb4:.25 A4 F4:.5','A4 F4:.5 G4:.5 A4 F4:.5 G4:.5','A4:.75 Bb4:.25 C5:.5 C5:.5 G4:.75 A4:.25 G4:.5',
+      'C5:.75 D5:.25 C5:.75 D5:.25 C5:.5 C5:.5 A4:.5 A4:.5','A4:.75 Bb4:.25 A4:.75 Bb4:.25 A4:.5 A4:.5 F4:.5','D5 C5:.5 A4:.5 C5:.5 C5:.5 A4:.5 F4:.5','A4:.5 A4:.5 G4:.75 G4:.25 F4:2']},
+    {t:'お正月', u:.16, ph:[
+      'F4:2 G4 F4:.5 G4:.5','A4 C5 A4:2','G4 G4 F4 G4 A4:3',
+      'F4:.5 F4:.5 D4:.5 D4:.5 C4:.5 C4:.5 C4','F4:.5 F4:.5 G4:.5 G4:.5 A4:2','A4:.5 A4:.5 G4 F4:.5 F4:.5 F4:.5 F4:.5','G4:.5 G4:.5 A4:.5 A4:.5 C5:2',
+      'F4:2 G4 F4:.5 G4:.5','A4 C5 A4 A4','G4 G4 A4 G4 F4:3']},
+    {t:'冬景色', u:.2, ph:[
+      'F4 A4 C5','C5:1.5 Bb4:.5 A4','G4:1.5 C5:.5 G4:.5 E4:.5 C4:2',
+      'C4 E4 G4','A4:1.5 G4:.5 F4','A4:1.5 A4:.5 G4:.5 E4:.5 F4:2',
+      'A4:2 C4','F4:.5 G4:.5 A4:.5 Bb4:.5 C5','D5:1.5 C5:.5 Bb4:.5 G4:.5 A4:2',
+      'A4 G4 F4','C4:1.5 D4:.5 C4','A4:1.5 G4:.5 F4:.5 E4:.5 F4:2']}
+  ]
+};
+const songIdx = {spring:0, summer:0, autumn:0, winter:0};
+for(const s in songIdx) songIdx[s] = Math.random() * SONGS[s].length | 0;  // 遊ぶたびに最初の歌が変わる
+let song = null, songPos = 0, songSeason = null, lastPhraseAt = 0, melodyUntil = 0;   // melodyUntil: 歌の一節が鳴り終わる時刻（BGMはそのあいだ休む）
+function startSong(){  // その季節の次の歌を頭から（季節ごとに三曲を順繰り）
+  const L = SONGS[fxSeason] || SONGS.spring;
+  song = L[songIdx[fxSeason]++ % L.length]; songSeason = fxSeason; songPos = 0;
+}
+function songTag(){    // 歌のはじまりに、盤の下辺へ曲名をそっと
+  const s = document.createElement('div'); s.className = 'songTag';
+  s.textContent = '♪ ' + song.t;
+  board.appendChild(s); setTimeout(() => s.remove(), 2700);
+}
+// 一節を奏でる。節の位置は手番をまたいで進む（同じ季節のあいだは同じ歌のつづき）。
+// 季節が移れば次の歌、歌い終えても次の歌。長く間があいたとき（45秒）は頭から
+function playPhrase(wave){
+  const now = performance.now() / 1000;
+  if(!song || songSeason !== fxSeason || songPos >= song.ph.length) startSong();
+  else if(now - lastPhraseAt > 45) songPos = 0;
+  lastPhraseAt = now;
+  if(songPos === 0) songTag();
+  const ph = song.ph[songPos++].split(' ');
+  const u = song.u || .16, vol = Math.min(.26, .15 + wave * .012);
+  let t = 0;
+  for(let i = 0; i < ph.length; i++){
+    const tok = ph[i].split(':'), dur = tok[1] ? parseFloat(tok[1]) : 1;
+    if(tok[0] !== 'r'){
+      const f = nf(tok[0]);
+      pluck(f, t, vol);
+      if(i === 0 && wave >= 4) pluck(f / 2, t, .05);   // 四服からは低音の相の手を添える
+    }
+    t += dur * u;
+  }
+  if(AC) melodyUntil = AC.currentTime + t + .35;
+}
 const collected = {waka:0, asa:0, anpan:0};
 
 let speed = 1; // 検証用に演出を早送りできる
@@ -1769,8 +2091,21 @@ const unkey = k => k.split(',').map(Number);
 const inB = (r,c) => r >= 0 && r < N && c >= 0 && c < N;
 const isWall = p => !p;
 
+// 上生菓子（発火剤）の意匠 ―― 季節ごとに三種。生まれたときの演出の季節から順繰りに選ぶ（同じ季節で同じ意匠が続かない）
+const JOU_SETS = {
+  spring:[{id:'#s-jou-sakura', n:'桜'}, {id:'#s-jou-ume', n:'梅'}, {id:'#s-jou-nanohana', n:'菜の花'}],
+  summer:[{id:'#s-jou-ajisai', n:'紫陽花'}, {id:'#s-jou-asagao', n:'朝顔'}, {id:'#s-jou-mizu', n:'水の彩'}],
+  autumn:[{id:'#s-jou-kiku', n:'菊'}, {id:'#s-jou-momiji', n:'紅葉'}, {id:'#s-jou-tsuki', n:'月のうさぎ'}],
+  winter:[{id:'#s-jou-tsubaki', n:'椿'}, {id:'#s-jou-yukiusagi', n:'雪うさぎ'}, {id:'#s-jou-hanabira', n:'花びら餅'}]
+};
+const jouIdx = {spring:0, summer:0, autumn:0, winter:0};
+function pickJou(){
+  const L = JOU_SETS[fxSeason] || JOU_SETS.spring;
+  return L[jouIdx[fxSeason]++ % L.length];
+}
 function pieceSVG(p){
-  return `<svg viewBox="0 0 100 100"><use href="${SYM[p.type]}"/></svg>`;
+  const href = (p.type === 'jou' && p.jou) ? p.jou.id : SYM[p.type];
+  return `<svg viewBox="0 0 100 100"><use href="${href}"/></svg>`;
 }
 function updateVisual(p){
   p.el.innerHTML = pieceSVG(p);
@@ -1784,6 +2119,7 @@ function place(p, r, c, instant){
 }
 function makePiece(type, r, c, spawnAbove){
   const p = {type, r, c, el: document.createElement('div')};
+  if(type === 'jou') p.jou = pickJou();
   p.el.className = 'piece';
   updateVisual(p);
   board.appendChild(p.el);
@@ -2108,7 +2444,7 @@ function showChain(wave, label){
     const t = document.querySelector('.tray');
     t.classList.remove('chainGlow'); t.offsetHeight; t.classList.add('chainGlow');
     setTimeout(() => t.classList.remove('chainGlow'), 750);
-    pluck(1046.5 + lv * 30, .06, .1);
+    // （六服からの高いひと爪は v0.12 で歌に譲った）
   }
 }
 function goldRain(n, withPetals){
@@ -2235,7 +2571,8 @@ function expandAll(set, ignited){
   }
 }
 function applyPlan(pp){
-  pp.p.type = 'jou';              // 発火剤の上生菓子が生まれる
+  pp.p.type = 'jou';              // 発火剤の上生菓子が生まれる（意匠はそのときの季節から）
+  pp.p.jou = pickJou();
   pluck(1318.5, 0, .18); pluck(1568, .09, .14);
   updateVisual(pp.p);
   const bel = pp.p.el;
@@ -2257,7 +2594,8 @@ async function clearWave(set, opt){
     for(let i = 0; i < planPieces.length; i++) applyPlan(planPieces[i]);
     return 0;
   }
-  pluck(PENTA[Math.min(mult - 1, 5)]);
+  // 一服は琴のひと爪、二服からは季節の歌を一節ずつ（大茶会の金色の払いは従来の律音階のまま）
+  if(!opt.gold && mult >= 2) playPhrase(mult); else pluck(PENTA[Math.min(mult - 1, 5)]);
   // 得点：連なりはレア度に応じて、巻き込んだ分は一律
   let pts = 0, groupCells = 0;
   for(let i = 0; i < groups.length; i++){
@@ -2555,20 +2893,23 @@ function chainLabel(){
   return maxChain >= 2 ? kanjiNum(maxChain) + '服' : '一服';
 }
 // 段位は点数だけで決まる（連鎖も個数も、点数という一本の物差しに集約される）。
-// 上位は 五段→匠→達人→名人 の順（v0.11で原さん指定）。名人は難易度超高（12万）。1手先読みの自動プレイは中央値1万・最高4万程度。
-// 段位ごとに、お手前を段階的に講評する
+// 上位は 五段→匠→達人→名人 の順（v0.11で原さん指定）。名人＝頂点は10万（v0.12で12万から補正）。1手先読みの自動プレイは中央値1万・最高4万程度。
+// さらに隠れ階級「大名茶人」（不昧公と同等域のレジェンド・25万）を名人の上に置く。ふだんは図にも文にも出さず、到達したときだけ現れる。
+// 講評の語気は段位の高さに揃える（v0.12。達人に「天下一」は名人より上に聞こえるので改めた）:
+//   級位＝励まし ／ 初段〜四段＝ほめる ／ 五段・匠＝感心 ／ 達人＝名人に迫る ／ 名人＝不昧公が認める ／ 大名茶人＝不昧公と肩を並べる「天下一」
 // h = 結果画面の表題（段位ごとに数通り。同じ「お手前、拝見しました」ばかりでは味気ないので）
 const RANKS = [
   {min:0,     name:'二級', h:['精進が必要ですな','まずは一服、また参られよ'], c:'まずは一服。盆をよく見て、大きなかたまりを狙ってみましょう。'},
   {min:4000,  name:'一級', h:['もう一息、精進なされ','筋はよろしい'], c:'筋がいい。次は詰合せを一箱、詰めきってみましょう。'},
   {min:7000,  name:'初段', h:['結構なお手前で','よい一服でした'], c:'お見事、初段。連鎖の味を覚えましたね。'},
-  {min:11000, name:'二段', h:['結構なお手前で','なかなかの腕前'], c:'なかなかの腕前。上生菓子の発火剤を活かせています。'},
-  {min:15000, name:'三段', h:['お見事！','見事なお手前'], c:'上手いお手前。連鎖がよく伸びました。'},
-  {min:19000, name:'四段', h:['お見事！','玄人の手つき'], c:'玄人の域。茶席の空気を読む手つきです。'},
-  {min:24000, name:'五段', h:['感服いたしました','見事な茶席でした'], c:'見事な茶席でした。不昧公も目を細めておいでです。'},
+  {min:11000, name:'二段', h:['なかなかの腕前','板についてきましたな'], c:'なかなかの腕前。上生菓子の発火剤を活かせています。'},
+  {min:15000, name:'三段', h:['お見事！','冴えたお手前'], c:'上手いお手前。連鎖がよく伸びました。'},
+  {min:19000, name:'四段', h:['見事なお手前','玄人の手つき'], c:'玄人の域。茶席の空気を読む手つきです。'},
+  {min:24000, name:'五段', h:['感服いたしました','堂に入った茶席'], c:'堂に入った茶席でした。不昧公も目を細めておいでです。'},
   {min:30000, name:'匠',   h:['匠の技、恐れ入りました','見事な手際'], c:'匠の腕前。八雲も筆を止めて、この連鎖の音に耳をすませたことでしょう。'},
-  {min:60000, name:'達人', h:['達人の域、感服いたしました','天下一のお手前'], c:'達人位。松江の茶席で末永く語り草になる、見事な一服でした。'},
-  {min:120000, name:'名人', h:['天晴れ、名人','不昧公も脱帽'], c:'名人位。不昧公より一服、進ぜよう。'}
+  {min:60000, name:'達人', h:['達人の域、感服いたしました','名人に迫るお手前'], c:'達人位。松江の茶席で末永く語り草になる、見事な一服でした。名人の座は、もう目の前。'},
+  {min:100000, name:'名人', h:['天晴れ、名人','不昧公もお認めの腕'], c:'名人位。頂に立つお手前。不昧公より一服、進ぜよう。'},
+  {min:250000, name:'大名茶人', hidden:true, h:['天下一の茶人、ここにあり','不昧公と並ぶ大名茶人'], c:'大名茶人。不昧公が「わが茶友」と呼ぶ、伝説の域。この一服、松江の語り草として末代まで。'}
 ];
 function rankIndex(){
   let i = 0;
@@ -2576,6 +2917,26 @@ function rankIndex(){
   return i;
 }
 function rankName(){ return RANKS[rankIndex()].name; }
+// 点数の目安を短く（4000→4千、30000→3万、250000→25万）
+function fmtMan(n){
+  if(n <= 0) return '';
+  if(n < 10000) return (n / 1000) + '千';
+  const m = n / 10000;
+  return (Math.round(m * 10) / 10) + '万';
+}
+// 段位の図 ―― ピラミッド。頂点は名人。隠れ階級の大名茶人は、到達したときだけ金の冠石として名人の上に現れる
+function rankPyramid(ri){
+  const vis = RANKS.map((r, i) => ({r:r, i:i})).filter(x => !x.r.hidden || x.i <= ri);
+  const top = vis.length - 1, W0 = 72, STEP = 16;
+  let html = '';
+  for(let k = top; k >= 0; k--){
+    const x = vis[k], w = x.r.hidden ? 60 : W0 + (top - k - (vis[top].r.hidden ? 1 : 0)) * STEP;
+    const cls = x.r.hidden ? 'legend' : (x.i < ri ? 'got' : x.i === ri ? 'now' : '');
+    const th = x.r.hidden ? '' : fmtMan(x.r.min);
+    html += '<i class="' + cls + '" style="width:' + w + 'px">' + x.r.name + (th ? '<small>' + th + '</small>' : '') + '</i>';
+  }
+  return html;
+}
 // お手前の中身に応じた一言を添える
 function playNote(){
   if(maxChain >= 10) return '十服を超える大連鎖、見応えがありました。';
@@ -2596,11 +2957,13 @@ function checkEnd(){
   document.getElementById('resHead').textContent = R.h[Math.random() * R.h.length | 0];
   document.getElementById('resRank').textContent = R.name;
   document.getElementById('resComment').textContent = R.c + ' ' + playNote();
-  document.getElementById('resNext').textContent = (ri < RANKS.length - 1)
-    ? '次の段位「' + RANKS[ri + 1].name + '」まで あと ' + (RANKS[ri + 1].min - score).toLocaleString() + ' 点'
+  // 次の段位まであと何点。隠れ階級（大名茶人）は名人のときにも明かさない
+  const nx = RANKS[ri + 1];
+  document.getElementById('resNext').textContent = R.hidden ? '伝説の域。不昧公と肩を並べる、天下一の茶人です。'
+    : (nx && !nx.hidden) ? '次の段位「' + nx.name + '」まで あと ' + (nx.min - score).toLocaleString() + ' 点'
     : '最高位です。お見事。';
-  document.getElementById('resLadder').innerHTML = RANKS.map((r, i) =>
-    '<i class="' + (i < ri ? 'got' : i === ri ? 'now' : '') + '">' + r.name + '</i>').join('');
+  document.getElementById('resLadder').innerHTML = rankPyramid(ri);
+  document.getElementById('resultOv').classList.toggle('legend', !!R.hidden);
   document.getElementById('resScore').textContent = score.toLocaleString();
   document.getElementById('resPieces').textContent = totalPieces;
   document.getElementById('resChain').textContent = chainLabel();
