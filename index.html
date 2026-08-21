@@ -1958,6 +1958,12 @@ try{
   if(saved && SYM[saved]) GUEST = saved;
 }catch(e){}
 TYPES.push(GUEST);
+// 若草だけわずかに出やすい（v0.16。看板商品のえこひいき）。一様なら6種とも約16.7%のところ、
+// 若草は約20%・他5種は約15.9%（約1.28倍）。普通に遊んで気づかない程度だが、
+// 二択で消し込みに迷ったら若草を選ぶ方が次が揃いやすく、詰合せ（若草20個）も進みやすい。
+// 偏りを変えるときはこの数字ひとつ（0でえこひいきなし。+0.045で若草+4.5%）
+const WAKA_EXTRA = .045;
+function pickType(){ return Math.random() < WAKA_EXTRA ? 'waka' : TYPES[Math.random()*TYPES.length|0]; }
 const GUEST_SEASON = {hana:'春', manten:'夏', kuri:'秋', yuzu:'冬'};
 function updateGuestBox(){
   document.getElementById('guestUse').setAttribute('href', SYM[GUEST]);
@@ -2335,7 +2341,7 @@ function init(){
     if(grid[r][c]) continue;
     let t, tries = 0;
     do {
-      t = TYPES[Math.random()*TYPES.length|0];
+      t = pickType();
       grid[r][c] = {type:t};                     // 判定用の仮置き
     } while(groupSizeAt(r,c) >= 3 && ++tries < 24);
     grid[r][c] = makePiece(t, r, c, 0);
@@ -2832,7 +2838,7 @@ async function gravity(){
       const r = holes - 1 - i;
       let t, tries = 0;
       do {
-        t = TYPES[Math.random()*TYPES.length|0];
+        t = pickType();
         grid[r][c] = {type:t};                   // 判定用の仮置き
       } while(groupSizeAt(r,c) >= 3 && ++tries < 20);
       grid[r][c] = makePiece(t, r, c, holes);
