@@ -454,6 +454,21 @@
   }
   .prBand .shopLink:active{background:#f0e2bc}
 
+  /* ===== v0.16 追加分 ===== */
+
+  /* 季節ピースの選択（スタート画面）。ふだんは今日の季節の銘菓、お好みで四季どれでも */
+  .guestPick{display:flex;justify-content:center;gap:5px;margin:6px 0 2px;flex-wrap:wrap}
+  .guestPick button{
+    display:inline-flex;align-items:center;gap:4px;cursor:pointer;
+    font-size:10.5px;letter-spacing:.06em;color:#5c4f3c;
+    padding:3px 8px 3px 5px;border-radius:999px;border:1px solid #d8cbae;background:#fffdf6;
+  }
+  .guestPick button svg{width:17px;height:17px;display:block}
+  .guestPick button.on{
+    border-color:var(--gold);background:#fff3d4;color:var(--sumi);
+    box-shadow:0 0 7px rgba(201,162,75,.45);
+  }
+
   /* ===== v0.15 追加分 ===== */
 
   /* 完奏の祝福（連鎖の途中でも遊びを止めない、浮かぶ札） */
@@ -476,30 +491,6 @@
     24%{transform:translate(-50%,-50%) scale(1)}
     82%{opacity:1;transform:translate(-50%,-54%)}
     100%{opacity:0;transform:translate(-50%,-78%)}}
-
-  /* 名物拝見 ― 完奏の褒美に、不昧公が雲州蔵帳の一品を披露する */
-  .meibutsuCard{
-    position:absolute;left:50%;top:58%;transform:translateX(-50%);width:min(86%,252px);
-    background:var(--washi);border:2px solid var(--gold);border-radius:12px;padding:10px 14px 11px;
-    box-shadow:0 0 26px rgba(232,201,106,.45),0 10px 30px rgba(0,0,0,.45);
-    pointer-events:none;z-index:6;text-align:center;animation:meibutsuA 3.1s ease forwards;
-  }
-  .meibutsuCard em{font-style:normal;font-size:9.5px;letter-spacing:.22em;color:#8a7a5e}
-  .meibutsuCard b{display:block;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:21px;letter-spacing:.16em;color:var(--sumi);margin:3px 0 1px}
-  .meibutsuCard i{font-style:normal;font-size:10px;color:var(--azuki);letter-spacing:.12em}
-  .meibutsuCard p{font-size:10.5px;color:#5c4f3c;line-height:1.6;margin-top:5px;letter-spacing:.02em}
-  @keyframes meibutsuA{
-    0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.94)}
-    9%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
-    88%{opacity:1}
-    100%{opacity:0;transform:translateX(-50%) translateY(-12px)}}
-
-  /* 結果：完奏の歌・拝見の名物 */
-  #resultOv .resSongs{
-    font-family:"Yu Mincho",serif;font-size:11px;color:#5c4f3c;letter-spacing:.06em;
-    line-height:1.7;margin:-2px 0 8px;
-  }
-  #resultOv .resSongs em{font-style:normal;font-size:9.5px;color:#8a7a5e;letter-spacing:.18em;margin-right:4px}
 
   /* ===== 検分モード（暫定：連鎖の調べの音階確認用。検分が済んだらこのブロックごと削除） ===== */
   .overlay button.testGhost{
@@ -526,6 +517,7 @@
     border:1px solid #e2d8c2;font-size:10.5px;color:#5c4f3c;font-variant-numeric:tabular-nums;
   }
   .tChip small{font-size:8px;color:#b0a284}
+  .tChip i{font-style:normal;font-size:9px;color:#b0a284}
   .tChip.on{background:var(--gold);border-color:var(--gold);color:#fff}
   .tChip.on small{color:#fff3d4}
   .tChip.br{margin-right:9px}
@@ -539,7 +531,7 @@
 <div class="wrap">
   <header>
     <h1>若草かさね</h1>
-    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.15</b></div>
+    <div class="sub">彩雲堂 銘菓パズル <b>たたき台 v0.16</b></div>
     <div class="rule"></div>
     <div style="margin-top:6px"><span class="seasonTag" id="seasonTag">花の候</span></div>
   </header>
@@ -590,7 +582,7 @@
     <b>詰合せ</b>を一箱詰め終えるごとに<b>手数と点</b>がもらえます。次の箱は一回り大きくなります。<br>
     <b>一度に5つ以上</b>消すと<b>上生菓子（発火剤）</b>が生まれます。となりで消し込みが起きると
     <b>小爆発</b>してまわりを巻き込み、近くの上生菓子にも燃えうつります。手数1つで動かせます。意匠はそのときの季節の練り切り（桜・梅・菜の花／紫陽花・朝顔・水の彩／菊・紅葉・月のうさぎ／椿・雪うさぎ・花びら餅）。<br>
-    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。<b>連鎖の音は季節の歌の一音ずつ</b>（一服目が一音目、二服目が二音目…「さ・く・ら・さ・く・ら」と六服つなげば「さくらさくら」）。二十服前後で<b>完奏</b>し、次の歌へ。服を重ねるほど低音の重ね・和音・太鼓と小鼓が加わり、だんだん賑やかに盛り上がります。連鎖のあいだは歌の音階を最優先に、BGMや鳴り物は音程を持たない太鼓・鼓だけで脇に控えます。<b>完奏</b>できたら拍手と紙吹雪でお祝い ― さらに不昧公が<b>雲州蔵帳の名物</b>を一品、披露してくれます（結果にも記録されます）。
+    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。<b>連鎖の音は季節の歌</b> ― 一服が歌の一拍にあたり、「さ・く・ら・さ・く・ら」と六服つなげば「さくらさくら」。歌によっては一服に二音の「タタン」も入って、原曲のリズムどおりに進みます。歌いきれば<b>完奏</b>、拍手と紙吹雪でお祝いして次の歌へ。服を重ねるほど低音の重ね・和音・太鼓と小鼓が加わり、だんだん賑やかに盛り上がります。連鎖のあいだは歌の音階を最優先に、BGMや鳴り物は音程を持たない太鼓・鼓だけで脇に控えます。曲は季節ごとに二曲（春＝さくらさくら・朧月夜／夏＝たなばたさま・われは海の子／秋＝月・虫のこえ／冬＝雪・お正月。いずれも著作権保護期間の満了した曲）。
     茶碗ゲージが満ちると<b>不昧公</b>が降臨し、大茶会の<b>百花繚乱</b> ― 盤の真ん中から二度の大払い。<br>
     <b>パンダは連鎖の命綱</b>。ゲージが満タンなら連鎖中にタップして<b>呼んでおく</b>と、
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
@@ -598,7 +590,7 @@
     <b>茶筅</b>ボタンで盤面をひとまぜ。詰合せを一箱詰めるごとにひと振りもどります（一局で計3回まで）。手詰まりの時は自動でまぜ直します。<br>
     <b>五手ごとに、春から順に季節がめぐります</b>（二十手でひとめぐり）。季節が変わると松江の名勝が画面上部に大きく映り、
     舞い散るものや連鎖の景色も移ろいます。<b>十服(10連鎖)</b>からは情景がカットインで入ります。<br>
-    今の季節の<b>お替わり銘菓</b>が仲間入りします。段位は点数だけで決まります。<br>
+    今の季節の<b>お替わり銘菓</b>が仲間入りします（スタート画面で、お好みの季節の銘菓に替えることもできます）。段位は点数だけで決まります。<br>
     右上の<b>♪</b>で効果音、<b>♫</b>で調べ（BGM）、<b>投</b>で投了できます。
   </details>
   <div class="foot">松江・彩雲堂 ― 試作につき非売品</div>
@@ -1863,6 +1855,7 @@
       <svg viewBox="0 0 100 100" id="guestSvg"><use id="guestUse" href="#s-manten"/></svg>
       <div class="guestTxt"><span id="guestLead">今は夏 ― 季節のお替わり銘菓</span><br><b id="guestName">満天</b><span id="guestNote"></span></div>
     </div>
+    <div class="guestPick" id="guestPick"></div>
     <button id="startBtn">はじめる</button>
     <div class="shopRow">
       <svg class="kanban" viewBox="0 0 220 60"><use href="#s-kanban"/></svg>
@@ -1907,9 +1900,7 @@
       <li><span>詰合せ</span><b id="resBoxes">0箱</b><i id="resBonus">―</i></li>
       <li><span>消した銘菓</span><b id="resPieces">0</b><i>個</i></li>
       <li><span>最大連鎖</span><b id="resChain">一服</b><i></i></li>
-      <li><span>完奏の歌</span><b id="resSongs">―</b><i></i></li>
     </ul>
-    <div class="resSongs" id="resSongList" style="display:none"></div>
     <button onclick="location.reload()">もう一服</button>
     <div class="prBand">
       <svg class="saiun" viewBox="0 0 400 40" preserveAspectRatio="none"><use href="#s-saiun"/></svg>
@@ -1923,7 +1914,8 @@
 <div class="overlay" id="testOv">
   <div class="card">
     <h2>調べ検分</h2>
-    <p class="testNote">連鎖の調べに使う各曲の音階を、そのままの琴の音で確認できます（暫定機能）。<br>
+    <p class="testNote">連鎖の調べに使う各曲を、実際の連鎖と同じテンポ（一服≒0.6秒）で確認できます（暫定機能）。<br>
+      「ラ･ラ」のように点でつないだところは一服に二音の「タタン」。<br>
       「盛り上げ再現」を入れると、実際の連鎖と同じ低音の重ね・和音・鼓が加わります。</p>
     <label class="testOpt"><input type="checkbox" id="testLayer"> 盛り上げ再現（服が深まる響きも鳴らす）</label>
     <div id="testList"></div>
@@ -1967,9 +1959,41 @@ const GUESTINFO = {
   kuri:  {name:'栗まる', note:'栗を丸ごとひとつ包んだ秋の菓子'}
 };
 // 定番5種（若草・伯耆坊・朝汐・あんぱん饅頭・やまかつら）に、季節の銘菓が6種目として仲間入りする。
-// 種類が増えるほど偶然には揃いにくくなり、狙って形を作る腕の見せどころが生まれる
-const GUEST = SEA.guest;
+// 種類が増えるほど偶然には揃いにくくなり、狙って形を作る腕の見せどころが生まれる。
+// ふだんは今日の季節の銘菓。スタート画面で好みの季節の銘菓に替えられる（v0.16。選んだ好みは次の一局にも引き継ぐ）
+let GUEST = SEA.guest;
+try{
+  const saved = localStorage.getItem('wakakusaGuest');
+  if(saved && SYM[saved]) GUEST = saved;
+}catch(e){}
 TYPES.push(GUEST);
+const GUEST_SEASON = {hana:'春', manten:'夏', kuri:'秋', yuzu:'冬'};
+function updateGuestBox(){
+  document.getElementById('guestUse').setAttribute('href', SYM[GUEST]);
+  document.getElementById('guestName').textContent = GUESTINFO[GUEST].name;
+  document.getElementById('guestNote').textContent = GUESTINFO[GUEST].note;
+  document.getElementById('guestLead').textContent = (GUEST === SEA.guest)
+    ? '今は' + SEA.name + ' ― 季節の銘菓が仲間入り'
+    : 'お好みで ― ' + GUEST_SEASON[GUEST] + 'の銘菓が仲間入り';
+  document.querySelectorAll('#guestPick button').forEach(b => b.classList.toggle('on', b.dataset.g === GUEST));
+}
+function setGuest(k){
+  if(k === GUEST || busy) return;
+  const old = GUEST;
+  GUEST = k;
+  TYPES[TYPES.length - 1] = k;
+  try{
+    if(k === SEA.guest) localStorage.removeItem('wakakusaGuest');   // 季節どおりに戻したら、おまかせに帰る
+    else localStorage.setItem('wakakusaGuest', k);
+  }catch(e){}
+  // 盤の上のお替わり銘菓も、その場で衣替え（同じマスを同じ種類のまま置き換えるので、新しい消し込みは生まれない）
+  if(grid) for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
+    const p = grid[r][c];
+    if(p && p.type === old){ p.type = k; updateVisual(p); }
+  }
+  pluck(587.3, 0, .14);
+  updateGuestBox();
+}
 
 function kanjiNum(n){
   const K = ['','一','二','三','四','五','六','七','八','九'];
@@ -2109,55 +2133,46 @@ setInterval(() => {
   }
 }, 300);
 
-/* ---------- 連鎖の調べ（v0.13、v0.14で盛り上げ直し）―― 一服ごとに一音。連鎖をつなぐほど、季節の歌が一音ずつ進む ----------
-   連鎖の効果音（琴のひと爪）そのものが歌の音になる。一服目＝歌の一音目、二服目＝二音目、三服目＝三音目…
-   「さ・く・ら・さ・く・ら」と六服つなげば「さくらさくら」を奏でたことになる。歌は手番ごとに頭から。
-   曲はどれも15〜25音（二十服前後で完奏。短すぎる曲は続きの句で、長すぎる曲は句の選び方で帳尻を合わせた）。
-   完奏すると拍手・紙吹雪・名物拝見（雲州蔵帳の一品）で祝い、次の歌へ進む。完奏の札には曲名も出す（v0.15）。
-   歌は季節ごとに一曲（その季節のあいだは同じ歌。季節が移れば次の歌。最初の歌は遊ぶたびに変わる）。
+/* ---------- 連鎖の調べ（v0.13、v0.16で拍にそろえ直し）―― 一服ごとに一拍。連鎖をつなぐほど、季節の歌が進む ----------
+   連鎖の効果音（琴のひと爪）そのものが歌の音になる。一服目＝一拍目、二服目＝二拍目…
+   連鎖の落下・消去は機械側の一定のテンポ（一服≒0.6秒）で進むので、そのテンポを拍として扱い、
+   歌の側を拍に合わせて編曲する（v0.16）。原曲で二つの音が一拍に収まるところは「タタン」と
+   一服に二音を続けて鳴らし（譜面では A4+B4 と書く）、原曲で引き延ばす音や装飾の音は
+   前の音とまとめて省く。こうすると等間隔の連鎖でも原曲のリズムどおりに聞こえる。
+   曲は聞き取りやすいものだけ8曲に絞った（v0.16。季節ごとに二曲。最初の歌は遊ぶたびに変わり、
+   完奏か季節替わりで次の歌へ。歌は手番ごとに頭から）。
    盛り上げは服の深さに応じて段々に（chainNote参照）: 独奏 → 四服から低音の重ね → 八服から五度の和音 →
    十服から大太鼓 → 十二服から小鼓の拍子 → 十三服から高音も重ねた総奏。曲はすべて著作権保護期間の満了した童謡・唱歌・古謡
-   （旋律は Wikipedia の LilyPond 譜・おとタマ・mu-tech 等の楽譜で照合。2026-08-20。
-   　たなばたさま＝下総皖一・1962年没は、旧法の没後50年を2012年に満了しており保護は復活しない） */
+   （旋律・リズムは mu-tech（音楽研究所）のMIDI譜を機械解析して照合。2026-08-21。
+   　たなばたさま＝下総皖一・1962年没は、旧法の没後50年を2012年に満了しており保護は復活しない。
+   　朧月夜＝作曲・岡野貞一 1941年没、作詞・高野辰之 1947年没でともに満了） */
 const NOTE_IDX = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
 function nf(name){ const m = /^([A-G][#b]?)(\d)$/.exec(name); return m ? 440 * Math.pow(2, (NOTE_IDX[m[1]] + (m[2] - 4) * 12 - 9) / 12) : 0; }
-// n: 一音ずつ空白区切り。音名のうしろの | は句の切れ目（和音＋太鼓で区切る）。一音＝一服
+// n: 一拍（＝一服）ずつ空白区切り。A4+B4 は一服に二音の「タタン」。音名のうしろの | は句の切れ目（太鼓で区切る）
 const SONGS = {   // l: 歌詞（検分モードの表示用。音との厳密な対応付けはしない）
   spring:[
-    {t:'さくらさくら', l:'さくら さくら やよいの そらは みわたす かぎり', n:'A4 A4 B4| A4 A4 B4| A4 B4 C5 B4| A4 B4 A4 F4| E4 C4 E4 F4| E4 E4 C4 B3|'},   // さくら さくら やよいの そらは みわたす かぎり（22）
-    {t:'春が来た',     l:'はるがきた はるがきた どこにきた やまにきた', n:'G4 E4 F4 G4 A4| G4 E4 F4 G4 C5| A4 G4 E4 C4 D4| G4 A4 G4 E4 G4|'},            // はるがきた はるがきた どこにきた やまにきた（20）
-    {t:'茶摘み',       l:'なつもちかづく はちじゅうはちや のにもやまにも', n:'D4 G4 A4 B4 B4 B4 B4| D5 D5 D5 B4 A4 G4 A4| B4 B4 D5 B4 B4 B4 A4|'}           // なつもちかづく はちじゅうはちや のにもやまにも（21）
+    {t:'さくらさくら', l:'さくら さくら やよいの そらは みわたす かぎり', n:'A4 A4 B4| A4 A4 B4| A4 B4 C5 B4| A4 B4 A4 F4| E4 C4 E4 F4| E4 E4 C4 B3|'},   // さくら さくら やよいの そらは みわたす かぎり（22服・原曲がほぼ等拍）
+    {t:'朧月夜',       l:'なのはなばたけに いりひうすれ', n:'F#4 F#4 D4 E4| F#4 A4 A4 B4| E4 F#4 D4 E4 A4 F#4|'}                              // なのはなばたけに いりひうすれ（14服・ニ長調。「にー」の下がる持ち音は省略）
   ],
   summer:[
-    {t:'ほたるこい',   l:'ほうほう ほたるこい あっちのみずは にがいぞ', n:'A4 A4| A4 G4 G4 A4| A4 G4 G4 A4 B4 B4| A4 A4 G4 E4|'},                        // ほうほう ほたるこい あっちのみずは にがいぞ（16）
-    {t:'たなばたさま', l:'ささのは さらさら のきばに ゆれる', n:'C4 C4 F4 G4| A4 A4 A4 A4| A4 C5 C5 A4| F4 A4 G4|'},                            // ささのは さらさら のきばに ゆれる（15）
-    {t:'われは海の子', l:'われはうみのこ しらなみの さわぐいそべの まつばらに', n:'F4 C4 C4| F4 E4 F4 G4| A4 G4 A4 D5| C5| D5 C5 D5 E5| F5 F5 C5 A4| G4 Bb4 A4 G4| F4|'}        // われはうみのこ しらなみの さわぐいそべの まつばらに（25・ヘ長調）
+    {t:'たなばたさま', l:'ささのは さらさら のきばに ゆれる', n:'C4 C4 F4 G4| A4 A4+A4 A4| A4 C5 C5 A4| F4 A4 G4|'},                          // ささのは さーらさらー のきばに ゆれる（14服・「らさ」はタタン）
+    {t:'われは海の子', l:'われはうみのこ しらなみの さわぐいそべの まつばらに', n:'F4 C4 C4| F4 E4 F4 G4| A4 G4 A4 D5| C5| D5 C5 D5 E5| F5 F5 C5 A4| G4 Bb4 A4 G4| F4|'}        // われはうみのこ しらなみの さわぐいそべの まつばらに（25服・ヘ長調）
   ],
   autumn:[
-    {t:'紅葉',         l:'あきのゆうひに てるやま もみじ', n:'A4 G4 F4 G4 A4 F4 C4| F4 E4 F4 G4 C5| A4 G4 F4 G4|'},                          // あきのゆうひに てるやま もみじ（16）
-    {t:'月',           l:'でたでた つきが まあるい まあるい まんまるい', n:'G4 E4 G4 E4| C4 D4 E4| G4 A4 G4 E4| G4 A4 G4 E4| G4 A4 G4 E4 D4|'},                   // でたでた つきが まあるい まあるい まんまるい（20）
-    {t:'虫のこえ',     l:'あれまつむしが ないている チンチロチンチロチンチロリン', n:'G4 E4 A4 A4 G4 G4 E4| C5 C5 A4 A4 G4| G4 A4 G4 A4 G4 G4 G4|'}                   // あれまつむしが ないている チンチロチンチロチンチロリン（19）
+    {t:'月',           l:'でたでた つきが まあるい まあるい まんまるい ぼんのような つきが', n:'G4 E4 G4 E4 C4 D4 E4| G4+A4 G4+E4 G4+A4 G4+E4| G4+A4 G4+E4 D4| C4+D4 E4+A4 G4 E4 D4 E4 C4|'},   // でたでた つきが まぁるい…（21服。「まあ」「るい」はタタン。「ぼんのようなつきが」まで伸ばして主音で終止・v0.16）
+    {t:'虫のこえ',     l:'あれまつむしが ないている チンチロチンチロチンチロリン', n:'G4 E4 A4 A4 G4 G4 E4| C5 C5 A4 A4 G4| G4 A4 G4 A4 G4 G4 G4|'}                   // あれまつむしが ないている チンチロチンチロチンチロリン（19服）
   ],
   winter:[
-    {t:'雪',           l:'ゆきやこんこ あられやこんこ ふってはふっては ずんずんつもる', n:'C5 D5 C5 D5 C5 A4| A4 Bb4 A4 Bb4 A4 F4| A4 F4 G4 A4 F4 G4| A4 Bb4 C5 C5 G4 A4 G4|'},        // ゆきやこんこ あられやこんこ ふってはふっては ずんずんつもる（25）
-    {t:'お正月',       l:'もういくつねると おしょうがつ はやくこいこい おしょうがつ', n:'F4 G4 F4 G4 A4 C5 A4| G4 G4 F4 G4 A4| F4 G4 F4 G4 A4 C5 A4 A4| G4 G4 A4 G4 F4|'},          // もういくつねると おしょうがつ はやくこいこい おしょうがつ（25・二句目のあと最終句へ。主音で終止し自然につながる）
-    {t:'一月一日',     l:'としのはじめの ためしとて おわりなきよの めでたさを', n:'A4 B4 A4| F#4 E4 D4 D4| E4 E4 A4 G4| F#4| A4 B4 A4| F#4 E4 D4 D4| E4 E4 F#4 E4| D4|'}       // としのはじめの ためしとて おわりなきよの めでたさを（24）
+    {t:'雪',           l:'ゆきやこんこ あられやこんこ ふってはふっては ずんずんつもる', n:'C5+D5 C5+D5 C5 A4| A4+Bb4 A4+Bb4 A4 F4| A4 F4+G4 A4 F4+G4| A4+Bb4 C5+C5 G4+A4 G4|'},   // ゆきやこんこ…（16服。「ゆき」「やこ」等はタタン、「あられやこんこ」の「ん」は前音に含める）
+    {t:'お正月',       l:'もういくつねると おしょうがつ はやくこいこい おしょうがつ', n:'F4 G4 F4+G4 A4 C5 A4| G4 G4 F4 G4 A4| F4 G4 F4+G4 A4 C5 A4| G4 G4 A4 G4 F4|'}          // もーういくつねーるとー…（22服。「くつ」「くこ」はタタン。二句目のあと最終句へ、主音で終止）
   ]
 };
-for(const s in SONGS) SONGS[s].forEach(sg => {   // 文字列の譜を {f, end} の並びに
-  sg.notes = sg.n.trim().split(/\s+/).map(tok => ({f: nf(tok.replace('|', '')), end: tok.slice(-1) === '|'}));
+for(const s in SONGS) SONGS[s].forEach(sg => {   // 文字列の譜を {f, f2, end} の並びに（f2はタタンの二音目）
+  sg.notes = sg.n.trim().split(/\s+/).map(tok => {
+    const p = tok.replace('|', '').split('+');
+    return {f: nf(p[0]), f2: p[1] ? nf(p[1]) : 0, end: tok.slice(-1) === '|'};
+  });
 });
-/* ---------- 名物拝見（v0.15）―― 完奏の褒美に、不昧公が雲州蔵帳の一品を披露する ----------
-   雲州蔵帳＝不昧公・松平治郷が集めた名物茶道具の蔵帳。名勝札（土地の景色）や偉人札（人物）と
-   役どころが被らないよう、名物は「完奏のご褒美」だけに登場させる。一局で完奏を重ねると順に一品ずつ */
-const MEIBUTSU = [
-  {t:'油屋肩衝',     k:'唐物茶入・大名物',     n:'天下に名高い肩衝茶入。不昧公が大枚を投じて雲州に迎えました。'},
-  {t:'喜左衛門井戸', k:'大井戸茶碗・国宝',     n:'井戸茶碗の王とうたわれる一碗。不昧公の秘蔵ののち、大徳寺孤篷庵へ。'},
-  {t:'流れ圜悟',     k:'圜悟克勤の墨蹟・国宝', n:'日本に伝わる最古の墨蹟と名高い一幅。'},
-  {t:'破れ虚堂',     k:'虚堂智愚の墨蹟',       n:'破れの繕い跡ごと賞玩された名筆。'}
-];
-let meibutsuIdx = 0;
-const meibutsuSeen = [], songsCompleted = [];   // 結果画面に載せる（完奏した歌・拝見した名物）
 const songIdx = {spring:0, summer:0, autumn:0, winter:0};
 for(const s in songIdx) songIdx[s] = Math.random() * SONGS[s].length | 0;  // 遊ぶたびに最初の歌が変わる
 let song = null, songPos = 0, songSeason = null, melodyUntil = 0;   // melodyUntil: 歌の音が鳴り終わる時刻（BGMはそのあいだ休む）
@@ -2165,8 +2180,8 @@ function startSong(){  // その季節の次の歌を頭から
   const L = SONGS[fxSeason] || SONGS.spring;
   song = L[songIdx[fxSeason]++ % L.length]; songSeason = fxSeason; songPos = 0;
 }
-// 一服ごとの一音。wave＝何服目か（1から）
-// 服を重ねるほど響きが厚くなる ― 独奏→低音の重ね→五度の和音→総奏と、二十服の完奏へ向けて段々に盛り上げる
+// 一服ごとの一拍。wave＝何服目か（1から）。タタン（f2）は半拍あとに二音目を続ける
+// 服を重ねるほど響きが厚くなる ― 独奏→低音の重ね→五度の和音→総奏と、完奏へ向けて段々に盛り上げる
 function chainNote(wave){
   if(!song || songSeason !== fxSeason) startSong();
   if(songPos >= song.notes.length) startSong();        // 念のため（完奏直後は次の歌に切り替わっている）
@@ -2176,13 +2191,17 @@ function chainNote(wave){
   if(wave >= 4)  pluck(nt.f / 2, 0, vol * .35);          // 四服から：低いオクターブの重ね音
   if(wave >= 8)  pluck(nt.f * 1.5, .015, vol * .25);     // 八服から：五度を添えて和音に
   if(wave >= 13) pluck(nt.f * 2, .03, vol * .22);        // 十三服から：高いオクターブも重ねて総奏の響き
+  if(nt.f2){                                             // タタンの二音目 ― 半拍（連鎖一服≒0.6秒の半分）あとに澄んだまま
+    pluck(nt.f2, .3 * speed, vol * .92);
+    if(wave >= 4) pluck(nt.f2 / 2, .3 * speed, vol * .3);
+  }
   if(nt.end){                                            // 句の切れ目 ― 服が深いほど太鼓が大きく
     if(wave >= 10) thud(false); else if(wave >= 3) thud(true);
     if(wave >= 6) pon(.13);
   }
-  if(wave >= 12) pon(.08);                               // 十二服からは一音ごとに小鼓が拍子を刻む
-  if(AC) melodyUntil = AC.currentTime + .55;
-  if(songPos === song.notes.length){                     // 完奏 ― 拍手と紙吹雪と名物拝見で祝って、次の歌へ（v0.15）
+  if(wave >= 12) pon(.08);                               // 十二服からは一拍ごとに小鼓が拍子を刻む
+  if(AC) melodyUntil = AC.currentTime + (nt.f2 ? .85 : .55);
+  if(songPos === song.notes.length){                     // 完奏 ― 拍手と紙吹雪で祝って、次の歌へ
     // 合いの手は歌の終止音を主にした和音だけ（音階を濁さない）。かき手は鳴らさない
     setTimeout(() => { thud(false); pluck(nt.f, .05, .22); pluck(nt.f * 1.5, .12, .13); pluck(nt.f * 2, .19, .15); }, 260 * speed);
     celebrateSong(song, wave);
@@ -2204,23 +2223,13 @@ function applause(n){
   }
 }
 function celebrateSong(sg, wave){
-  songsCompleted.push(sg.t);
-  // 服が深いほど拍手も紙吹雪も盛大に
+  // 服が深いほど拍手も紙吹雪も盛大に（v0.16: 名物拝見と結果画面への記録は情報過多だったのでやめ、祝いは音と紙吹雪と札だけに）
   applause(Math.min(8 + wave, 22));
   goldRain(Math.min(22 + wave, 40), true);
   hyakka();
   const d = document.createElement('div'); d.className = 'kansoBanner';
   d.innerHTML = '<b>完奏</b><span>「' + sg.t + '」</span>';
   board.appendChild(d); setTimeout(() => d.remove(), 2350);
-  // 名物拝見 ― ひと呼吸おいて、不昧公が蔵の一品を披露する
-  const m = MEIBUTSU[meibutsuIdx++ % MEIBUTSU.length];
-  if(meibutsuSeen.indexOf(m) < 0) meibutsuSeen.push(m);
-  setTimeout(() => {
-    pon(.13); setTimeout(() => pon(.1), 130);
-    const c = document.createElement('div'); c.className = 'meibutsuCard';
-    c.innerHTML = '<em>不昧公の名物拝見 ― 雲州蔵帳より</em><b>' + m.t + '</b><i>' + m.k + '</i><p>' + m.n + '</p>';
-    board.appendChild(c); setTimeout(() => c.remove(), 3150);
-  }, 950 * speed);
 }
 // 小鼓の「ポン」（短い張りのある音）
 function pon(vol){
@@ -2341,10 +2350,13 @@ function init(){
     grid[r][c] = makePiece(t, r, c, 0);
   }
   renderMissions(); updateHUD(); setupSeason();
-  document.getElementById('guestUse').setAttribute('href', SYM[GUEST]);
-  document.getElementById('guestName').textContent = GUESTINFO[GUEST].name;
-  document.getElementById('guestNote').textContent = GUESTINFO[GUEST].note;
-  document.getElementById('guestLead').textContent = '今は' + SEA.name + ' ― 季節の銘菓が仲間入り';
+  // 季節ピースの選択肢（スタート画面）。ふだんは今日の季節、お好みで四季どれでも
+  const pick = document.getElementById('guestPick');
+  pick.innerHTML = ['hana','manten','kuri','yuzu'].map(k =>
+    '<button data-g="' + k + '"><svg viewBox="0 0 100 100"><use href="' + SYM[k] + '"/></svg>' +
+    GUEST_SEASON[k] + '・' + GUESTINFO[k].name + '</button>').join('');
+  pick.querySelectorAll('button').forEach(b => b.addEventListener('click', () => setGuest(b.dataset.g)));
+  updateGuestBox();
 }
 
 /* ---------- 四季の情景 ---------- */
@@ -2896,9 +2908,9 @@ async function cutIn(wave){
   const ov = document.getElementById('cutinOv');
   ov.classList.add('show');
   // 鳴り物は音程のない太鼓・鼓・風の音だけ（v0.15。かき手と律音階の払いは歌の音階を濁すのでやめた）。
-  // 長さも詰めて、歌の流れが途切れにくいように
+  // 止まる長さは連鎖の一服（約0.61秒）の倍数にそろえる（v0.16。一枚目は二服分、以降は一服分の休符として歌の拍に乗る）
   thud(false); swish(true); pon(.15); setTimeout(() => pon(.11), 140);
-  await sleep(wave === 10 ? 1100 : 850);
+  await sleep(wave === 10 ? 1070 : 460);
   ov.classList.remove('show');
   await sleep(150);
 }
@@ -3158,14 +3170,6 @@ function checkEnd(){
   document.getElementById('resChain').textContent = chainLabel();
   document.getElementById('resBoxes').textContent = boxesDone + '箱';
   document.getElementById('resBonus').textContent = bonusMoves > 0 ? '＋' + bonusMoves + '手' : '―';
-  // 完奏した歌と、褒美に拝見した名物（v0.15）
-  document.getElementById('resSongs').textContent = songsCompleted.length ? songsCompleted.length + '曲' : '―';
-  const sl = document.getElementById('resSongList');
-  if(songsCompleted.length){
-    let h = '<em>完奏</em>' + songsCompleted.map(t => '「' + t + '」').join('');
-    if(meibutsuSeen.length) h += '<br><em>名物拝見</em>' + meibutsuSeen.map(m => m.t).join('・');
-    sl.innerHTML = h; sl.style.display = 'block';
-  }
   if(boxesDone > 0) PENTA.forEach((f, i) => pluck(f, .4 + i * .09, .2)); else thud(false);
   setTimeout(() => document.getElementById('resultOv').classList.add('show'), 400);
   updateHUD();
@@ -3258,11 +3262,13 @@ init();
 (function(){
   const SEASON_LABEL = {spring:'春', summer:'夏', autumn:'秋', winter:'冬'};
   const KANA = {C:'ド', D:'レ', E:'ミ', F:'ファ', G:'ソ', A:'ラ', B:'シ'};
-  function tokKana(tok){
+  function oneKana(tok){
     const m = /^([A-G])([#b]?)(\d)/.exec(tok);
     if(!m) return tok;
     return KANA[m[1]] + (m[2] === '#' ? '♯' : m[2] === 'b' ? '♭' : '') + '<small>' + m[3] + '</small>';
   }
+  // A4+B4（タタン＝一服に二音）は「ラ･シ」とひとつのチップで示す
+  function tokKana(tok){ return tok.replace('|', '').split('+').map(oneKana).join('<i>･</i>'); }
   let playTok = 0;   // 再生の世代番号。増えたら進行中の再生は静かにやめる
   const ov = document.getElementById('testOv'), listEl = document.getElementById('testList'), nowEl = document.getElementById('testNow');
   // 曲一覧（季節ごと）
@@ -3278,7 +3284,7 @@ init();
   }
   function renderNow(sg){
     const toks = sg.n.trim().split(/\s+/);
-    nowEl.innerHTML = '<div class="tTitle">' + sg.t + '（' + toks.length + '音）</div>'
+    nowEl.innerHTML = '<div class="tTitle">' + sg.t + '（' + toks.length + '服）</div>'
       + '<div class="tLyric">' + sg.l + '</div>'
       + '<div>' + toks.map((tk, i) =>
           '<span class="tChip' + (tk.slice(-1) === '|' ? ' br' : '') + '" data-i="' + i + '">' + tokKana(tk) + '</span>').join('') + '</div>';
@@ -3295,18 +3301,20 @@ init();
       if(my !== playTok) return;
       const nt = sg.notes[i], wave = i + 1;
       chips.forEach(ch => ch.classList.toggle('on', +ch.dataset.i === i));
-      // 実際の連鎖と同じ鳴らし方（chainNoteと同じ式）。素の音階だけ聴くときは旋律の一音のみ
+      // 実際の連鎖と同じ鳴らし方・同じテンポ（一服≒0.61秒。chainNoteと同じ式）。素の音階だけ聴くときは旋律のみ
       const vol = Math.min(.3, .16 + wave * .012);
       pluck(nt.f, 0, layer ? vol : .24);
+      if(nt.f2) pluck(nt.f2, .3, layer ? vol * .92 : .23);   // タタンの二音目は半拍あと
       if(layer){
         if(wave >= 4)  pluck(nt.f / 2, 0, vol * .35);
+        if(wave >= 4 && nt.f2) pluck(nt.f2 / 2, .3, vol * .3);
         if(wave >= 8)  pluck(nt.f * 1.5, .015, vol * .25);
         if(wave >= 13) pluck(nt.f * 2, .03, vol * .22);
         if(nt.end){ if(wave >= 10) thud(false); else if(wave >= 3) thud(true); if(wave >= 6) pon(.13); }
         if(wave >= 12) pon(.08);
       }
-      if(AC) melodyUntil = AC.currentTime + .55;
-      await new Promise(r => setTimeout(r, nt.end ? 560 : 400));
+      if(AC) melodyUntil = AC.currentTime + (nt.f2 ? .85 : .55);
+      await new Promise(r => setTimeout(r, 610));
     }
     if(my !== playTok) return;
     btn.classList.remove('playing');
