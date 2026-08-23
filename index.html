@@ -287,8 +287,8 @@
   @keyframes callA{from{opacity:.72;transform:translateX(-50%) scale(.95)}to{opacity:1;transform:translateX(-50%) scale(1.07)}}
 
   /* カットイン（十服以上） */
-  #cutinOv{background:radial-gradient(circle at 50% 45%,rgba(60,40,16,.9),rgba(16,10,4,.95))}
-  #cutinOv .cutCard{width:min(92vw,400px);animation:cutInA .45s cubic-bezier(.2,1.25,.4,1)}
+  #cutinOv{background:radial-gradient(circle at 50% 45%,rgba(60,40,16,.9),rgba(16,10,4,.95));transition:opacity .14s}   /* v0.18: 一拍の札なので出入りを速く */
+  #cutinOv .cutCard{width:min(92vw,400px);animation:cutInA .28s cubic-bezier(.2,1.25,.4,1)}
   #cutinOv .cutChain{
     font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:38px;color:#fff8e0;letter-spacing:.14em;
     text-shadow:0 0 22px var(--gold-bright),0 2px 6px rgba(0,0,0,.85);margin-bottom:8px;line-height:1;
@@ -576,7 +576,7 @@
     <b>詰合せ</b>を一箱詰め終えるごとに<b>手数と点</b>がもらえます。次の箱は一回り大きくなります。<br>
     <b>一度に5つ以上</b>消すと<b>上生菓子（発火剤）</b>が生まれます。となりで消し込みが起きると
     <b>小爆発</b>してまわりを巻き込み、近くの上生菓子にも燃えうつります。手数1つで動かせます。意匠はそのときの季節の練り切り（桜・梅・菜の花／紫陽花・朝顔・水の彩／菊・紅葉・月のうさぎ／椿・雪うさぎ・花びら餅）。<br>
-    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。<b>連鎖の音は季節の歌</b> ― 一服が歌の一拍にあたり、「さ・く・ら・さ・く・ら」と六服つなげば「さくらさくら」。歌によっては一服に二音の「タタン」や付点の「タッタ」、伸ばす音の持ちも入って、原曲のリズムどおりに進みます。歌いきれば<b>完奏</b>、拍手と紙吹雪でお祝いして次の歌へ。服を重ねるほど低音の重ね・和音・太鼓と小鼓が加わり、だんだん賑やかに盛り上がります。連鎖のあいだは歌の音階を最優先に、BGMや鳴り物は音程を持たない太鼓・鼓だけで脇に控え、情景の札が出ているあいだも歌は止まりません。曲は季節ごとに二曲（春＝さくらさくら・春の小川／夏＝たなばたさま・われは海の子／秋＝月・虫のこえ／冬＝雪・お正月。いずれも著作権保護期間の満了した曲）。
+    連鎖（一服、二服…）が深いほど<b>点が倍</b>になり、金箔が舞って演出も<b>華やか</b>に。<b>連鎖の音は季節の歌</b> ― 一服が歌の一拍にあたり、「さ・く・ら・さ・く・ら」と六服つなげば「さくらさくら」。歌によっては一服に二音の「タタン」や付点の「タッタ」、伸ばす音の持ちも入って、原曲のリズムどおりに進みます。歌いきれば<b>完奏</b>、拍手と紙吹雪でお祝いして次の歌へ。服を重ねるほど低音の重ね・和音・太鼓と小鼓が加わり、だんだん賑やかに盛り上がります。連鎖のあいだは歌の音階を最優先に、BGMや鳴り物は音程を持たない太鼓・鼓だけで脇に控え、情景の札が出ているあいだも歌は止まりません。曲は季節ごとに候補を多めに（春＝さくらさくら・春の小川・朧月夜／夏＝たなばたさま・われは海の子・かたつむり・夏は来ぬ／秋＝月・虫のこえ・村祭・紅葉／冬＝雪・お正月・冬の夜。いずれも著作権保護期間の満了した曲）。
     茶碗ゲージが満ちると<b>不昧公</b>が降臨し、大茶会の<b>百花繚乱</b> ― 盤の真ん中から二度の大払い。<br>
     <b>パンダは連鎖の命綱</b>。ゲージが満タンなら連鎖中にタップして<b>呼んでおく</b>と、
     切れ目で自動でつながります。切れ目の「いま！」の合図で叩いても間に合います。
@@ -1906,9 +1906,10 @@
   <div class="card">
     <h2>調べ検分</h2>
     <p class="testNote">連鎖の調べに使う各曲を、実際の連鎖と同じテンポ（一服＝一拍0.6秒）で確認できます（暫定機能）。<br>
-      「ラ･ラ」は一服に二音の「タタン」、「ラッラ」は付点のスキップ「タッタ」、<br>
+      「ラ･ラ」は一服に二音の「タタン」、「ラッラ」は付点のスキップ「タッタ」、「ラ･シ‧ラ」は三音、<br>
       「ー」は前の音の持ち（小さく弾き直し）、「休」は小鼓だけの休み。<br>
-      「盛り上げ再現」を入れると、実際の連鎖と同じ低音の重ね・和音・鼓が加わります。</p>
+      「盛り上げ再現」を入れると、実際の連鎖と同じ低音の重ね・和音・鼓が加わります。<br>
+      v0.18: 曲は絞り込まず候補を多めに入れてあります（季節ごとに3〜4曲）。残す曲をお決めください。</p>
     <label class="testOpt"><input type="checkbox" id="testLayer"> 盛り上げ再現（服が深まる響きも鳴らす）</label>
     <div id="testList"></div>
     <div id="testNow"><div class="tLyric">曲を選ぶと、音の並びがここに出ます。</div></div>
@@ -2033,17 +2034,17 @@ function pluck(f, delay, vol){ // 琴の爪弾き（delay秒あと）
 }
 // 琴の爪弾きを AudioContext の時刻 t に予約して鳴らす（v0.17: 連鎖の調べは拍の時刻を先に決めて予約するので、
 // 画面処理の遅れ（setTimeout のぶれ・描画の詰まり）で音がよろけない）
-function pluckAt(f, t, vol){
+function pluckAt(f, t, vol, dur){   // dur: 響きの長さ（秒・省略時0.5。伸ばす音は長め、速い二音は短め）
   const a = ac(); if(!a || muted) return;
-  const v = vol || .2;
+  const v = vol || .2, d = dur || .5;
   const o = a.createOscillator(), g = a.createGain();
   o.type = 'triangle'; o.frequency.setValueAtTime(f, t);
-  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + .5);
-  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .5);
+  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d);
   const o2 = a.createOscillator(), g2 = a.createGain();
   o2.type = 'sine'; o2.frequency.setValueAtTime(f * 2, t);  // 倍音は正確なオクターブ（わずかな狂いでも和音を重ねると濁って「ズレ」に聴こえる）
-  g2.gain.setValueAtTime(v * .25, t); g2.gain.exponentialRampToValueAtTime(.001, t + .3);
-  o2.connect(g2); g2.connect(a.destination); o2.start(t); o2.stop(t + .3);
+  g2.gain.setValueAtTime(v * .25, t); g2.gain.exponentialRampToValueAtTime(.001, t + d * .6);
+  o2.connect(g2); g2.connect(a.destination); o2.start(t); o2.stop(t + d * .6);
 }
 function swish(hi){ // 菓子切りの刃 / 天狗の風 / 茶筅
   const a = ac(); if(!a || muted) return;
@@ -2164,47 +2165,72 @@ const BEAT = .6;   // 一服＝一拍の長さ（秒）。連鎖の消去0.27秒
 const NOTE_IDX = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
 function nf(name){ const m = /^([A-G][#b]?)(\d)$/.exec(name); return m ? 440 * Math.pow(2, (NOTE_IDX[m[1]] + (m[2] - 4) * 12 - 9) / 12) : 0; }
 // 譜の書き方（n）: 一拍（＝一服）ずつ空白区切り。音名のうしろの | は句の切れ目（太鼓で区切る）
-//   A4      一拍にひとつの音（タン）            A4+B4   半拍ずつ二音（タタン）
-//   A4.B4   付点のスキップ（タッタ＝0.75拍＋0.25拍）   ~       持ち（前の音を小さく弾き直す）
-//   ~+B4    持ちのあと半拍で B4                  -       休み（小鼓だけ）
+//   A4        一拍にひとつの音（タン）
+//   A4+B4     半拍ずつ二音（タタン）。+ は「次の半拍」に置く
+//   A4.B4     付点のスキップ（タッタ＝0.75拍＋0.25拍）
+//   A4+B4,A4  三音（タ・タタ）。, は「次の四分の一拍」に置く（さくらの「そ-らぁ」の装飾、村祭の「ヒャララ」）
+//   B4,A4+F4  三音（タタ・タ）
+//   ~         持ち（前の音を小さく弾き直す。前の音は長めに響かせる）   ~+B4  持ちのあと半拍で B4
+//   -         休み（小鼓だけ）
 //   k: 完奏の和音の主音（歌が主音以外で終わるとき）。l: 歌詞（検分モードの表示用。音との厳密な対応付けはしない）
+// v0.18: 曲は絞り込まず候補を多めに入れてある（残す曲は原さんが決める）。旋律・リズムはすべて mu-tech の MIDI から写した
 const SONGS = {
   spring:[
-    {t:'さくらさくら', k:'A4', l:'さくら さくら やよいの そらは みわたす かぎり',
-     n:'A4 A4 B4 ~| A4 A4 B4 ~| A4 B4 C5 B4| A4 B4 A4 F4| E4 C4 E4 F4| E4 E4 C4 B3|'},                                   // 24服。「らー」は二拍（v0.16は一拍に詰めていた）
+    {t:'さくらさくら', l:'さくら さくら やよいの そらは みわたす かぎり いざや いざや みにゆかん',
+     n:'A4+A4 B4| A4+A4 B4| A4+B4 C5+B4| A4+B4,A4 F4| E4+C4 E4+F4| E4+E4,C4 B3| A4+A4 B4| A4+A4 B4| E4+F4 B4,A4+F4| E4|'},    // 19服。一服に二音ずつ詰めて流れを作る（v0.18。一服一音は間延びした）。「そ-らぁ-はー」「か-ぎぃ-りー」の装飾も原曲どおり。中の句（かすみか…いずる）は同じ節なので飛ばし「いざや」で主音終止
     {t:'春の小川',     k:'C4', l:'はるのおがわは さらさらいくよ',
-     n:'E4 G4 A4 G4| E4 G4 C5 ~| A4 A4 G4 E4| C4 D4 E4|'}                                                                // 15服・ハ長調。全音が四分音符で一服一音。「はー」は二拍（v0.17新規採用）
+     n:'E4 G4 A4 G4| E4 G4 C5 ~| A4 A4 G4 E4| C4 D4 E4|'},                                                                // 15服・ハ長調。全音が四分音符で一服一音。「はー」は二拍
+    {t:'朧月夜',       l:'なのはなばたけに いりひうすれ みわたすやまのは かすみふかし',
+     n:'F#4+F#4 D4 ~+E4| F#4+A4 A4+B4 A4| E4 F#4 ~+D4| E4+A4 F#4 ~| A4+A4 F#4 ~+G4| A4+D5 D5+E5 D5| A4 B4 ~+F#4| E4+E4 D4|'}   // 23服・ニ長調・三拍子。候補として再投入（v0.17で外したが原さんが選ぶ）。裏拍から入る音は ~+ で
   ],
   summer:[
     {t:'たなばたさま', k:'F4', l:'ささのは さらさら のきばに ゆれる',
-     n:'C4 C4 F4 G4| A4 A4+A4 A4 -| A4 C5 C5 A4| F4 A4 G4|'},                                                            // 15服。「さーらさらー」の「らさ」はタタン、句のあとの休みに小鼓
+     n:'C4 C4 F4 G4| A4 A4+A4 A4 -| A4 C5 C5 A4| F4 A4 G4|'},                                                            // 15服。「らさ」はタタン、句のあとの休みに小鼓
     {t:'われは海の子', k:'D4', l:'われはうみのこ しらなみの さわぐいそべの まつばらに',
-     n:'D4 ~ A3 A3| D4 ~+C#4 D4 E4| F#4 ~+E4 F#4 B4| A4 ~ ~ -| B4 ~+A4 B4 C#5| D5 ~+D5 A4 F#4| E4 G4 F#4 ~+E4| D4|'}     // 29服・ニ長調（原曲の変ホ長調を半音下げて中音域に）。「わーれは」「うーみ」「しーら」の付点を持ちと裏拍で写す
+     n:'D4 ~ A3 A3| D4 ~+C#4 D4 E4| F#4 ~+E4 F#4 B4| A4 ~ ~ -| B4 ~+A4 B4 C#5| D5 ~+D5 A4 F#4| E4 G4 F#4 ~+E4| D4|'},     // 29服・ニ長調。付点のリズムを持ちと裏拍で写す
+    {t:'かたつむり',   k:'D4', l:'でんでんむしむし かたつむり おまえのあたまは どこにある つのだせやりだせ あたまだせ',
+     n:'A4.A4 A4+F#4 D4.D4 D4+E4| F#4.F#4 E4+D4 E4 -| F#4.G4 A4+B4 A4.A4 A4+F#4| E4.E4 D4+E4 F#4 -| A4+D5 D5+A4 F#4+A4 A4+F#4| D4+F#4 F#4.E4 D4|'},   // 23服・ニ長調（v0.18候補）。付点のスキップとタタンの歌
+    {t:'夏は来ぬ',     k:'C4', l:'うのはなの におうかきねに ほととぎす はやもきなきて しのびねもらす なつはきぬ',
+     n:'G4| E4+F4 G4.G4 A4+C5 G4+D5 C5+A4 G4| A4 C5+A4 G4.G4| A4+D4 D4+G4 E4+C4 D4| C4 E4 G4.G4 A4+G4 A4+C5 G4.G4| C5.E5 D5 D5 C5|'}   // 24服・ハ長調（v0.18候補）。小山作之助1927年没・佐佐木信綱1963年没でともに満了
   ],
   autumn:[
     {t:'月',           k:'C4', l:'でたでた つきが まあるい まあるい まんまるい ぼんのような つきが',
-     n:'G4 E4 G4 E4| C4 D4 E4 ~| G4.A4 G4+E4 G4.A4 G4+E4| G4.A4 G4+E4 D4 ~| C4+D4 E4+A4 G4 E4| D4 E4 C4|'},            // 23服。「まぁ」は付点のスキップ、「るい」はタタン。「がー」「いー」は二拍
+     n:'G4 E4 G4 E4| C4 D4 E4 ~| G4.A4 G4+E4 G4.A4 G4+E4| G4.A4 G4+E4 D4 ~| C4+D4 E4+A4 G4 E4| D4 E4 C4|'},            // 23服。「まぁ」は付点のスキップ、「るい」はタタン
     {t:'虫のこえ',     k:'C4', l:'あれまつむしが ないている チンチロチンチロチンチロリン あれすずむしも なきだした リンリンリンリン リィンリン',
-     n:'G4+E4 A4+A4 G4+G4 E4| C5+C5 A4+A4 G4 -| G4+A4 G4+A4 G4+G4 G4| G4+E4 A4+A4 G4+G4 E4| C5+C5 A4+A4 G4 -| G4+A4 G4+A4 G4+G4 G4|'}  // 24服。八分音符の対をタタンに。「あれすずむしも」は同じ節のくり返し
+     n:'G4+E4 A4+A4 G4+G4 E4| C5+C5 A4+A4 G4 -| G4+A4 G4+A4 G4+G4 G4| G4+E4 A4+A4 G4+G4 E4| C5+C5 A4+A4 G4 -| G4+A4 G4+A4 G4+G4 G4|'},  // 24服。八分音符の対をタタンに
+    {t:'村祭',         k:'D4', l:'むらのちんじゅの かみさまの きょうはめでたい おまつりび ドンドンヒャララ ドンヒャララ ドンドンヒャララ ドンヒャララ あさからきこえる ふえたいこ',
+     n:'A4| A4.A4 A4+B4 G4+E4 D4.D4 E4+F#4 E4 ~| E4 A4+A4 G4+F#4 E4+D4 A3.A3 B3+E4 D4 -| A3+A3 D4,D4+D4 F#4+F#4,F#4 A4| F#4+F#4 D4,D4+D4 F#4+D4,D4 A3| A4.A4 A4+A4 A4+B4 G4+E4 D4.E4 F#4+E4 D4|'},   // 31服・ニ長調（v0.18候補）。「ヒャララ」は十六分の三音。太鼓の低い「ドンドン」も旋律で
+    {t:'紅葉',         k:'F4', l:'あきのゆうひに てるやまもみじ こいもうすいも かずあるなかに',
+     n:'A4 G4+F4 G4 A4| F4 ~ C4 -| F4 E4+F4 G4 C5| A4 G4+F4 G4 -| A4 G4+F4 G4 A4| F4 ~ C4 -| F4 E4+F4 G4 C5| A4 G4 F4|'}        // 31服・ヘ長調（v0.18候補）。「ひーに」「もみじ」のあとに休み。前半二句で主音終止
   ],
   winter:[
     {t:'雪',           k:'F4', l:'ゆきやこんこ あられやこんこ ふってはふっては ずんずんつもる',
-     n:'C5.D5 C5.D5 C5 A4| A4.Bb4 A4.Bb4 A4 F4| A4 F4+G4 A4 F4+G4| A4.Bb4 C5+C5 G4.A4 G4|'},                            // 16服。「ゆーき」「やーこ」「あーら」「ずーん」「つーも」は付点のスキップ（原曲どおり）、「ては」「ずん」はタタン
-    {t:'お正月',       k:'F4', l:'もういくつねると おしょうがつ',
-     n:'F4 ~ G4 F4+G4| A4 C5 A4 ~| G4 G4 F4 G4| A4|'}                                                                    // 13服。「もーう」「るー」は二拍、「いく」はタタン。一句目で完奏（原曲も主和音の上で終わる句）
+     n:'C5.D5 C5.D5 C5 A4| A4.Bb4 A4.Bb4 A4 F4| A4 F4+G4 A4 F4+G4| A4.Bb4 C5+C5 G4.A4 G4|'},                            // 16服。「ゆーき」等は付点のスキップ、「ては」「ずん」はタタン
+    {t:'お正月',       k:'F4', l:'もういくつねると おしょうがつ はやくこいこい おしょうがつ',
+     n:'F4 ~ G4 F4+G4| A4 C5 A4 ~| G4 G4 F4 G4| A4 ~ -| F4 ~ G4 F4+G4| A4 C5 A4 A4| G4 G4 A4 G4| F4|'},                    // 28服。一句目のあと最終句「はやくこいこい」へ（v0.18で延長。13服は短すぎた）。主音で終止
+    {t:'冬の夜',       k:'G4', l:'ともしびちかく きぬぬうははは はるのあそびの たのしさかたる',
+     n:'G4.B4 B4 A4+G4 D4.E4 D4 G4| B4.D5 D5 B4+G4 A4.B4 A4 -| D4.E4 D4 G4+A4 B4.B4 A4 G4| A4.D5 A4 A4 A4.B4 G4|'}       // 23服・ト長調（v0.18候補）。付点のスキップの歌。主音で終止
   ]
 };
-for(const s in SONGS) SONGS[s].forEach(sg => {   // 文字列の譜を {f, f2, split, tie, rest, end} の並びに
+// 文字列の譜を {notes:[{f,pos}], tie, rest, end, held} の並びに。pos は拍の中の位置（0〜1）。held: 次が持ちなら長めに響かせる
+for(const s in SONGS) SONGS[s].forEach(sg => {
   let prev = 0;
+  const next = (pos, m) => Math.floor(pos / m + 1e-6) * m + m;
   sg.notes = sg.n.trim().split(/\s+/).map(tok => {
     const end = tok.slice(-1) === '|', body = end ? tok.slice(0, -1) : tok;
-    if(body === '-') return {f:0, f2:0, rest:true, end};
-    const dot = body.indexOf('.') > 0, p = body.split(dot ? '.' : '+');
-    const tie = p[0] === '~';
-    const f = tie ? prev : nf(p[0]), f2 = p[1] ? nf(p[1]) : 0;
-    prev = f2 || f;
-    return {f, f2, split: dot ? .75 : .5, tie, rest:false, end};
+    if(body === '-') return {notes:[], rest:true, tie:false, end};
+    const parts = body.split(/([+,.])/), notes = [];
+    let pos = 0, tie = false;
+    for(let i = 0; i < parts.length; i += 2){
+      if(i > 0) pos = parts[i - 1] === '+' ? next(pos, .5) : parts[i - 1] === ',' ? next(pos, .25) : .75;
+      let f;
+      if(parts[i] === '~'){ f = prev; tie = true; } else f = nf(parts[i]);
+      notes.push({f, pos});
+      prev = f;
+    }
+    return {notes, tie, rest:false, end};
   });
+  sg.notes.forEach((nt, i) => { nt.held = !!(sg.notes[i + 1] && sg.notes[i + 1].tie); });
 });
 const songIdx = {spring:0, summer:0, autumn:0, winter:0};
 for(const s in songIdx) songIdx[s] = Math.random() * SONGS[s].length | 0;  // 遊ぶたびに最初の歌が変わる
@@ -2239,24 +2265,28 @@ function sleepUntil(t){                 // AudioContext の時刻 t まで待つ
 // 服を重ねるほど響きが厚くなる ― 独奏→低音の重ね→五度の和音→総奏と、完奏へ向けて段々に盛り上げる
 function soundNote(nt, wave, t, plain){
   const vol = plain ? .24 : Math.min(.3, .16 + wave * .012);
-  const t2 = t + BEAT * speed * nt.split;                 // 二音目（タタン＝半拍、タッタ＝3/4拍）
   if(nt.rest){                                            // 休み ― 小鼓の合いの手だけ（拍は刻む）
     pon(plain ? .11 : .13, t);
-  } else if(nt.tie){                                      // 持ち ― 前の音を小さく弾き直して拍を刻む（琴の押し手のように）
-    pluckAt(nt.f, t, vol * .42);
-    if(!plain && wave >= 4) pluckAt(nt.f / 2, t, vol * .16);
-  } else {
-    pluckAt(nt.f, t, vol);                                // 旋律の一音（これだけは常に澄んだまま）
-    if(!plain){
-      if(wave >= 4)  pluckAt(nt.f / 2, t, vol * .35);          // 四服から：低いオクターブの重ね音
-      if(wave >= 8)  pluckAt(nt.f * 1.5, t + .012, vol * .25); // 八服から：五度を添えて和音に（わずかにかき下ろす）
-      if(wave >= 13) pluckAt(nt.f * 2, t + .024, vol * .22);   // 十三服から：高いオクターブも重ねて総奏の響き
+  }
+  const last = nt.notes.length - 1;
+  nt.notes.forEach((n, i) => {
+    const ti = t + BEAT * speed * n.pos;
+    // 次の拍が持ちなら長めに響かせる（伸ばす音）。一拍に二音以上なら短めに切って流れを作る
+    const ring = (i === last && nt.held) ? 1.1 : (last > 0 ? .4 : .5);
+    if(i === 0 && nt.tie){                                // 持ち ― 前の音をごく小さく弾き直して拍を刻む（琴の押し手のように）
+      pluckAt(n.f, ti, vol * .3, .5);
+    } else if(i === 0){
+      pluckAt(n.f, ti, vol, ring);                        // 旋律の一音（これだけは常に澄んだまま）
+      if(!plain){
+        if(wave >= 4)  pluckAt(n.f / 2, ti, vol * .35, ring);          // 四服から：低いオクターブの重ね音
+        if(wave >= 8)  pluckAt(n.f * 1.5, ti + .012, vol * .25, ring); // 八服から：五度を添えて和音に（わずかにかき下ろす）
+        if(wave >= 13) pluckAt(n.f * 2, ti + .024, vol * .22, ring);   // 十三服から：高いオクターブも重ねて総奏の響き
+      }
+    } else {                                              // 二音目・三音目 ― 澄んだまま
+      pluckAt(n.f, ti, vol * .92, ring);
+      if(!plain && wave >= 4) pluckAt(n.f / 2, ti, vol * .3, ring);
     }
-  }
-  if(nt.f2){                                              // 二音目 ― 澄んだまま
-    pluckAt(nt.f2, t2, vol * .92);
-    if(!plain && wave >= 4) pluckAt(nt.f2 / 2, t2, vol * .3);
-  }
+  });
   if(!plain){
     if(nt.end){                                           // 句の切れ目 ― 服が深いほど太鼓が大きく
       if(wave >= 10) thud(false, t); else if(wave >= 3) thud(true, t);
@@ -2264,12 +2294,12 @@ function soundNote(nt, wave, t, plain){
     }
     if(wave >= 12 && !nt.rest) pon(.08, t);               // 十二服からは一拍ごとに小鼓が拍子を刻む
   }
-  melodyUntil = t + (nt.f2 ? .85 : .55);
+  melodyUntil = t + (last > 0 ? .85 : .55);
 }
 // 完奏の合いの手 ― 終止の拍に、主音の和音と大太鼓（音階を濁さない）。k が無い曲は終止音を主にする
 function finaleChord(sg, last, t, vol){
-  const f = sg.k ? nf(sg.k) : last.f;
-  thud(false, t); pluckAt(f, t, vol || .22); pluckAt(f * 1.5, t + .04, .13); pluckAt(f * 2, t + .08, .15);
+  const f = sg.k ? nf(sg.k) : (last.notes[0] ? last.notes[0].f : nf('C4'));
+  thud(false, t); pluckAt(f, t, vol || .22, 1); pluckAt(f * 1.5, t + .04, .13, 1); pluckAt(f * 2, t + .08, .15, 1);
 }
 // 一服ごとの一拍を時刻 t に予約する（歌を一音進める）。wave＝何服目か（1から）
 function chainNote(wave, t){
@@ -2566,7 +2596,7 @@ async function checkBox(){
   kotoGliss(.3);
   const ov = document.getElementById('boxOv');
   ov.classList.add('show');
-  await sleep(1700);
+  await sleep(1200);     // v0.18: 1700→1200ms（止まる時間を短く）
   ov.classList.remove('show');
   // 次の箱は一回り大きく
   const f = Math.pow(BOX_GROWTH, boxesDone);
@@ -3002,8 +3032,8 @@ async function cutIn(wave){
   // 歌は止めない（v0.17）: 札が出ている拍（一枚目は二拍、以降は一拍）にも歌の次の音を拍どおりに鳴らし、
   // 札のあとの服の音も先に予約しておく。札は次の服の拍の少し前に消えるので、盤に戻った瞬間に次の服が拍に乗る。
   // （v0.16までは札のあいだ歌が止まり、再開のたびに拍がよろけていた）
-  // 札は二拍（1.2秒）。歌が止まらなくなったので、二枚目以降も一枚目と同じだけ見せる（v0.16は一拍だった）
-  const beats = 2;
+  // 札は一拍（0.6秒）で切り上げる（v0.18: 原さんの指示で止まる時間を短く。歌は止まらないので一拍でも流れは切れない。v0.17は二拍）
+  const beats = 1;
   const tStart = beatTake(wave);
   for(let i = 1; i < beats; i++) noteAt(wave);
   beatPrepare(wave);
@@ -3011,7 +3041,7 @@ async function cutIn(wave){
   ov.classList.add('show');
   // 鳴り物は音程のない太鼓・鼓・風の音だけ（v0.15。かき手と律音階の払いは歌の音階を濁すのでやめた）。拍の頭に合わせる
   thud(false, tStart); swish(true); pon(.15, tStart); pon(.11, tStart + .14);
-  if(AC) await sleepUntil(tEnd - .2); else await sleep(beats * BEAT * 1000);   // 音が使えない環境では拍ぶんだけ待つ
+  if(AC) await sleepUntil(tEnd - .12); else await sleep(beats * BEAT * 1000);   // 音が使えない環境では拍ぶんだけ待つ
   ov.classList.remove('show');                                                  // 次の服の拍の少し前に消え始める（消えきる0.3秒のあいだに盤へ）
 }
 
@@ -3023,9 +3053,9 @@ async function fever(){
   swish(true); setTimeout(() => swish(true), 140); setTimeout(() => swish(false), 280);
   kotoGliss(.4); flute(659.3, .6, 2.4, .05);
   ov.classList.add('show');
-  await sleep(1500);
+  await sleep(900);      // v0.18: 1500→900ms（止まる時間を短く）
   ov.classList.remove('show');
-  await sleep(150);
+  await sleep(100);
   blast(); quake(); shockFX(3, 3, 3); showChain(0, '百花繚乱'); hyakka();
   const inner = new Set(), outer = new Set();
   for(let r = 0; r < N; r++) for(let c = 0; c < N; c++){
@@ -3063,7 +3093,7 @@ async function pandaHelp(){
   const ov = document.getElementById('pandaOv');
   document.getElementById('pandaMsg').textContent = 'いちばん多い銘菓を ぱくり！';
   ov.classList.add('show');
-  await sleep(900);
+  await sleep(600);      // v0.18: 900→600ms
   ov.classList.remove('show');
   songRestart();               // パンダの一掃も歌の一音目から
   await pandaSweep(1);
@@ -3090,7 +3120,7 @@ function pandaChance(){
   pluck(880, 0, .18); pluck(1174.7, .1, .18);
   return new Promise(res => {
     pandaWindow = res;
-    setTimeout(() => { if(pandaWindow === res){ pandaWindow = null; res(false); } }, 1800 * speed);
+    setTimeout(() => { if(pandaWindow === res){ pandaWindow = null; res(false); } }, 1200 * speed);
   }).then(ok => {
     call.remove(); btn.classList.remove('chance');
     return ok;
@@ -3368,12 +3398,14 @@ init();
     return KANA[m[1]] + (m[2] === '#' ? '♯' : m[2] === 'b' ? '♭' : '') + '<small>' + m[3] + '</small>';
   }
   // A4+B4（タタン＝一服に二音）は「ラ･シ」、A4.B4（タッタ＝付点のスキップ）は「ラッシ」、~（持ち）は「ー」、-（休み）は「休」
+  // 三音（A4+B4,A4 / B4,A4+F4）は「ラ･シ･ラ」。, の速い音は小さな点で
   function tokKana(tok){
     const body = tok.replace('|', '');
     if(body === '-') return '休';
-    const dot = body.indexOf('.') > 0, p = body.split(dot ? '.' : '+');
-    const head = p[0] === '~' ? 'ー' : oneKana(p[0]);
-    return p[1] ? head + (dot ? '<i>ッ</i>' : '<i>･</i>') + oneKana(p[1]) : head;
+    const parts = body.split(/([+,.])/);
+    let s = parts[0] === '~' ? 'ー' : oneKana(parts[0]);
+    for(let i = 1; i < parts.length; i += 2) s += (parts[i] === '.' ? '<i>ッ</i>' : parts[i] === ',' ? '<i>‧</i>' : '<i>･</i>') + oneKana(parts[i + 1]);
+    return s;
   }
   let playTok = 0;   // 再生の世代番号。増えたら進行中の再生は静かにやめる
   const ov = document.getElementById('testOv'), listEl = document.getElementById('testList'), nowEl = document.getElementById('testNow');
@@ -3383,7 +3415,7 @@ init();
     listEl.appendChild(h);
     SONGS[s].forEach(sg => {
       const b = document.createElement('button');
-      b.textContent = '▶ ' + sg.t;
+      b.textContent = '▶ ' + sg.t + '（' + sg.notes.length + '服）';
       b.addEventListener('click', () => play(sg, b));
       listEl.appendChild(b);
     });
